@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${entity}Mapper">
+
+    <insert id="insert" parameterType="${entity}" useGeneratedKeys="true" keyProperty="id">
+        insert into ${entity}(
+        #foreach($field in ${table.Fields})
+        <if test="${entity}.${field.propertyName}!=null and ${entity}.${field.propertyName}!=''">${field.name},</if>
+        #end
+        is_deleted
+        )values(
+        #foreach($field in ${table.Fields})
+        <if test="${entity}.${field.propertyName}!=null and ${entity}.${field.propertyName}!=''">#{${entity}.${field.propertyName}},</if>
+        #end
+        #{${entity}.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="${entity}">
+        update ${entity} set
+        update_time = #{${entity}.updatetime}
+        #foreach($field in ${table.Fields})
+        <if test="${entity}.${field.propertyName}!=null and ${entity}.${field.propertyName}!=''">,${field.name}=#{${entity}.${field.propertyName}}</if>
+        #end
+        where id =#{${entity}.id}
+    </update>
+
+</mapper>

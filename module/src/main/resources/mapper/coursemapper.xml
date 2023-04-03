@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.mapper.CourseMapper">
+
+    <insert id="insert" parameterType="com.qc.entity.Course" useGeneratedKeys="true" keyProperty="id">
+
+        insert into course(
+        <if test="course.courseName!=null and course.courseName!=''">course_name,</if>
+        <if test="course.courseSubName != null and course.courseSubName!=''">course_sub_name,</if>
+        <if test="course.courseCount!=null and course.courseCount!=''">course_count,</if>
+        <if test="course.courseTime!=null and course.courseTime!=''">course_time,</if>
+        <if test="course.courseIntro!=null and course.courseIntro!=''">course_intro,</if>
+        <if test="course.courseImage!=null and course.courseImage!=''">course_image,</if>
+        <if test="course.coursePrice!=null and course.coursePrice!=''">course_price,</if>
+        <if test="course.teacherId!=null">teacher_id,</if>
+        <if test="course.weight!=null">weight,</if>
+        <if test="course.createTime!=null">create_time,</if>
+        <if test="course.updateTime!=null">update_time,</if>
+        is_deleted
+        ) values (
+        <if test="course.courseName!=null and course.courseName !=''">#{course.courseName},</if>
+        <if test="course.courseSubName!=null and course.courseSubName!=''">#{course.courseSubName},</if>
+        <if test="course.courseCount!=null and course.courseCount!=''">#{course.courseCount},</if>
+        <if test="course.courseTime!=null and course.courseTime!=''">#{course.courseTime},</if>
+        <if test="course.courseIntro!=null and course.courseIntro!=''">#{course.courseIntro},</if>
+        <if test="course.courseImage!=null and course.courseImage!=''">#{course.courseImage},</if>
+        <if test="course.coursePrice!=null and course.coursePrice!=''">#{course.coursePrice},</if>
+        <if test="course.teacherId!=null">#{course.teacherId},</if>
+        <if test="course.weight!=null">#{course.weight},</if>
+        <if test="course.updateTime!=null">#{course.updateTime},</if>
+        <if test="course.createTime!=null">#{course.createTime},</if>
+        #{course.isDeleted})
+    </insert>
+
+    <update id="update" parameterType="com.qc.entity.Course">
+        update course set
+        update_time = #{course.updateTime}
+        <if test="course.courseName!=null and course.courseName != ''">,course_name=#{course.courseName}</if>
+        <if test="course.courseSubName!=null and course.courseSubName!=''">,course_sub_name=#{course.courseSubName}</if>
+        <if test="course.courseCount!=null and course.courseCount!=''">,course_count=#{course.courseCount}</if>
+        <if test="course.courseTime!=null and course.courseTime!=''">,course_time=#{course.courseTime}</if>
+        <if test="course.courseIntro!=null and course.courseIntro!=''">,course_intro=#{course.courseIntro}</if>
+        <if test="course.courseImage!=null and course.courseImage!=''">,course_image=#{course.courseImage}</if>
+        <if test="course.coursePrice!=null and course.coursePrice!=''">,course_price=#{course.coursePrice}</if>
+        <if test="course.teacherId!=null">,teacher_id=#{course.teacherId}</if>
+        <if test="course.weight!=null">,weight=#{course.weight}</if>
+        <if test="course.createTime!=null">,create_time=#{course.createTime}</if>
+        <if test="course.isDeleted!=null">,is_deleted=#{course.isDeleted}</if>
+        where id = #{course.id}
+    </update>
+
+    <select id="getCoursesByCourseNameAndNickName" parameterType="com.qc.entity.Course" resultType="com.qc.entity.Course">
+        select * from course
+        <where>
+            <if test="courseName!=null and courseName!='' ">
+                course_name like CONCAT('%',#{courseName},'%')
+            </if>
+            <if test="idsByTeacherId!=null and idsByTeacherId!=''">
+                and teacher_id in (${idsByTeacherId})
+            </if>
+            and is_deleted=0
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+    <resultMap id="CourseTeacherMap" type="com.qc.entity.NewCourse">
+        <id column="id" property="id" ></id>
+        <result column="course_name" property="courseName"></result>
+        <result column="course_price" property="coursePrice"></result>
+        <result column="course_count" property="courseCount"></result>
+        <association property="newTeacher" column="id" resultMap="com.qc.mapper.TeacherMapper.teacherResultMap"/>
+    </resultMap>
+
+    <select id="getCourseTeacherUserByRealNameAndNickName" resultMap="CourseTeacherMap">
+        select c.id,c.course_name,c.course_count,c.course_price,t.real_name,u.nick_name
+        from course c left join teacher t on c.teacher_id = t.id
+        left join user u on t.user_id = u.id
+        <where>
+            <if test="realName !=null and realName !=''">
+                t.real_name like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="nickName !=null and nickName !=''">
+                and u.nick_name like CONCAT('%',#{nickName},'%')
+            </if>
+            and u.is_deleted=0 and t.is_deleted =0 and c.is_deleted =0
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+</mapper>
+
+

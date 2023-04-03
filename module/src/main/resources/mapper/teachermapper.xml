@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qc.mapper.TeacherMapper">
+
+    <insert id="insert" parameterType="com.qc.entity.Teacher" useGeneratedKeys="true" keyProperty="id">
+        insert into teacher(
+        <if test="teacher.userId!=null">user_id,</if>
+        <if test="teacher.realName!=null and teacher.realName!=''">real_name,</if>
+        <if test="teacher.enrollmentTime!=null and teacher.enrollmentTime!=''">enrollment_time,</if>
+        <if test="teacher.createTime!=null">create_time,</if>
+        <if test="teacher.updateTime!=null">update_time,</if>
+        is_deleted
+        )values(
+        <if test="teacher.userId!=null">#{teacher.userId},</if>
+        <if test="teacher.realName!=null and teacher.realName!=''">#{teacher.realName},</if>
+        <if test="teacher.enrollmentTime!=null and teacher.enrollmentTime!=''">#{teacher.enrollmentTime},</if>
+        <if test="teacher.updateTime!=null">#{teacher.updateTime},</if>
+        <if test="teacher.createTime!=null">#{teacher.createTime},</if>
+        #{teacher.isDeleted}
+        )
+    </insert>
+
+
+    <update id="update" parameterType="com.qc.entity.Teacher">
+        update teacher set
+        update_time=#{teacher.updateTime}
+        <if test="teacher.realName!=null and teacher.realName!=''">,real_name=#{teacher.realName}</if>
+        <if test="teacher.userId!=null">,user_id=#{teacher.userId}</if>
+        <if test="teacher.enrollmentTime!=null and teacher.enrollmentTime!=''">,enrollment_time=#{teacher.enrollmentTime}</if>
+        <if test="teacher.createTime!=null">,create_time=#{teacher.createTime}</if>
+        <if test="teacher.isDeleted!=null">,is_deleted=#{teacher.isDeleted}</if>
+        where id=#{teacher.id}
+    </update>
+
+    <select id="getTeacherIdsByUserId" resultType="java.math.BigInteger">
+        select id from teacher
+        <where>
+            <if test="UserIdsForTeacher!=null and UserIdsForTeacher!=''">
+                user_id in(${UserIdsForTeacher})
+            </if>
+            and is_deleted=0
+        </where>
+    </select>
+    <select id="getTeachersByNickName" resultType="com.qc.entity.Teacher">
+        select * from teacher
+        <where>
+            <if test="idsByUserId!=null and idsByUserId!=''">
+                user_id in (${idsByUserId})
+            </if>
+            and is_deleted=0
+        </where>
+        limit #{begin},#{pageSize}
+    </select>
+    <select id="getByIds" resultType="com.qc.entity.Teacher" parameterType="java.lang.String">
+        select * from teacher where id in (${teacherIdsFromCourse})
+    </select>
+
+    <resultMap id="teacherResultMap" type="com.qc.entity.NewTeacher" >
+        <id column="id" property="id"  />
+        <result column="real_name" property="realName" />
+        <association property="newUser" column="id" resultMap="com.qc.mapper.UserMapper.UserResultMap"/>
+    </resultMap>
+
+</mapper>
+
