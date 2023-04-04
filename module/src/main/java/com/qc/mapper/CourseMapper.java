@@ -17,7 +17,7 @@ public interface CourseMapper {
     @Select("select * from course where id = #{id} and is_deleted=0")
     Course getById(@Param("id") BigInteger id);
 
-    @Select("select from course where id=#{id}")
+    @Select("select * from course where id=#{id}")
     Course extractById(@Param("id")BigInteger id);
 
     @Update("update course set is_deleted=1 and update_time=#{updateTime} where id = #{id}")
@@ -29,8 +29,8 @@ public interface CourseMapper {
     @Select("select * from course where is_delete = 0 limit #{begin}, {pageSize}")
     List<Course> getCoursesForApp(@Param("begin")Integer pageNum, @Param("size")Integer pageSize);
 
-    @Select("select * from course limit #{begin}, {pageSize}")
-    List<Course> getCoursesForConsole(@Param("begin")Integer pageNum, @Param("size")Integer pageSize);
+    @Select("select * from course limit #{begin}, #{size}")
+    List<Course> getCoursesForConsole(@Param("begin")Integer begin, @Param("size")Integer pageSize);
 
     List<Course> getCoursesByCourseNameAndNickName(@Param("begin") Integer begin, @Param("size") Integer pageSize,
                                                    String courseName,String idsByTeacherId);

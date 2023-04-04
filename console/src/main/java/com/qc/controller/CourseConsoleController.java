@@ -1,11 +1,13 @@
 package com.qc.controller;
 
+import com.qc.common.BaseResponse;
+import com.qc.common.ErrorCode;
+import com.qc.common.ResultUtils;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.CourseVo;
 import com.qc.entity.Course;
 import com.qc.entity.Teacher;
 import com.qc.entity.User;
-import com.qc.mapper.CourseMapper;
 import com.qc.service.CourseService;
 import com.qc.service.TeacherService;
 import com.qc.service.UserService;
@@ -14,14 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 
 @RestController
 @Slf4j
@@ -35,87 +34,97 @@ public class CourseConsoleController {
     private UserService userService;
 
     @RequestMapping("course/list")
-    public BaseListVo courseList(@RequestParam(name = "pageNum") Integer pageNum){
+    public BaseResponse courseList(@RequestParam(required = false,name = "pageNum")Integer inputPageNum){
 
+        Integer pageNum;
+        if(inputPageNum==null || inputPageNum<=0){
+            pageNum=1;
+        }else {
+            pageNum = inputPageNum;
+        }
         int pageSize=3;
 
         BaseListVo result = new BaseListVo();
-        List<Course> courses = courseService.getCoursesForConsole(pageNum,pageSize);
-        List<CourseVo> list = new ArrayList<>();
+        List<Course> courseList = courseService.getCoursesForConsole(pageNum,pageSize);
+        if(courseList.size()==0){
+            return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR);
+        }
+        List<BigInteger> teacherIds = courseList.stream().map(Course::getTeacherId).collect(Collectors.toList());
+        List<Teacher> teacherList = teacherService.getByIds(teacherIds);
+        Map<BigInteger, Teacher> idTeacherMap = teacherList.stream().collect(Collectors.toMap(Teacher::getId, Function.identity())); //得到 id，Teacher
+        List<BigInteger> userIds = teacherList.stream().map(Teacher::getUserId).collect(Collectors.toList());
+        List<User> userList = userService.getByIds(userIds);
+        Map<BigInteger, User> idUserMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity()));
 
-        for(Course c:courses){
-
-            CourseVo entry = new CourseVo();
-
-            Teacher teacher = teacherService.getById(c.getTeacherId());
-            if(teacher==null){
+        List<CourseVo> courseVoList = new ArrayList<>();
+        for(Course c:courseList){
+            CourseVo courseVo = new CourseVo();
+            if(idTeacherMap.containsKey(c.getTeacherId())){
+                Teacher teacher = idTeacherMap.get(c.getTeacherId());
+                courseVo.setRealName(teacher.getRealName());
+                if(idUserMap.containsKey(teacher.getUserId())){
+                    User user = idUserMap.get(teacher.getUserId());
+                    courseVo.setTeacherAvatar(user.getAvatar());
+                    courseVo.setNickName(user.getNickName());
+                    courseVo.setTeacherIntro(user.getUserIntro());
+                }else {
+                    continue;
+                }
+            }else {
                 continue;
             }
-            User user = userService.getById(teacher.getUserId());
-            if(user == null){
-                continue;
-            }
-            entry.setTeacherAvatar(user.getAvatar());
-            entry.setNickName(user.getNickName());
-            entry.setTeacherIntro(user.getUserIntro());
-            entry.setRealName(teacher.getRealName());
-            entry.setId(c.getId());
-            entry.setTeacherId(c.getTeacherId());
-            entry.setCourseName(c.getCourseName());
-            entry.setCourseSubName(c.getCourseSubName());
-            entry.setCourseCount(c.getCourseCount());
-            entry.setCourseTime(c.getCourseTime());
-            entry.setCourseIntro(c.getCourseIntro());
+            courseVo.setId(c.getId());
+            courseVo.setTeacherId(c.getTeacherId());
+            courseVo.setCourseName(c.getCourseName());
+            courseVo.setCourseSubName(c.getCourseSubName());
+            courseVo.setCourseCount(c.getCourseCount());
+            courseVo.setCourseTime(c.getCourseTime());
+            courseVo.setCourseIntro(c.getCourseIntro());
+            courseVo.setCoursePrice(c.getCoursePrice());
+            courseVo.setWeight(c.getWeight());
+            courseVo.setCreateTime(c.getCreateTime().toString());
+            int now = (int)(System.currentTimeMillis()/1000);
+            courseVo.setUpdateTime(String.valueOf(now));
+            courseVo.setIsDeleted(c.getIsDeleted());
 
             try{
-                entry.setCourseImages(Arrays.asList((c.getCourseImage().split("\\$"))));
+                courseVo.setCourseImages(Arrays.asList((c.getCourseImage().split("\\$"))));
             }catch (Exception e){
-                log.info("有的课程图片不存在");
+                courseVo.setCourseImages(null);
             }
-
-            entry.setCoursePrice(c.getCoursePrice());
-
-            entry.setWeight(c.getWeight());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            Long time1 = Long.valueOf(c.getCreateTime()+"000");
-            String creteTime = sdf.format(new Date(time1));
-            entry.setCreateTime(creteTime);
-
-            Long time2 = Long.valueOf(c.getUpdateTime()+"000");
-            String updateTime = sdf.format(new Date(time2));
-            entry.setUpdateTime(updateTime);
-
-            entry.setIsDeleted(c.getIsDeleted());
-            list.add(entry);
+            courseVoList.add(courseVo);
         }
-        result.setCourseList(list);
+        result.setCourseList(courseVoList);
         result.setCourseTotal(courseService.getTotal());
         result.setPageSize(pageSize);
-
-        return result;
-
+        return ResultUtils.success(result);
     }
 
+    /**
+     * 在新增的时候，要求必须要输入的属性是：teacherId,courseName,courseCount,courseIntro,coursePrice
+     * 新增的时候，如果课程图片没有，用公司默认的一张课程图片
+     */
+
     @RequestMapping("/course/insert")
-    public Object courseInsert(@RequestParam(required = false)BigInteger id,
-                               @RequestParam(name="teacherId") BigInteger teacherId,
-                               @RequestParam(name="courseName")String courseName,
-                               @RequestParam(required = false)String courseSubName,
-                               @RequestParam(name = "courseCount")String courseCount,
-                               @RequestParam(required = false)String courseTime,
-                               @RequestParam(name = "courseIntro")String courseIntro,
-                               @RequestParam(name = "courseImage")String courseImage,
-                               @RequestParam(name = "coursePrice")String coursePrice,
-                               @RequestParam(required = false)Integer weight) {
+    public BaseResponse courseInsert(@RequestParam(required = false,name = "id")BigInteger id,
+                                     @RequestParam(name="teacherId") BigInteger teacherId,
+                                     @RequestParam(name="courseName")String courseName,
+                                     @RequestParam(name = "courseIntro")String courseIntro,
+                                     @RequestParam(name = "coursePrice")String coursePrice,
+                                     @RequestParam(name = "courseCount")String courseCount,
+                                     @RequestParam(required = false,name = "courseImage")String courseImage,
+                                     @RequestParam(required = false,name = "courseSubName")String courseSubName,
+                                     @RequestParam(required = false,name = "courseTime")String courseTime,
+                                     @RequestParam(required = false,name = "weight")Integer weight) {
 
         try{
-            Object i = courseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
+            BigInteger newId = courseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
                     weight);
-            return i;
+
+            return ResultUtils.success(("新增课程成功:id="+newId));
+
         }catch(RuntimeException e) {
-            return e.getMessage();
+            return ResultUtils.error(ErrorCode.OPERATION_ERROR); //
         }
     }
 
@@ -132,24 +141,25 @@ public class CourseConsoleController {
                                @RequestParam(required = false)Integer weight) {
 
         try {
-            courseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
+            BigInteger newId = courseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
                     courseImage, coursePrice, weight);
-            log.info("修改后:"+ courseService.extractCourseById(id));
-            return "修改成功";
+
+            return ResultUtils.success(("id为"+newId+"的课程修改成功，updateTime 对应字段已更新"));
         }catch (RuntimeException e){
-            return e.getMessage();
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
     }
 
-    @RequestMapping("/course/delete")
-    public String courseDelete(BigInteger id){
-
-        try {
-            courseService.delete(id);
-            log.info("逻辑删除后:"+ courseService.extractCourseById(id));
-            return "删除成功";
-        }catch (RuntimeException e){
-            return e.getMessage();
+        @RequestMapping("/course/delete")
+        public BaseResponse courseDelete(BigInteger id){
+            /**
+             如果输入的id查询不到，就会报错
+             */
+            try {
+                courseService.delete(id);
+                return ResultUtils.success(("id为"+id+"的课程删除成功，isDeleted and updateTime 对应字段已更新"));
+            }catch (RuntimeException e){
+                return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR);
             }
     }
 }

@@ -1,6 +1,8 @@
 package com.qc.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.qc.common.BaseResponse;
+import com.qc.common.ResultUtils;
 import com.qc.domain.*;
 import com.qc.entity.*;
 import com.qc.service.CourseService;
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +33,7 @@ public class CourseController {
 
     @Resource
     private UserService userService;
+    private String message;
 
     @RequestMapping("/course/info")
     public CourseInfoVo showCourseDetailById(BigInteger id) {
@@ -53,10 +57,10 @@ public class CourseController {
     }
 
     @RequestMapping("/course/list")
-    public BaseListVo courseList(@RequestParam(required = false, name = "courseName") String courseName,
-                                      @RequestParam(required = false, name = "nickName") String nickName,
-                                        @RequestParam(required = false,name="realName")String realName,
-                                        @RequestParam(required = false,name = "wp")String wp){
+    public BaseResponse courseList(@RequestParam(required = false, name = "courseName") String courseName,
+                                   @RequestParam(required = false, name = "nickName") String nickName,
+                                   @RequestParam(required = false,name="realName")String realName,
+                                   @RequestParam(required = false,name = "wp")String wp){
 
         CommentWpVo wpVo = new CommentWpVo();
         if (wp == null) {
@@ -70,6 +74,11 @@ public class CourseController {
         }
         Integer pageSize =12;
         List<Course> courseList = courseService.getCourseByCourseNameAndNickName(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName());
+
+        if(courseList.size()==0){
+            return ResultUtils.error(40040,"请求查询不到");
+        }
+
 
         BaseListVo baseListVo = new BaseListVo();
         baseListVo.setIsEnd(courseList.size()<pageSize);
@@ -155,14 +164,14 @@ public class CourseController {
             list.add(courseListVo);
         }
         baseListVo.setCourseList(list);
-        return baseListVo;
+        return ResultUtils.success(baseListVo);
     }
 
     @RequestMapping("/course/test")
     public BaseListVo courseTest(@RequestParam(required = false, name = "courseName") String courseName,
                                  @RequestParam(required = false, name = "nickName") String nickName,
-                                 @RequestParam(required = false,name="realName")String realName,
-                                 @RequestParam(required = false,name = "wp")String wp) {
+                                 @RequestParam(required = false, name="realName")String realName,
+                                 @RequestParam(required = false, name = "wp")String wp) {
         CommentWpVo wpVo = new CommentWpVo();
         if (wp == null) {
             wpVo.setCourseName(courseName);

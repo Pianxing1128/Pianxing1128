@@ -94,13 +94,14 @@ public class TeacherConsoleController {
     }
 
     @RequestMapping("/teacher/insert")
-    public String teacherInsert(@RequestParam(name = "userId")BigInteger userId,
+    public String teacherInsert(@RequestParam(name = "id")BigInteger id,
+                                @RequestParam(name = "userId")BigInteger userId,
                                 @RequestParam(required = false)String enrollmentTime,
                                 @RequestParam(required = false)String realName
                                 ){
 
          try{
-             teacherService.editTeacher(userId,enrollmentTime,realName);
+             teacherService.editTeacher(id,userId,enrollmentTime,realName);
              return "新增教师成功";
          }catch (Exception e){
              return e.getMessage();

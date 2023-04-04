@@ -53,7 +53,7 @@ public class CourseService {
     }
 
     public BigInteger editCourse(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime, String courseIntro,
-                        String courseImage, String coursePrice, Integer weight){
+        String courseImage, String coursePrice, Integer weight){
 
         Course course = new Course();
         course.setId(id);
@@ -63,7 +63,11 @@ public class CourseService {
         course.setCourseCount(courseCount);
         course.setCourseTime(courseTime);
         course.setCourseIntro(courseIntro);
-        course.setCourseImage(courseImage);
+        if(courseImage==null){
+            course.setCourseImage("https://qc1128.oss-cn-shenzhen.aliyuncs.com/image/2023/04/02/82f38d9d412b40bf86175fcc32467a58_38402160.jpg");
+        }else {
+            course.setCourseImage(courseImage);
+        }
         course.setCoursePrice(coursePrice);
         course.setWeight(weight);
 
@@ -90,7 +94,7 @@ public class CourseService {
     public int delete(BigInteger id){
         Course oldCourse = mapper.extractById(id);
         if(oldCourse==null){
-            throw new RuntimeException("The course does not exist");
+            throw new RuntimeException("This course does not exist!");
         }
         Integer updateTime = (int)System.currentTimeMillis()/1000;
         return mapper.delete(id,updateTime);
