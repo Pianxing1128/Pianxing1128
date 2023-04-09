@@ -3,11 +3,14 @@ package com.qc.service;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.qc.entity.AliyunOssConstant;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 
 @Service
+@Slf4j
 public class OssService {
     public String uploadPicture(MultipartFile image,String filePath) {
 

@@ -1,19 +1,18 @@
 package com.qc.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.qc.common.BaseResponse;
-import com.qc.common.ResultUtils;
 import com.qc.domain.*;
 import com.qc.entity.*;
 import com.qc.service.CourseService;
 import com.qc.service.TeacherService;
 import com.qc.service.UserService;
+import com.qc.utils.BaseUtils;
+import com.qc.utils.ImageUtils;
+import com.qc.utils.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -33,34 +32,52 @@ public class CourseController {
 
     @Resource
     private UserService userService;
-    private String message;
 
     @RequestMapping("/course/info")
-    public CourseInfoVo showCourseDetailById(BigInteger id) {
+    public Response showCourseDetailById(@RequestParam(name="id") BigInteger id) {
 
-        CourseInfoVo entry = new CourseInfoVo();
+        CourseInfoVo courseInfoVo = new CourseInfoVo();
         Course course = courseService.getById(id);
+        if(BaseUtils.isEmpty(course)){
+           return new Response(3001);
+        }
         Teacher teacher = teacherService.getById(course.getTeacherId());
+        if(!BaseUtils.isEmpty(teacher)){
+            courseInfoVo.setTeacherName(teacher.getRealName());
+        }
         User user = userService.getById(teacher.getUserId());
-        entry.setCourseName(course.getCourseName());
-        entry.setCourseSubName(course.getCourseSubName());
-        entry.setCourseCount(course.getCourseCount());
-        entry.setCourseCount(course.getCourseCount());
-        entry.setCourseTime(course.getCourseTime());
-        entry.setCourseIntro(course.getCourseIntro());
-        entry.setTeacherName(teacher.getRealName());
-        entry.setTeacherIntro(user.getUserIntro());
-        List<String> images = Arrays.asList((course.getCourseImage().split("\\$")));
-        entry.setCourseImages(images);
-        entry.setCoursePrice(course.getCoursePrice());
-        return entry;
+        if(!BaseUtils.isEmpty(user)){
+            courseInfoVo.setTeacherIntro(user.getUserIntro());
+        }
+        courseInfoVo.setCourseName(course.getCourseName());
+        courseInfoVo.setCourseSubName(course.getCourseSubName());
+        courseInfoVo.setCourseCount(course.getCourseCount());
+        courseInfoVo.setCourseCount(course.getCourseCount());
+        courseInfoVo.setCourseTime(course.getCourseTime());
+        courseInfoVo.setCourseIntro(course.getCourseIntro());
+        courseInfoVo.setCoursePrice(course.getCoursePrice());
+
+        List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
+        Float ar;
+        List<ImageVo> imageVoList = new ArrayList<>();
+        for(String s:courseList){
+            ImageVo imageVo = new ImageVo();
+            imageVo.setImage(s);
+            int[] wxh = ImageUtils.getImageWidthAndHeight(s);
+            ar = ((float)wxh[0] / (float)wxh[1]);
+            imageVo.setAr(ar);
+            imageVoList.add(imageVo);
+        }
+        courseInfoVo.setImagesVo(imageVoList);
+
+        return new Response(1001,courseInfoVo);
     }
 
     @RequestMapping("/course/list")
-    public BaseResponse courseList(@RequestParam(required = false, name = "courseName") String courseName,
-                                   @RequestParam(required = false, name = "nickName") String nickName,
-                                   @RequestParam(required = false,name="realName")String realName,
-                                   @RequestParam(required = false,name = "wp")String wp){
+    public Response courseList(@RequestParam(required = false, name = "courseName") String courseName,
+                               @RequestParam(required = false, name = "nickName") String nickName,
+                               @RequestParam(required = false,name="realName")String realName,
+                               @RequestParam(required = false,name = "wp")String wp){
 
         CommentWpVo wpVo = new CommentWpVo();
         if (wp == null) {
@@ -76,9 +93,8 @@ public class CourseController {
         List<Course> courseList = courseService.getCourseByCourseNameAndNickName(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName());
 
         if(courseList.size()==0){
-            return ResultUtils.error(40040,"请求查询不到");
+            return new Response(3001);
         }
-
 
         BaseListVo baseListVo = new BaseListVo();
         baseListVo.setIsEnd(courseList.size()<pageSize);
@@ -114,64 +130,18 @@ public class CourseController {
             }
             courseListVo.setCourseCount(c.getCourseCount());
             courseListVo.setCoursePrice(c.getCoursePrice());
-
-            WallImageVo wallImageVo = new WallImageVo();
-            String wallImage;
-            Float ar=null;
-            List<String> images = Arrays.asList((c.getCourseImage().split("\\$")));
-            if(images.size()==0){ //如果得不到images
-                continue;
-            }
-            wallImage = images.get(0);
-
-            String[] wallImageSplit = wallImage.split("_");
-            if(wallImageSplit.length==0){ //如果名字里没有"_"
-                continue;
-            }
-            String wxhANDSuffix = wallImageSplit[wallImageSplit.length - 1];
-            if(wxhANDSuffix==null){ //如果得不到名字和后缀
-                continue;
-            }
-            String[] wxhANDSuffixSplit = wxhANDSuffix.split("\\.");
-            if(wxhANDSuffixSplit.length==0){ //如果没有"."
-                continue;
-            }
-            String wxh = wxhANDSuffixSplit[0];
-            if(wxh==null){  //如果得不到 点前面的 wxh
-                continue;
-            }
-            String[] wxhSplit = wxh.split("x");
-            if(wxhSplit==null){ //如果没有"x"
-                continue;
-            }
-            if(wxhSplit.length!=2){ //如果不是两个
-                continue;
-            }
-            String width = wxhSplit[0];
-            String height = wxhSplit[1];
-
-            if(StringUtils.isNumeric(width)==false || StringUtils.isNumeric(height)==false){ //如果这俩不是数字
-                continue;
-            }
-            Float w = Float.valueOf(width);
-            Float h = Float.valueOf(height);
-            ar = w/h;
-
-            wallImageVo.setAr(ar);
-            wallImageVo.setWallImage(wallImage);
-            courseListVo.setWallImageVo(wallImageVo);
-
+            courseListVo.setCourseImage(c.getCourseImage());
             list.add(courseListVo);
         }
         baseListVo.setCourseList(list);
-        return ResultUtils.success(baseListVo);
+        return new Response(1001,baseListVo);
     }
 
     @RequestMapping("/course/test")
-    public BaseListVo courseTest(@RequestParam(required = false, name = "courseName") String courseName,
-                                 @RequestParam(required = false, name = "nickName") String nickName,
-                                 @RequestParam(required = false, name="realName")String realName,
-                                 @RequestParam(required = false, name = "wp")String wp) {
+    public Response courseTest(@RequestParam(required = false, name = "courseName") String courseName,
+                               @RequestParam(required = false, name = "nickName") String nickName,
+                               @RequestParam(required = false, name="realName")String realName,
+                               @RequestParam(required = false, name = "wp")String wp) {
         CommentWpVo wpVo = new CommentWpVo();
         if (wp == null) {
             wpVo.setCourseName(courseName);
@@ -206,62 +176,6 @@ public class CourseController {
             list.add(courseListVo);
         }
         baseListVo.setCourseList(list);
-        return baseListVo;
+        return new Response(1001,baseListVo);
     }
 }
-
-//
-//public class SSS {
-//
-//    Course c;
-//    WallImageAR wallImageAR = new WallImageAR();
-//    String wallImage;
-//    Float ar = null;
-//    List<String> images = Arrays.asList((c.getCourseImage().split("\\$")));
-//    if(images!=0){
-//        wallImage = images.get(0);
-//        wallImageAR.setWallImage(wallImage);
-//        String[] wallImageSplit = wallImage.split("_");
-//        if (wallImageSplit.length != 0) {
-//            String wxhANDSuffix = wallImageSplit[wallImageSplit.length - 1];
-//            if (wxhANDSuffix != null) {
-//                String[] wxhANDSuffixSplit = wxhANDSuffix.split("\\.");
-//                if (wxhANDSuffixSplit.length != 0) {
-//                    String wxh = wxhANDSuffixSplit[0];
-//                    if (wxh != null) {
-//                        String[] wxhSplit = wxh.split("x");
-//                        if (wxhSplit != null) {
-//                            if (wxhSplit.length == 2) {
-//                                String width = wxhSplit[0];
-//                                String height = wxhSplit[1];
-//                                if (width != null && height != null && height.matches("[0-9]*") == true) {
-//                                    Float w = Float.valueOf(Integer.parseInt(width));
-//                                    Float h = Float.valueOf(Integer.parseInt(height));
-//                                    ar = w / h;
-//                                } else {
-//                                    continue;
-//                                }
-//                            } else {
-//                                continue;
-//                            }
-//                        } else {
-//                            continue;
-//                        }
-//                    } else {
-//                        continue;
-//                    }
-//                } else {
-//                    continue;
-//                }
-//            } else {
-//                continue;
-//            }
-//        } else {
-//            continue;
-//        }
-//    }else{
-//        continue;
-//    }
-//
-//
-//}

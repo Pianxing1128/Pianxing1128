@@ -19,6 +19,23 @@ public class User{
     private BigInteger id;
 
     /**
+     * 用户账号
+     */
+    private String userAccount;
+    /**
+     * 用户密码
+     */
+    private String userPassword;
+    /**
+     * 签名 accessKey
+     */
+    private String accessKey;
+
+    /**
+     * 签名 secretKey
+     */
+    private String secretKey;
+    /**
      * 用户头像
      */
     private String avatar;
@@ -76,7 +93,7 @@ public class User{
     /**
      * 是否删除
      */
-    private Integer isDeleted;
+    private Integer isDeleted = 0;
 
     /**
      * CREATE TABLE `user` (

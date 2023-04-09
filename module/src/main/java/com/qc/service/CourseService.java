@@ -40,11 +40,6 @@ public class CourseService {
     }
 
     public Course getById(BigInteger id){
-        Course oldCourse = mapper.getById(id);
-        if (oldCourse == null) {
-            throw new RuntimeException("The course does not exist");
-        }
-        threadService.updateCourse(this.mapper,id);
         return mapper.getById(id);
     }
 
@@ -113,7 +108,6 @@ public class CourseService {
 
     public List<NewCourse> getCourseByRealName(@Param("pageNum") Integer pageNum, @Param("size") Integer pageSize, String realName, String nickName){
         Integer begin = (pageNum-1)*pageSize;
-        log.info(mapper.getCourseTeacherUserByRealNameAndNickName(begin,pageSize,realName,nickName).toString());
         return mapper.getCourseTeacherUserByRealNameAndNickName(begin,pageSize,realName,nickName);
     }
 }

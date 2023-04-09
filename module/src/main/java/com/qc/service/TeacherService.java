@@ -58,7 +58,7 @@ public class TeacherService{
         teacher.setCreateTime(now);
         teacher.setIsDeleted(0);
         mapper.update(teacher);
-        return (BigInteger) teacher.getId();
+        return teacher.getId();
     }
 
     public int delete(BigInteger id){

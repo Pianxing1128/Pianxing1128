@@ -8,6 +8,10 @@
     <insert id="insert" parameterType="com.qc.entity.User" useGeneratedKeys="true" keyProperty="id">
 
         insert into User(
+        <if test="user.userAccount!=null and user.userAccount!=''">user_account,</if>
+        <if test="user.userPassword!=null and user.userPassword!=''">user_password,</if>
+        <if test="user.accessKey!=null and user.accessKey!=''">access_key,</if>
+        <if test="user.secretKey!=null and user.secretKey!=''">secret_key,</if>
         <if test="user.avatar!=null and user.avatar!=''">avatar,</if>
         <if test="user.nickName!=null and user.nickName!=''">nick_name,</if>
         <if test="user.gender!=null">gender,</if>
@@ -21,6 +25,10 @@
         <if test="user.createTime!=null">create_time,</if>
         is_deleted
         )values(
+        <if test="user.userAccount!=null and user.userAccount!=''">#{user.userAccount},</if>
+        <if test="user.userPassword!=null and user.userPassword!=''">#{user.userPassword},</if>
+        <if test="user.accessKey!=null and user.accessKey!=''">#{user.accessKey},</if>
+        <if test="user.secretKey!=null and user.secretKey!=''">#{user.secretKey},</if>
         <if test="user.avatar!=null and user.avatar!=''">#{user.avatar},</if>
         <if test="user.nickName!=null and user.nickName!=''">#{user.nickName},</if>
         <if test="user.gender!=null">#{user.gender},</if>

@@ -1,8 +1,10 @@
 package com.qc.controller;
 
 import cn.hutool.core.date.DateTime;
+
+
 import com.qc.service.OssService;
-import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +15,10 @@ import java.awt.image.BufferedImage;
 import java.util.UUID;
 
 @RestController
-@Data
 public class OssController {
-    @Resource
-    private OssService ossService;
+
+    @Autowired
+    public OssService ossService;
 
     @RequestMapping("/upload/Image")
     public String uploadImage(@RequestParam(required = false,name="file") MultipartFile image){

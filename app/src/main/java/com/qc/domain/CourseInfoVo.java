@@ -2,6 +2,7 @@ package com.qc.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.util.List;
 
 @Data
@@ -20,9 +21,8 @@ public class CourseInfoVo {
     private String courseTime;
     private String courseIntro;
     private String teacherName;
-
     private String teacherIntro;
-    private List<String> courseImages;
+    private List<ImageVo> imagesVo;
     private String coursePrice;
 
 }

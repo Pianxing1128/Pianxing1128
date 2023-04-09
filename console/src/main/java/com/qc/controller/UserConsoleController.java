@@ -75,15 +75,17 @@ public class UserConsoleController {
 
     @RequestMapping("/user/insert")
     public Object userInsert(@RequestParam(required = false)BigInteger id,
-                                 @RequestParam(name="nickName")String nickName,
-                                 @RequestParam(name="gender")Integer gender,
-                                 @RequestParam(name="email")String email,
-                                 @RequestParam(name="userIntro")String userIntro,
-                                 @RequestParam(required = false)String avatar,
-                                 @RequestParam(required = false)Integer birthday){
+                             @RequestParam(name="userAccount")String userAccount,
+                             @RequestParam(name="userPassword")String userPassword,
+                             @RequestParam(name="gender")Integer gender,
+                             @RequestParam(name="nickName")String nickName,
+                             @RequestParam(required = false,name="email")String email,
+                             @RequestParam(required = false,name="userIntro")String userIntro,
+                             @RequestParam(required = false,name="avatar")String avatar,
+                             @RequestParam(required = false,name="birthday")Integer birthday){
 
         try {
-            Object o = userService.editUser(id, avatar, nickName, gender, email, userIntro, birthday);
+            Object o = userService.editUser(id, userAccount,userPassword,avatar, nickName, gender, email, userIntro, birthday);
             return "新增用户成功"+o;
         }catch (Exception e){
             return e.getMessage();
@@ -91,15 +93,17 @@ public class UserConsoleController {
     }
 
     @RequestMapping("/user/update")
-    public String userUpdate(@RequestParam(name="id")BigInteger id,
-                             @RequestParam(required = false)String nickName,
-                             @RequestParam(required = false)Integer gender,
-                             @RequestParam(required = false)String email,
-                             @RequestParam(required = false)String userIntro,
-                             @RequestParam(required = false)String avatar,
-                             @RequestParam(required = false)Integer birthday){
+    public String userUpdate(@RequestParam(required = false)BigInteger id,
+                             @RequestParam(name="userAccount")String userAccount,
+                             @RequestParam(name="userPassword")String userPassword,
+                             @RequestParam(name="gender")Integer gender,
+                             @RequestParam(name="nickName")String nickName,
+                             @RequestParam(required = false,name="email")String email,
+                             @RequestParam(required = false,name="userIntro")String userIntro,
+                             @RequestParam(required = false,name="avatar")String avatar,
+                             @RequestParam(required = false,name="birthday")Integer birthday){
         try {
-            Object o = userService.editUser(id, avatar, nickName, gender, email, userIntro, birthday);
+            Object o = userService.editUser(id, userAccount,userPassword,avatar, nickName, gender, email, userIntro, birthday);
             return "修改用户成功" + o;
         }catch (Exception e){
             return e.getMessage();

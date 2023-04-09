@@ -13,9 +13,9 @@ public class ResultUtils {
      * @param data
      * @param <T>
      * @return
-     */
+             */
     public static <T> BaseResponse<T> success(T data) {
-        return new BaseResponse<>(0, data, "ok");
+        return new BaseResponse<>(1001, data, "ok");
     }
 
     /**
@@ -28,6 +28,9 @@ public class ResultUtils {
         return new BaseResponse<>(errorCode);
     }
 
+    public static BaseResponse error(String message){
+        return new BaseResponse(message);
+    }
     /**
      * 失败
      *

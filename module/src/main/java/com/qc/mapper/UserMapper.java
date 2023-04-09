@@ -21,11 +21,17 @@ public interface UserMapper{
 
     int update(@Param("user")User user);
 
-    @Select("select * from user where is_deleted=0 and id=#{id}")
+    @Select("select * from user where id=#{id} and is_deleted=0")
     User getById(@Param("id") BigInteger id);
 
     @Select("select * from user where id=#{id}")
     User extractById(@Param("id")BigInteger id);
+
+    @Select("select id from user where user_account=#{userAccount}")
+    BigInteger extractByAccount(@Param("userAccount") String userAccount);
+
+    @Select("select * from user where user_account=#{userAccount} and user_password = #{encryptPassword}")
+    User extractByAccountAndEncryptPassword(@Param("userAccount")String userAccount,@Param("encryptPassword")String encryptPassword);
 
     @Update("update user set is_deleted=1 and update_time =#{updateTime} where id=#{id}")
     int delete(@Param("id") BigInteger id,@Param("updateTime") Integer updateTime);
@@ -49,4 +55,6 @@ public interface UserMapper{
     List<User> getUsersByNickName(String nickName);
 
     List<User> getByIds(String userIdsFromTeacher);
+
+
 }
