@@ -3,11 +3,27 @@ package com.qc.test;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Test5 {
     public static void main(String[] args) {
+        //判断手机号
+        String regex = "[1|2]\\d{10}";
+        boolean b1 = Pattern.matches(regex, "15605482190");
+        System.out.println(b1);
+        //判断邮箱
+        final String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        final Pattern pattern = Pattern.compile(check);
+        final Matcher mat = pattern.matcher("1799953029@qq.com");
+        System.out.println(mat.matches());
+        //marsha密码
+        String mm = DigestUtils.md5Hex("qcqc12345");
+        System.out.println(mm);
         String name;
         String distance;
         String nearby ="[{name:'碧梧小筑',distance:'123.1km'},{name:'古城墙',distance:'56km'}]";

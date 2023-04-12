@@ -3,13 +3,13 @@ package com.qc.controller;
 import cn.hutool.core.date.DateTime;
 
 
-import com.qc.service.OssService;
+import com.qc.oss.OssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import javax.annotation.Resource;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.UUID;

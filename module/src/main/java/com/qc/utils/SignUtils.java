@@ -1,7 +1,7 @@
 package com.qc.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.qc.entity.UserSign;
+import com.qc.module.user.entity.UserSign;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

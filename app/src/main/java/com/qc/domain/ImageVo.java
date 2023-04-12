@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain =true)
 public class ImageVo {
+
     private String Image;
     private Float ar;
+
 }

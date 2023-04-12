@@ -3,15 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.qc.mapper.UserMapper">
+<mapper namespace="com.qc.module.user.mapper.UserMapper">
 
-    <insert id="insert" parameterType="com.qc.entity.User" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.qc.module.user.entity.User" useGeneratedKeys="true" keyProperty="id">
 
         insert into User(
         <if test="user.userAccount!=null and user.userAccount!=''">user_account,</if>
         <if test="user.userPassword!=null and user.userPassword!=''">user_password,</if>
-        <if test="user.accessKey!=null and user.accessKey!=''">access_key,</if>
-        <if test="user.secretKey!=null and user.secretKey!=''">secret_key,</if>
         <if test="user.avatar!=null and user.avatar!=''">avatar,</if>
         <if test="user.nickName!=null and user.nickName!=''">nick_name,</if>
         <if test="user.gender!=null">gender,</if>
@@ -21,14 +19,13 @@
         <if test="user.lastLoginIp!=null and user.lastLoginIp!=''">last_login_ip,</if>
         <if test="user.registerIp!=null and user.registerIp!=''">register_ip,</if>
         <if test="user.lastLoginTime!=null">last_login_time,</if>
+        <if test="user.isBan!=null">is_ban,</if>
         <if test="user.updateTime!=null">update_time,</if>
         <if test="user.createTime!=null">create_time,</if>
         is_deleted
         )values(
         <if test="user.userAccount!=null and user.userAccount!=''">#{user.userAccount},</if>
         <if test="user.userPassword!=null and user.userPassword!=''">#{user.userPassword},</if>
-        <if test="user.accessKey!=null and user.accessKey!=''">#{user.accessKey},</if>
-        <if test="user.secretKey!=null and user.secretKey!=''">#{user.secretKey},</if>
         <if test="user.avatar!=null and user.avatar!=''">#{user.avatar},</if>
         <if test="user.nickName!=null and user.nickName!=''">#{user.nickName},</if>
         <if test="user.gender!=null">#{user.gender},</if>
@@ -38,15 +35,16 @@
         <if test="user.lastLoginIp!=null and user.lastLoginIp!=''">#{user.lastLoginIp},</if>
         <if test="user.registerIp!=null and user.registerIp!=''">#{user.registerIp},</if>
         <if test="user.lastLoginTime!=null">#{user.lastLoginTime},</if>
+        <if test="user.isBan!=null">#{user.isBan},</if>
         <if test="user.updateTime!=null">#{user.updateTime},</if>
         <if test="user.createTime!=null">#{user.createTime},</if>
         #{user.isDeleted}
         )
     </insert>
 
-    <update id="update" parameterType="com.qc.entity.User">
-        update User set
-        update_time = #{user.updatetime}
+    <update id="update" parameterType="com.qc.module.user.entity.User">
+        update user set
+        update_time = #{user.updateTime}
         <if test="user.avatar!=null and user.avatar!=''">,avatar=#{user.avatar}</if>
         <if test="user.nickName!=null and user.nickName!=''">,nick_name=#{user.nickName}</if>
         <if test="user.gender!=null">,gender=#{user.gender}</if>
@@ -67,14 +65,14 @@
     <select id="getUserIdsByNickName" resultType="java.lang.String" parameterType="java.lang.String">
         select id from user where nick_name like concat('%',#{nickName},'%') and is_deleted=0
     </select>
-    <select id="getUsersByNickName" resultType="com.qc.entity.User" parameterType="java.lang.String">
+    <select id="getUsersByNickName" resultType="com.qc.module.user.entity.User" parameterType="java.lang.String">
         select * from user where nick_name like concat('%',#{nickName},'%') and is_deleted=0
     </select>
-    <select id="getByIds" resultType="com.qc.entity.User" parameterType="java.lang.String">
+    <select id="getByIds" resultType="com.qc.module.user.entity.User" parameterType="java.lang.String">
         select * from user where id in (${userIdsFromTeacher})
     </select>
 
-    <resultMap id="UserResultMap" type="com.qc.entity.NewUser" >
+    <resultMap id="UserResultMap" type="com.qc.module.user.entity.NewUser" >
         <id column="id" property="id"/>
         <result column="nick_name" property="nickName" />
     </resultMap>
