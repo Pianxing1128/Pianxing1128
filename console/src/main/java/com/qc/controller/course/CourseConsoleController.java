@@ -145,15 +145,15 @@ public class CourseConsoleController {
     @RequestMapping("/course/update")
     public Response courseUpdate(@VerifiedUser User loginUser,
                                  @RequestParam(name="id") BigInteger id,
-                                 @RequestParam(required = false)BigInteger teacherId,
-                                 @RequestParam(required = false)String courseName,
-                                 @RequestParam(required = false)String courseSubName,
-                                 @RequestParam(required = false)String courseCount,
-                                 @RequestParam(required = false)String courseTime,
-                                 @RequestParam(required = false)String courseIntro,
-                                 @RequestParam(required = false)String courseImage,
-                                 @RequestParam(required = false)String coursePrice,
-                                 @RequestParam(required = false)Integer weight) {
+                                 @RequestParam(required = false,name = "teacherId")BigInteger teacherId,
+                                 @RequestParam(required = false,name = "courseName")String courseName,
+                                 @RequestParam(required = false,name = "courseSubName")String courseSubName,
+                                 @RequestParam(required = false,name = "courseCount")String courseCount,
+                                 @RequestParam(required = false,name = "courseTime")String courseTime,
+                                 @RequestParam(required = false,name = "courseIntro")String courseIntro,
+                                 @RequestParam(required = false,name = "courseImage")String courseImage,
+                                 @RequestParam(required = false,name = "coursePrice")String coursePrice,
+                                 @RequestParam(required = false,name = "weight")Integer weight) {
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);

@@ -5,6 +5,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.mapper.UserMapper;
 import com.qc.utils.BaseUtils;
+import com.qc.utils.DataUtils;
 import com.qc.utils.SignUtils;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,7 @@ public class UserService {
     }
 
 
-    public BigInteger editUser(BigInteger id, String userAccount,String userPassword, String avatar, String nickName, Integer gender, String email, String userIntro, Integer birthday) {
+    public BigInteger editUser(BigInteger id,String userAccount,String userPassword, String avatar, String nickName, Integer gender, String email, String userIntro, Integer birthday) {
         /**
          * 当id不为null且此id可以查询到user的时候做update操作
          * 1. 更新时间，注册Ip,上次登陆时间，上次登陆Ip，是否删除 为上次的记录
@@ -157,6 +158,9 @@ public class UserService {
         if (!userPassword.equals(checkPassword)) {
             throw new RuntimeException("两次输入的密码不一致");
         }
+        if(DataUtils.isEmail(email)==false){
+            throw new RuntimeException("输入的邮箱格式不对");
+        }
         synchronized (userAccount.intern()) {
             // 1.账户不能重复
             User oldUser = mapper.extractByAccount(userAccount);
@@ -175,6 +179,7 @@ public class UserService {
             user.setBirthday(birthday);
             user.setNickName(nickName);
             user.setUserIntro(userIntro);
+            user.setEmail(email);
             Integer createTime = (int)System.currentTimeMillis()/1000;
             user.setCreateTime(createTime);
             //4.是否存入成功

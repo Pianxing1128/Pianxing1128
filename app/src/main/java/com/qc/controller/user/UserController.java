@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 
-
 @RestController
 @Slf4j
 public class UserController {
+
     @Resource
     private UserService userService;
 
@@ -115,5 +114,51 @@ public class UserController {
         loginInfo.setUserInfo(userInfo);
 
         return new Response(1001, loginInfo);
+    }
+
+    /**
+     * 用户在app修改一些信息，修改成功后应该自动刷新userInfo页面
+     */
+    @RequestMapping("/user/edit")
+    public Response userEdit(@VerifiedUser User loginUser,
+                             @RequestParam(required = false)BigInteger id,
+                             @RequestParam(required = false,name="userAccount")String userAccount,
+                             @RequestParam(required = false,name="userPassword")String userPassword,
+                             @RequestParam(required = false,name="avatar")String avatar,
+                             @RequestParam(required = false,name="nickName")String nickName,
+                             @RequestParam(required = false,name="gender")Integer gender,
+                             @RequestParam(required = false,name="email")String email,
+                             @RequestParam(required = false,name="userIntro")String userIntro,
+                             @RequestParam(required = false,name="birthday")Integer birthday) {
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        try {
+            BigInteger result = userService.editUser(id, userAccount, userPassword, avatar, nickName, gender, email, userIntro, birthday);
+            return new Response(1001,result);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
+    /**
+     * 用户在app注销，逻辑删除，注销之后应该返回登陆界面
+     */
+    @RequestMapping("/user/delete")
+    public Response userDelete(@VerifiedUser User loginUser,
+                                 @RequestParam(name="id") BigInteger id){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        try {
+            int newId = userService.delete(id);
+            return new Response(1001,newId);
+        }catch (RuntimeException e){
+            return new Response(4004);
+        }
     }
 }
