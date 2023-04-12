@@ -26,7 +26,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-
     @RequestMapping("/user/register")
     public Response userRegister(@VerifiedUser User loginUser,
                                  @RequestParam(name="userAccount")String userAccount,

@@ -9,7 +9,6 @@ import java.util.List;
 @Accessors(chain = true)
 public class CourseInfoVo {
 
-
     private String courseName;
     private String courseSubName;
     private String courseCount;
