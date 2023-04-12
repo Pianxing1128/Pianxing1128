@@ -36,11 +36,6 @@ public class CourseService {
         return mapper.getCoursesForApp(begin, pageSize);
     }
 
-    public List<Course> getCoursesForConsole(Integer pageNum, Integer pageSize) {
-        int begin = (pageNum - 1) * pageSize;
-        return mapper.getCoursesForConsole(begin, pageSize);
-    }
-
     public Course getById(BigInteger id){
         return mapper.getById(id);
     }
@@ -101,11 +96,11 @@ public class CourseService {
         return mapper.getTotal();
     }
 
-    public List<Course> getCourseByCourseNameAndNickName(Integer pageNum, Integer pageSize,String courseName,String nickName) {
+    public List<Course> getCourseByCourseNameAndNickName(Integer pageNum, Integer pageSize,String courseName,String nickName,Integer isDeleted) {
 
         Integer begin = (pageNum - 1) * pageSize;
         String idsByTeacherId = teacherService.getIdsByUserId(nickName);
-        return mapper.getCoursesByCourseNameAndNickName(begin,pageSize,courseName,idsByTeacherId);
+        return mapper.getCoursesByCourseNameAndNickName(begin,pageSize,courseName,idsByTeacherId,isDeleted);
     }
 
     public List<NewCourse> getCourseByRealName(@Param("pageNum") Integer pageNum, @Param("size") Integer pageSize, String realName, String nickName){

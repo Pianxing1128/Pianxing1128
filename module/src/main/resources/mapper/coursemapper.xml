@@ -61,7 +61,9 @@
             <if test="idsByTeacherId!=null and idsByTeacherId!=''">
                 and teacher_id in (${idsByTeacherId})
             </if>
-            and is_deleted=0
+            <if test="isDeleted!=null">
+                and is_deleted = #{isDeleted}
+            </if>
         </where>
         limit #{begin},#{size}
     </select>

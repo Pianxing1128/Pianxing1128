@@ -15,6 +15,7 @@ import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.ImageUtils;
 import com.qc.utils.Response;
+import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -82,21 +83,25 @@ public class CourseController {
     @RequestMapping("/course/list")
     public Response courseList(@RequestParam(required = false, name = "courseName") String courseName,
                                @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false,name="realName")String realName,
                                @RequestParam(required = false,name = "wp")String wp){
 
         CommentWpVo wpVo = new CommentWpVo();
-        if (wp == null) {
+        if (BaseUtils.isEmpty(wp)) {
             wpVo.setCourseName(courseName);
             wpVo.setNickName(nickName);
-            wpVo.setRealName(realName);
             wpVo.setPageNum(1);
         } else {
-            byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
-            wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
+            try {
+                byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
+                wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
+            }catch (Exception e){
+                return new Response(4004);
+            }
         }
-        Integer pageSize =12;
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickName(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName());
+
+        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
+        Integer isDeleted = 0;
+        List<Course> courseList = courseService.getCourseByCourseNameAndNickName(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName(),isDeleted);
 
         if(courseList.size()==0){
             return new Response(3001);
@@ -158,7 +163,7 @@ public class CourseController {
             byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
             wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
         }
-        Integer pageSize =12;
+        Integer pageSize =6;
         List<NewCourse> courseTeacherList = courseService.getCourseByRealName(wpVo.getPageNum(), pageSize, wpVo.getRealName(),wpVo.getNickName());
         log.info(String.valueOf(courseTeacherList));
         BaseListVo baseListVo = new BaseListVo();

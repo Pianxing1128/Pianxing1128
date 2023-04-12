@@ -1,5 +1,6 @@
 package com.qc.controller.course;
 
+import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.course.CourseVo;
 import com.qc.module.course.entity.Course;
@@ -8,8 +9,12 @@ import com.qc.module.user.entity.User;
 import com.qc.module.course.service.CourseService;
 import com.qc.module.teacher.service.TeacherService;
 import com.qc.module.user.service.UserService;
+import com.qc.utils.BaseUtils;
 import com.qc.utils.Response;
+import com.qc.utils.SpringUtils;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +36,14 @@ public class CourseConsoleController {
     private UserService userService;
 
     @RequestMapping("course/list")
-    public Response courseList(@RequestParam(required = false,name = "pageNum")Integer inputPageNum){
+    public Response courseList(@VerifiedUser User loginUser,
+                               @RequestParam(required = false,name = "pageNum")Integer inputPageNum,
+                               @RequestParam(required = false, name = "courseName") String courseName,
+                               @RequestParam(required = false, name = "nickName") String nickName){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
 
         Integer pageNum;
         if(inputPageNum==null || inputPageNum<=0){
@@ -39,16 +51,17 @@ public class CourseConsoleController {
         }else {
             pageNum = inputPageNum;
         }
-        int pageSize=3;
 
+        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
+        Integer IsDeleted= null;
         BaseListVo result = new BaseListVo();
-        List<Course> courseList = courseService.getCoursesForConsole(pageNum,pageSize);
+        List<Course> courseList = courseService.getCourseByCourseNameAndNickName(pageNum,pageSize,courseName,nickName,IsDeleted);
         if(courseList.size()==0){
             return new Response(4004);
         }
         List<BigInteger> teacherIds = courseList.stream().map(Course::getTeacherId).collect(Collectors.toList());
         List<Teacher> teacherList = teacherService.getByIds(teacherIds);
-        Map<BigInteger, Teacher> idTeacherMap = teacherList.stream().collect(Collectors.toMap(Teacher::getId, Function.identity())); //得到 id，Teacher
+        Map<BigInteger, Teacher> idTeacherMap = teacherList.stream().collect(Collectors.toMap(Teacher::getId, Function.identity()));
         List<BigInteger> userIds = teacherList.stream().map(Teacher::getUserId).collect(Collectors.toList());
         List<User> userList = userService.getByIds(userIds);
         Map<BigInteger, User> idUserMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity()));
@@ -80,8 +93,7 @@ public class CourseConsoleController {
             courseVo.setCoursePrice(c.getCoursePrice());
             courseVo.setWeight(c.getWeight());
             courseVo.setCreateTime(c.getCreateTime().toString());
-            int now = (int)(System.currentTimeMillis()/1000);
-            courseVo.setUpdateTime(String.valueOf(now));
+            courseVo.setUpdateTime(c.getUpdateTime().toString());
             courseVo.setIsDeleted(c.getIsDeleted());
 
             try{
@@ -103,16 +115,21 @@ public class CourseConsoleController {
      */
 
     @RequestMapping("/course/insert")
-    public Response courseInsert(@RequestParam(required = false,name = "id")BigInteger id,
-                                     @RequestParam(name="teacherId") BigInteger teacherId,
-                                     @RequestParam(name="courseName")String courseName,
-                                     @RequestParam(name = "courseIntro")String courseIntro,
-                                     @RequestParam(name = "coursePrice")String coursePrice,
-                                     @RequestParam(name = "courseCount")String courseCount,
-                                     @RequestParam(required = false,name = "courseImage")String courseImage,
-                                     @RequestParam(required = false,name = "courseSubName")String courseSubName,
-                                     @RequestParam(required = false,name = "courseTime")String courseTime,
-                                     @RequestParam(required = false,name = "weight")Integer weight) {
+    public Response courseInsert(@VerifiedUser User loginUser,
+                                 @RequestParam(required = false,name = "id")BigInteger id,
+                                 @RequestParam(name="teacherId") BigInteger teacherId,
+                                 @RequestParam(name="courseName")String courseName,
+                                 @RequestParam(name = "courseIntro")String courseIntro,
+                                 @RequestParam(name = "coursePrice")String coursePrice,
+                                 @RequestParam(name = "courseCount")String courseCount,
+                                 @RequestParam(required = false,name = "courseImage")String courseImage,
+                                 @RequestParam(required = false,name = "courseSubName")String courseSubName,
+                                 @RequestParam(required = false,name = "courseTime")String courseTime,
+                                 @RequestParam(required = false,name = "weight")Integer weight) {
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
 
         try{
             BigInteger newId = courseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
@@ -126,37 +143,44 @@ public class CourseConsoleController {
     }
 
     @RequestMapping("/course/update")
-    public Response courseUpdate(@RequestParam(name="id") BigInteger id,
-                               @RequestParam(required = false)BigInteger teacherId,
-                               @RequestParam(required = false)String courseName,
-                               @RequestParam(required = false)String courseSubName,
-                               @RequestParam(required = false)String courseCount,
-                               @RequestParam(required = false)String courseTime,
-                               @RequestParam(required = false)String courseIntro,
-                               @RequestParam(required = false)String courseImage,
-                               @RequestParam(required = false)String coursePrice,
-                               @RequestParam(required = false)Integer weight) {
+    public Response courseUpdate(@VerifiedUser User loginUser,
+                                 @RequestParam(name="id") BigInteger id,
+                                 @RequestParam(required = false)BigInteger teacherId,
+                                 @RequestParam(required = false)String courseName,
+                                 @RequestParam(required = false)String courseSubName,
+                                 @RequestParam(required = false)String courseCount,
+                                 @RequestParam(required = false)String courseTime,
+                                 @RequestParam(required = false)String courseIntro,
+                                 @RequestParam(required = false)String courseImage,
+                                 @RequestParam(required = false)String coursePrice,
+                                 @RequestParam(required = false)Integer weight) {
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
 
         try {
             BigInteger newId = courseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
                     courseImage, coursePrice, weight);
-
             return new Response(1001,newId);
         }catch (RuntimeException e){
             return new Response(4004);
         }
     }
 
-        @RequestMapping("/course/delete")
-        public Response courseDelete(BigInteger id){
-            /**
-             如果输入的id查询不到，就会报错
-             */
-            try {
-                int newId = courseService.delete(id);
-                return new Response(1001,newId);
-            }catch (RuntimeException e){
-                return new Response(4004);
-            }
+    @RequestMapping("/course/delete")
+    public Response courseDelete(@VerifiedUser User loginUser,
+                                 @RequestParam(name="id") BigInteger id){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        try {
+            int newId = courseService.delete(id);
+            return new Response(1001,newId);
+        }catch (RuntimeException e){
+            return new Response(4004);
+        }
     }
 }
