@@ -1,8 +1,7 @@
-package com.qc.oss;
+package com.qc.module.oss;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.qc.oss.AliyunOssConstant;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

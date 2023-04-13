@@ -1,4 +1,4 @@
-package com.qc.configuration;
+package com.qc;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Bean;

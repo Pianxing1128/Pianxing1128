@@ -5,7 +5,6 @@ import com.qc.module.course.entity.NewCourse;
 import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.course.mapper.CourseMapper;
 import com.qc.module.teacher.service.TeacherService;
-import com.qc.oss.ThreadService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;

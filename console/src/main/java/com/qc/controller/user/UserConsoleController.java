@@ -8,7 +8,6 @@ import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.Response;
-import com.qc.utils.SignUtils;
 import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +40,10 @@ public class UserConsoleController {
                               @RequestParam(required = false,name = "remember") boolean remember) {
 
 
-        //如果用户登陆为空
-//        if(BaseUtils.isEmpty(loginUser)){
-//            return new Response(4004);
-//        }
+        //如果用户登陆不为空
+        if(!BaseUtils.isEmpty(loginUser)){
+            return new Response(4004);
+        }
 
         boolean result;
         if(remember){
@@ -84,17 +83,17 @@ public class UserConsoleController {
 
         // 写session
         httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
-//        log.info(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
+
         return new Response(1001, userVo);
     }
     @RequestMapping("/user/list")
     public Response userList(@VerifiedUser User loginUser,
-                             HttpSession httpSession,
                              @RequestParam(name = "pageNum")Integer pageNum){
 
-        if (!BaseUtils.isEmpty(loginUser)) {
-            return new Response(4004);
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
         }
+
         int pageSize = 3;
         BaseListVo result = new BaseListVo();
         List<User> users = userService.getUsersForConsole(pageNum, pageSize);
@@ -133,20 +132,21 @@ public class UserConsoleController {
         result.setPageSize(pageSize);
         result.setUserTotal(userService.getTotal());
 
-        // 写session
-        httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(users));
-
         return new Response(1001,result);
     }
 
     @RequestMapping("user/getById")
-    public User userGetById(BigInteger id) {
-        return userService.getById(id);
+    public Response userGetById(@VerifiedUser User loginUser,
+                                @RequestParam(name = "id")BigInteger id) {
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        return new Response(1001, userService.getById(id));
     }
 
-    @RequestMapping("/user/edit")
-    public Response userEdit(@VerifiedUser User loginUser,
-                             @RequestParam(required = false)BigInteger id,
+    @RequestMapping("/user/update")
+    public Response userUpdate(@VerifiedUser User loginUser,
+                             @RequestParam(name = "id")BigInteger id,
                              @RequestParam(required = false,name="userAccount")String userAccount,
                              @RequestParam(required = false,name="userPassword")String userPassword,
                              @RequestParam(required = false,name="avatar")String avatar,
@@ -155,6 +155,10 @@ public class UserConsoleController {
                              @RequestParam(required = false,name="email")String email,
                              @RequestParam(required = false,name="userIntro")String userIntro,
                              @RequestParam(required = false,name="birthday")Integer birthday) {
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
 
         try {
             BigInteger result = userService.editUser(id, userAccount, userPassword, avatar, nickName, gender, email, userIntro, birthday);

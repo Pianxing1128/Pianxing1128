@@ -1,9 +1,9 @@
-package com.qc.controller;
+package com.qc.controller.upload;
 
 import cn.hutool.core.date.DateTime;
 
 
-import com.qc.oss.OssService;
+import com.qc.module.oss.OssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

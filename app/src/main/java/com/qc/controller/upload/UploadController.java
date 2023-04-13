@@ -1,4 +1,4 @@
-package com.qc.controller;
+package com.qc.controller.upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.system.ApplicationHome;

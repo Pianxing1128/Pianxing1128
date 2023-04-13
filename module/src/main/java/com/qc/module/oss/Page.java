@@ -1,4 +1,4 @@
-package com.qc.oss;
+package com.qc.module.oss;
 
 
 import lombok.Data;

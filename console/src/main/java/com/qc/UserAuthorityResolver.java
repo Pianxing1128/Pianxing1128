@@ -1,4 +1,4 @@
-package com.qc.configuration;
+package com.qc;
 
 import com.alibaba.fastjson.JSON;
 import com.qc.annotations.VerifiedUser;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
@@ -49,16 +50,18 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer container, NativeWebRequest webRequest, WebDataBinderFactory factory) {
+    public Object resolveArgument(MethodParameter parameter,
+        ModelAndViewContainer container,
+        NativeWebRequest request,
+        WebDataBinderFactory factory) {
 
         if (isCheckAuthority) {
             String isAppS = SpringUtils.getProperty("application.isapp");
             boolean isApp = isAppS.equals("1") ? true : false;
-            HttpServletRequest sRequest = (HttpServletRequest)webRequest.getNativeRequest();
+            HttpServletRequest sRequest = (HttpServletRequest)request.getNativeRequest();
             if(isApp){
                 String signKey = SpringUtils.getProperty("application.sign.key");
                 String sign = sRequest.getHeader(signKey);
-                sign = "eyJleHBpcmF0aW9uIjoxNjgyNTg1MDI2LCJzYWx0IjoicWMiLCJ1c2VySWQiOjF9";
                 if(!BaseUtils.isEmpty(sign)){
                     BigInteger userId = SignUtils.parseSign(sign);
                     log.info("userId: {}, sign: {}", userId, sign);
@@ -77,7 +80,6 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
                 if (value == null) {
                     return null;
                 }
-
                 String sValue = (String)value;
                 return JSON.parseObject(sValue, User.class);
             }
