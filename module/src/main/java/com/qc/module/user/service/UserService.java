@@ -72,9 +72,7 @@ public class UserService {
          * 当id不为null且此id可以查询到user的时候做update操作
          * 1. 更新时间，注册Ip,上次登陆时间，上次登陆Ip，是否删除 为上次的记录
          */
-
         User user = new User();
-
         if (id != null) {
             User oldUser = getById(id);
             if (oldUser == null) {
@@ -180,14 +178,13 @@ public class UserService {
             user.setNickName(nickName);
             user.setUserIntro(userIntro);
             user.setEmail(email);
-            Integer createTime = (int)System.currentTimeMillis()/1000;
+            Integer createTime = (int)(System.currentTimeMillis()/1000);
             user.setCreateTime(createTime);
             //4.是否存入成功
             int saveResult = mapper.insert(user);
             if (saveResult==0) {
                 throw new RuntimeException( "注册失败，数据库错误");
             }
-
             return user.getId();
         }
     }
@@ -242,7 +239,7 @@ public class UserService {
         return login(userAccount,userPassword, false, true, SignUtils.getExpirationTime());
     }
 
-    private boolean login(String userAccount, String userPassword, boolean noPassword, boolean remember, int lifeTime) {
+    public boolean login(String userAccount, String userPassword, boolean noPassword, boolean remember, int lifeTime) {
         if(lifeTime < 0){
             return false;
         }
@@ -252,7 +249,7 @@ public class UserService {
         }
         if(noPassword || SignUtils.marshal(userPassword).equals(user.getUserPassword())) {
             // write session??
-            // lifetime?
+            // lifetime =
             return true;
         }else{
             return false;

@@ -10,7 +10,7 @@ import java.util.Base64;
 public final class SignUtils {
 
     private final static String SIGN_SALT = "qc";
-    private final static int EXPIRATION_TIME = 1209600;
+    private final static int EXPIRATION_TIME = 1209600; //14天
     private static final String PASSWORD_SALT = "qc";
 
     private SignUtils() {

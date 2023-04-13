@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 
 public class Test5 {
     public static void main(String[] args) {
+
+        Integer updateTime = (int)(System.currentTimeMillis()/1000);
+        System.out.println(updateTime);
         //判断手机号
         String regex = "[1|2]\\d{10}";
         boolean b1 = Pattern.matches(regex, "15605482190");

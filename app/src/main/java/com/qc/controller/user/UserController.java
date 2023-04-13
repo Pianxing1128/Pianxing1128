@@ -37,7 +37,7 @@ public class UserController {
                                  @RequestParam(required = false,name="userIntro") String userIntro,
                                  @RequestParam(required = false,name="email") String email) {
 
-        if(BaseUtils.isEmpty(loginUser)){
+        if(!BaseUtils.isEmpty(loginUser)){
             return new Response(4004);
         }
         //判断用户是否已经注册
@@ -83,12 +83,11 @@ public class UserController {
                               @RequestParam(name="userAccount")String userAccount,
                               @RequestParam(name="userPassword") String userPassword) {
 
-
         //如果用户登陆为空
         if(BaseUtils.isEmpty(loginUser)){
             return new Response(4004);
         }
-        //合法登陆
+        //合法登陆 合法在哪
         boolean result = userService.login(userAccount, userPassword);
         if (!result) {
             return new Response(4004);

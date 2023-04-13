@@ -91,7 +91,7 @@ public class User{
     /**
      * 更新时间
      */
-    private Integer updateTime = (int)System.currentTimeMillis()/1000;
+    private Integer updateTime = (int)(System.currentTimeMillis()/1000);
 
     /**
      * 创建时间

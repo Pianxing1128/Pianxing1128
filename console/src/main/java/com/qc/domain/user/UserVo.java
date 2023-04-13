@@ -2,6 +2,7 @@ package com.qc.domain.user;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.context.annotation.Primary;
 
 import java.math.BigInteger;
 
@@ -10,6 +11,7 @@ import java.math.BigInteger;
 public class UserVo {
 
     private BigInteger id;
+    private String userAccount;
     private String avatar;
     private String nickName;
     private Integer gender;
@@ -19,6 +21,7 @@ public class UserVo {
     private String lastLoginTime;
     private String lastLoginIp;
     private String registerIp;
+    private Integer isBan;
     private String updateTime;
     private String createTime;
     private Integer isDeleted;
