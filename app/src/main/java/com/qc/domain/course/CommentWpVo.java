@@ -1,4 +1,4 @@
-package com.qc.domain;
+package com.qc.domain.course;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

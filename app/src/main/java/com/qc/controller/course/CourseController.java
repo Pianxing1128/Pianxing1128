@@ -2,7 +2,7 @@ package com.qc.controller.course;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qc.domain.*;
-import com.qc.domain.CommentWpVo;
+import com.qc.domain.course.CommentWpVo;
 import com.qc.domain.course.CourseInfoVo;
 import com.qc.domain.course.CourseListVo;
 import com.qc.module.course.entity.Course;

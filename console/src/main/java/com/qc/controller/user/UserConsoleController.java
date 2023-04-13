@@ -42,9 +42,9 @@ public class UserConsoleController {
 
 
         //如果用户登陆为空
-        if(BaseUtils.isEmpty(loginUser)){
-            return new Response(4004);
-        }
+//        if(BaseUtils.isEmpty(loginUser)){
+//            return new Response(4004);
+//        }
 
         boolean result;
         if(remember){
@@ -84,7 +84,7 @@ public class UserConsoleController {
 
         // 写session
         httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
-
+//        log.info(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
         return new Response(1001, userVo);
     }
     @RequestMapping("/user/list")
