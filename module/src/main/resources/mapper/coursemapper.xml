@@ -52,7 +52,7 @@
         where id = #{course.id}
     </update>
 
-    <select id="getCoursesByCourseNameAndNickName" parameterType="com.qc.module.course.entity.Course" resultType="com.qc.module.course.entity.Course">
+    <select id="getCoursesByCourseNameAndNickNameAndTag" parameterType="com.qc.module.course.entity.Course" resultType="com.qc.module.course.entity.Course">
         select * from course
         <where>
             <if test="courseName!=null and courseName!='' ">
@@ -61,6 +61,8 @@
             <if test="idsByTeacherId!=null and idsByTeacherId!=''">
                 and teacher_id in (${idsByTeacherId})
             </if>
+            <if test="courseIds !=null and courseIds !=''"></if>
+                and id in(${courseIds})
             <if test="isDeleted!=null">
                 and is_deleted = #{isDeleted}
             </if>

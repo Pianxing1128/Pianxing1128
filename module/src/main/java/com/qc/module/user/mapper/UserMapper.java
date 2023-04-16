@@ -36,11 +36,11 @@ public interface UserMapper{
     @Select("select count(*) from user")
     Integer getTotal();
 
-    @Select("select * from user where is_deleted=0 limit #{begin},#{pageSize}")
-    List<User> getUsersForApp(@Param("begin") Integer begin,@Param("pageSize") Integer pageSize);
+    @Select("select * from user where is_deleted=0 limit #{begin},#{size}")
+    List<User> getUsersForApp(@Param("begin") Integer begin,@Param("size") Integer pageSize);
 
-    @Select("select * from user limit #{begin},#{pageSize}")
-    List<User> getUsersForConsole(@Param("begin") Integer begin,@Param("pageSize") Integer pageSize);
+    @Select("select * from user limit #{begin},#{size}")
+    List<User> getUsersForConsole(@Param("begin") Integer begin,@Param("size") Integer size);
 
     @Select("select id from user where nick_name like concat('%',#{nickName},'%') and is_deleted=0")
     List<BigInteger> getUserIdsByNickname(String nickName);

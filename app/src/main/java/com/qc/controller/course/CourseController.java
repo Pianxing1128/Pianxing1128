@@ -1,12 +1,15 @@
 package com.qc.controller.course;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.qc.annotations.VerifiedUser;
 import com.qc.domain.*;
 import com.qc.domain.course.CommentWpVo;
 import com.qc.domain.course.CourseInfoVo;
 import com.qc.domain.course.CourseListVo;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.entity.NewCourse;
+import com.qc.module.course.service.CourseTagRelationService;
+import com.qc.module.course.service.CourseTagService;
 import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.user.entity.User;
 import com.qc.module.course.service.CourseService;
@@ -33,16 +36,22 @@ public class CourseController {
 
     @Resource
     private CourseService courseService;
-
+    @Resource
+    private CourseTagRelationService courseTagRelationService;
+    @Resource
+    private CourseTagService courseTagService;
     @Resource
     private TeacherService teacherService;
-
     @Resource
     private UserService userService;
 
     @RequestMapping("/course/info")
-    public Response showCourseDetailById(@RequestParam(name="id") BigInteger id) {
+    public Response showCourseDetailById(@VerifiedUser User loginUser,
+                                         @RequestParam(name="id") BigInteger id) {
 
+        if(BaseUtils.isEmpty(loginUser)){
+            return new Response(1002);
+        }
         CourseInfoVo courseInfoVo = new CourseInfoVo();
         Course course = courseService.getById(id);
         if(BaseUtils.isEmpty(course)){
@@ -55,6 +64,14 @@ public class CourseController {
         User user = userService.getById(teacher.getUserId());
         if(!BaseUtils.isEmpty(user)){
             courseInfoVo.setTeacherIntro(user.getUserIntro());
+        }
+        //根据id = courseId 得到 tagId, 根据tagId = tag表里的id 获得 tag
+        String tagIds = courseTagRelationService.getTagIds(id);
+        if(!BaseUtils.isEmpty(tagIds)){
+            List<String> tags = courseTagService.getTag(tagIds);
+            if(!BaseUtils.isEmpty(tags)){
+                courseInfoVo.setTags(tags);
+            }
         }
         courseInfoVo.setCourseName(course.getCourseName());
         courseInfoVo.setCourseSubName(course.getCourseSubName());
@@ -83,12 +100,14 @@ public class CourseController {
     @RequestMapping("/course/list")
     public Response courseList(@RequestParam(required = false, name = "courseName") String courseName,
                                @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false,name = "wp")String wp){
+                               @RequestParam(required = false,name = "wp")String wp,
+                               @RequestParam(required = false,name = "tag")String tag){
 
         CommentWpVo wpVo = new CommentWpVo();
         if (BaseUtils.isEmpty(wp)) {
             wpVo.setCourseName(courseName);
             wpVo.setNickName(nickName);
+            wpVo.setTag(tag);
             wpVo.setPageNum(1);
         } else {
             try {
@@ -101,7 +120,8 @@ public class CourseController {
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         Integer isDeleted = 0;
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickName(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName(),isDeleted);
+        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndTag(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
+                                                                                    wpVo.getNickName(),wpVo.getTag(),isDeleted);
 
         if(courseList.size()==0){
             return new Response(3001);
@@ -141,7 +161,18 @@ public class CourseController {
             }
             courseListVo.setCourseCount(c.getCourseCount());
             courseListVo.setCoursePrice(c.getCoursePrice());
-            courseListVo.setWallImage(c.getCourseImage());
+
+            List<String> images = Arrays.asList(c.getCourseImage().split("\\$"));
+            ImageVo imageVo = new ImageVo();
+            imageVo.setImage(images.get(0));
+
+            int[] wxh = ImageUtils.getImageWidthAndHeight(imageVo.getImage());
+            Float ar = ((float)wxh[0] / (float)wxh[1]);
+            imageVo.setAr(ar);
+            courseListVo.setWallImage(imageVo);
+            String tagIds = courseTagRelationService.getTagIds(c.getId());
+            List<String> tags = courseTagService.getTag(tagIds);
+            courseListVo.setTags(tags);
             list.add(courseListVo);
         }
         baseListVo.setCourseList(list);

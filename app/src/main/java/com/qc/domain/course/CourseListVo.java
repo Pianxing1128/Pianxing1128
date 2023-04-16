@@ -1,5 +1,6 @@
 package com.qc.domain.course;
 
+import com.qc.domain.ImageVo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.math.BigInteger;
@@ -21,5 +22,6 @@ public class CourseListVo {
     private String teacherNickName;
     private String teacherRealName;
     private String coursePrice;
-    private String wallImage;
+    private ImageVo wallImage;
+    private List<String> tags;
 }

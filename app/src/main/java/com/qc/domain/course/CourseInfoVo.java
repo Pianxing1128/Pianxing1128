@@ -18,5 +18,6 @@ public class CourseInfoVo {
     private String teacherIntro;
     private List<ImageVo> imagesVo;
     private String coursePrice;
+    private List<String> tags;
 
 }

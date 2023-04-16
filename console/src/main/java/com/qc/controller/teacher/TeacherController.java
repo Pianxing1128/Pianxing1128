@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-public class TeacherConsoleController {
+public class TeacherController {
 
     @Resource
     private TeacherService teacherService;

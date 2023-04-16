@@ -24,6 +24,7 @@ public class CourseVo {
     private String teacherIntro;
     private List<String> courseImages;
     private String coursePrice;
+    private List<String> tags;
     private Integer weight;
     private String createTime;
     private String updateTime;

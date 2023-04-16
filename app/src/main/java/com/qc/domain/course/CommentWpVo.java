@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 public class CommentWpVo{
     private String courseName;
     private String nickName;
+    private String tag;
     private Integer pageNum;
     private String realName;
 }

@@ -61,9 +61,9 @@ public class UserService {
         return mapper.getUsersForApp(begin,pageSize);
     }
 
-    public List<User> getUsersForConsole(Integer pageNum,Integer pageSize){
+    public List<User> getUsersForConsole(Integer pageNum,Integer size){
         int begin = pageNum-1;
-        return mapper.getUsersForConsole(begin,pageSize);
+        return mapper.getUsersForConsole(begin,size);
     }
 
 
@@ -264,9 +264,8 @@ public class UserService {
     public void refreshUserLoginContext(BigInteger id, String currentIp, int currentTime) {
         User user = new User();
         user.setId(id);
-        user.setLastLoginIp("123.1.2.3");
-
-        currentTime = (int)System.currentTimeMillis()/1000;
+        user.setLastLoginIp(currentIp);
+        currentTime = (int)(System.currentTimeMillis()/1000);
         user.setLastLoginTime(currentTime);
         user.setUpdateTime(currentTime);
         try{

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qc.module.course.mapper.CourseTagRelationMapper">
+
+    <insert id="insert" parameterType="com.qc.module.course.entity.CourseTagRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into course_tag_relation(
+        <if test="courseTagRelation.courseId!=null and courseTagRelation.courseId!=''">course_id,</if>
+        <if test="courseTagRelation.tagId!=null and courseTagRelation.tagId!=''">tag_id,</if>
+        is_deleted
+        ) values (
+        <if test="courseTagRelation.courseId!=null and courseTagRelation.courseId!=''">#{courseTagRelation.courseId},</if>
+        <if test="courseTagRelation.tagId!=null and courseTagRelation.tagId!=''">#{courseTagRelation.tagId},</if>
+        #{course.isDeleted})
+    </insert>
+
+
+
+
+
+</mapper>
+

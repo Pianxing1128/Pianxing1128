@@ -1,12 +1,14 @@
 package com.qc.controller.user;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.user.UserVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
+import com.qc.utils.JWTUtils;
 import com.qc.utils.Response;
 import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
-public class UserConsoleController {
+public class UserController {
 
     @Autowired
     private UserService userService;
@@ -39,10 +39,9 @@ public class UserConsoleController {
                               @RequestParam(name="userPassword") String userPassword,
                               @RequestParam(required = false,name = "remember") boolean remember) {
 
-
         //如果用户登陆不为空
         if(!BaseUtils.isEmpty(loginUser)){
-            return new Response(4004);
+            return new Response(1002);
         }
 
         boolean result;
@@ -81,23 +80,26 @@ public class UserConsoleController {
         userVo.setUpdateTime(updateTime);
         userVo.setIsDeleted(user.getIsDeleted());
 
-        // 写session
+        // web登陆时候写session
         httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
 
         return new Response(1001, userVo);
+
     }
     @RequestMapping("/user/list")
     public Response userList(@VerifiedUser User loginUser,
-                             @RequestParam(name = "pageNum")Integer pageNum){
+                             @RequestParam(required = false,name = "pageNum")Integer pageNum){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
         }
-
-        int pageSize = 3;
-        BaseListVo result = new BaseListVo();
+        if(pageNum==null || pageNum<=0){
+            pageNum = 1;
+        }
+        int pageSize = 6;
+        BaseListVo baseListVo = new BaseListVo();
         List<User> users = userService.getUsersForConsole(pageNum, pageSize);
-        List<UserVo> list = new ArrayList<>();
+        List<UserVo> userVoList = new ArrayList<>();
 
         for(User u:users){
             UserVo entry = new UserVo();
@@ -126,13 +128,13 @@ public class UserConsoleController {
             String updateTime = sdf.format(new Date(time2));
             entry.setUpdateTime(updateTime);
 
-            list.add(entry);
+            userVoList.add(entry);
         }
-        result.setUserList(list);
-        result.setPageSize(pageSize);
-        result.setUserTotal(userService.getTotal());
+        baseListVo.setUserList(userVoList);
+        baseListVo.setPageSize(pageSize);
+        baseListVo.setUserTotal(userService.getTotal());
 
-        return new Response(1001,result);
+        return new Response(1001,baseListVo);
     }
 
     @RequestMapping("user/getById")

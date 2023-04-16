@@ -6,6 +6,7 @@ import com.qc.domain.user.UserLoginInfoVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
+import com.qc.utils.IpUtils;
 import com.qc.utils.Response;
 import com.qc.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -83,20 +84,18 @@ public class UserController {
                               @RequestParam(name="userAccount")String userAccount,
                               @RequestParam(name="userPassword") String userPassword) {
 
-        //如果用户登陆为空
-        if(BaseUtils.isEmpty(loginUser)){
+        if(!BaseUtils.isEmpty(loginUser)){
             return new Response(4004);
         }
-        //合法登陆 合法在哪
+
         boolean result = userService.login(userAccount, userPassword);
         if (!result) {
             return new Response(4004);
         }
         User user = userService.getUserAccount(userAccount);
-        //获取request更新登陆账户的信息
+
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-        userService.refreshUserLoginContext(user.getId(), "123.1.2.3", BaseUtils.currentSeconds());
-//        userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
+        userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
 
         UserInfoVo userInfo = new UserInfoVo();
         userInfo.setId(user.getId());
@@ -109,6 +108,7 @@ public class UserController {
         userInfo.setUserIntro(user.getUserIntro());
 
         UserLoginInfoVo loginInfo = new UserLoginInfoVo();
+
         loginInfo.setSign(SignUtils.makeSign(user.getId()));
         loginInfo.setUserInfo(userInfo);
 
@@ -142,22 +142,4 @@ public class UserController {
         }
     }
 
-    /**
-     * 用户在app注销，逻辑删除，注销之后应该返回登陆界面
-     */
-    @RequestMapping("/user/delete")
-    public Response userDelete(@VerifiedUser User loginUser,
-                                 @RequestParam(name="id") BigInteger id){
-
-        if (BaseUtils.isEmpty(loginUser)) {
-            return new Response(1002);
-        }
-
-        try {
-            int newId = userService.delete(id);
-            return new Response(1001,newId);
-        }catch (RuntimeException e){
-            return new Response(4004);
-        }
-    }
 }

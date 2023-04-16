@@ -28,9 +28,9 @@ public interface CourseMapper {
     @Select("select * from course where is_delete = 0 limit #{begin}, {pageSize}")
     List<Course> getCoursesForApp(@Param("begin")Integer pageNum, @Param("size")Integer pageSize);
 
-    List<Course> getCoursesByCourseNameAndNickName(@Param("begin") Integer begin,
+    List<Course> getCoursesByCourseNameAndNickNameAndTag(@Param("begin") Integer begin,
                                                    @Param("size") Integer pageSize,
-                                                   String courseName,String idsByTeacherId,Integer isDeleted);
+                                                   String courseName,String idsByTeacherId,String courseIds,Integer isDeleted);
 
     List<NewCourse> getCourseTeacherUserByRealNameAndNickName(@Param("begin") Integer begin,
                                                               @Param("size") Integer pageSize,

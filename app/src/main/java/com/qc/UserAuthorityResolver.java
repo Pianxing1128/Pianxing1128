@@ -15,8 +15,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.math.BigInteger;
 
 @Slf4j
@@ -49,16 +51,16 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer container, NativeWebRequest webRequest, WebDataBinderFactory factory) {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer container, NativeWebRequest request, WebDataBinderFactory factory) throws IOException {
 
         if (isCheckAuthority) {
-            String isAppS = SpringUtils.getProperty("application.isapp");
+            String isAppS = SpringUtils.getProperty("application.isApp");
             boolean isApp = isAppS.equals("1") ? true : false;
-            HttpServletRequest sRequest = (HttpServletRequest)webRequest.getNativeRequest();
+            HttpServletRequest sRequest = (HttpServletRequest)request.getNativeRequest();
             if(isApp){
                 String signKey = SpringUtils.getProperty("application.sign.key");
                 String sign = sRequest.getHeader(signKey);
-                sign = "eyJleHBpcmF0aW9uIjoxNjgyNTg1MDI2LCJzYWx0IjoicWMiLCJ1c2VySWQiOjF9";
+                sign="eyJleHBpcmF0aW9uIjoxNjgyODAwNDcwLCJzYWx0IjoicWMiLCJ1c2VySWQiOjF9";
                 if(!BaseUtils.isEmpty(sign)){
                     BigInteger userId = SignUtils.parseSign(sign);
                     log.info("userId: {}, sign: {}", userId, sign);
@@ -74,7 +76,6 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
                 }
                 String signKey = SpringUtils.getProperty("application.session.key");
                 Object value = session.getAttribute(signKey);
-
                 if (value == null) {
                     return null;
                 }
@@ -82,7 +83,6 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
                 return JSON.parseObject(sValue, User.class);
             }
         }
-
         return userService.getById(BigInteger.valueOf(1));
     }
 }
