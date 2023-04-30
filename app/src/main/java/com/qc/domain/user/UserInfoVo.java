@@ -16,7 +16,7 @@ public class UserInfoVo {
     private Integer gender;
     private String nickName;
     private String email;
-    private Integer birthday;
+    private String birthday;
     private String userIntro;
 
 }

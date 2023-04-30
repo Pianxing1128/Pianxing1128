@@ -20,7 +20,7 @@ public interface CourseMapper {
     Course extractById(@Param("id")BigInteger id);
 
     @Update("update course set is_deleted=1 and update_time=#{updateTime} where id = #{id}")
-    int delete(@Param("id") BigInteger id,@Param("updateTime") Integer updateTime);
+    int delete(@Param("id") BigInteger id,@Param("updateTime") int updateTime);
 
     @Select("select count(*) from course")
     Integer getTotal();
@@ -30,7 +30,7 @@ public interface CourseMapper {
 
     List<Course> getCoursesByCourseNameAndNickNameAndTag(@Param("begin") Integer begin,
                                                    @Param("size") Integer pageSize,
-                                                   String courseName,String idsByTeacherId,String courseIds,Integer isDeleted);
+                                                   String courseName,String idsByTeacherId,String courseIds);
 
     List<NewCourse> getCourseTeacherUserByRealNameAndNickName(@Param("begin") Integer begin,
                                                               @Param("size") Integer pageSize,

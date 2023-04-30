@@ -8,6 +8,7 @@ import com.qc.domain.course.CourseInfoVo;
 import com.qc.domain.course.CourseListVo;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.entity.NewCourse;
+import com.qc.module.course.service.BaseCourseService;
 import com.qc.module.course.service.CourseTagRelationService;
 import com.qc.module.course.service.CourseTagService;
 import com.qc.module.teacher.entity.Teacher;
@@ -20,10 +21,11 @@ import com.qc.utils.ImageUtils;
 import com.qc.utils.Response;
 import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import javax.annotation.Resource;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -34,16 +36,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CourseController {
 
-    @Resource
+    @Autowired
     private CourseService courseService;
-    @Resource
+    @Autowired
     private CourseTagRelationService courseTagRelationService;
-    @Resource
+    @Autowired
     private CourseTagService courseTagService;
-    @Resource
+    @Autowired
     private TeacherService teacherService;
-    @Resource
+    @Autowired
     private UserService userService;
+    @Autowired
+    private BaseCourseService baseCourseService;
 
     @RequestMapping("/course/info")
     public Response showCourseDetailById(@VerifiedUser User loginUser,
@@ -68,7 +72,7 @@ public class CourseController {
         //根据id = courseId 得到 tagId, 根据tagId = tag表里的id 获得 tag
         String tagIds = courseTagRelationService.getTagIds(id);
         if(!BaseUtils.isEmpty(tagIds)){
-            List<String> tags = courseTagService.getTag(tagIds);
+            List<String> tags = courseTagService.getTagsByTagIds(tagIds);
             if(!BaseUtils.isEmpty(tags)){
                 courseInfoVo.setTags(tags);
             }
@@ -119,9 +123,8 @@ public class CourseController {
         }
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        Integer isDeleted = 0;
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndTag(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
-                                                                                    wpVo.getNickName(),wpVo.getTag(),isDeleted);
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndTag(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
+                                                                                    wpVo.getNickName(),wpVo.getTag());
 
         if(courseList.size()==0){
             return new Response(3001);
@@ -134,7 +137,6 @@ public class CourseController {
         String wps = JSONObject.toJSONString(wpVo);
         byte[] encodeWp = Base64.getUrlEncoder().encode(wps.getBytes(StandardCharsets.UTF_8));
         baseListVo.setWp(new String(encodeWp, StandardCharsets.UTF_8).trim());
-
         List<BigInteger> teacherIds = courseList.stream().map(Course::getTeacherId).collect(Collectors.toList());
         List<Teacher> teacherList = teacherService.getByIds(teacherIds);
         Map<BigInteger, Teacher> teacherRealNamesMap = teacherList.stream().collect(Collectors.toMap(Teacher::getId, Function.identity()));
@@ -171,7 +173,8 @@ public class CourseController {
             imageVo.setAr(ar);
             courseListVo.setWallImage(imageVo);
             String tagIds = courseTagRelationService.getTagIds(c.getId());
-            List<String> tags = courseTagService.getTag(tagIds);
+            System.out.println(tagIds);
+            List<String> tags = courseTagService.getTagsByTagIds(tagIds);
             courseListVo.setTags(tags);
             list.add(courseListVo);
         }

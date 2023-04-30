@@ -2,11 +2,14 @@ package com.qc.module.course.service;
 
 import com.qc.module.course.entity.CourseTagRelation;
 import com.qc.module.course.mapper.CourseTagRelationMapper;
+import com.qc.utils.BaseUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -14,25 +17,52 @@ public class CourseTagRelationService {
 
     @Resource
     private CourseTagRelationMapper mapper;
-    @Transactional(rollbackFor = Exception.class)
-    public BigInteger insert(BigInteger courseId,BigInteger tagId ){
-        try {
-            CourseTagRelation courseTagRelation = new CourseTagRelation();
-            courseTagRelation.setCourseId(courseId);
-            courseTagRelation.setTagId(tagId);
-            mapper.insert(courseTagRelation);
-            return courseTagRelation.getId();
-        }catch (Exception e){
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return null;
-        }
+
+    private CourseService courseService;
+    @Autowired
+    public CourseTagRelationService(CourseService courseService){
+        this.courseService = courseService;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public List<BigInteger> edit(BigInteger courseId,List<BigInteger> tagsList ) { //(100, (1,2,40))
+
+        int now = BaseUtils.currentSeconds();
+
+        if (BaseUtils.isEmpty(courseId)) {
+            throw new RuntimeException("This course does not exist!");
+        }
+
+        List<BigInteger> oldRelationIdList = extractIdByCourseId(courseId);
+        if (!BaseUtils.isEmpty(oldRelationIdList)) { //如果courseId可以查到 relation存在
+            mapper.deleteByCourseId(courseId, now);// is_deleted 全部变成1   --- 执行1次
+        }
+        List list = new ArrayList<>();
+        if (!BaseUtils.isEmpty(tagsList)) {
+            for (BigInteger tagId : tagsList) {  //深圳英语$四川英语
+
+                BigInteger newRelationId = mapper.extractIdByCourseIdAndTagId(courseId, tagId);//  --- 执行n次
+                if (!BaseUtils.isEmpty(newRelationId)) {
+                    mapper.recover(newRelationId, now);// is_deleted 从1 变成 0  ---- 执行n次
+                    list.add(newRelationId);
+                } else {
+                    CourseTagRelation courseTagRelation = new CourseTagRelation();
+                    courseTagRelation.setCourseId(courseId);
+                    courseTagRelation.setTagId(tagId);
+                    courseTagRelation.setCreateTime(now);
+                    mapper.insert(courseTagRelation);  //如果新增失败就会自己抛出异常，被exception.class 捕获
+                    list.add(courseTagRelation.getId());
+                }
+            }
+            return list;
+        }
+        return oldRelationIdList;
+    }
     public String getTagIds(BigInteger id){
         BigInteger courseId = id;
-        List<String> tagIdList = mapper.getTagIds(courseId);
+        List<BigInteger> tagIdList = mapper.getTagIds(courseId);
         StringBuilder ss = new StringBuilder();
-        for(String t:tagIdList){
+        for(BigInteger t:tagIdList){
             ss.append(t+",");
         }
         if(ss.length()==0){
@@ -43,8 +73,17 @@ public class CourseTagRelationService {
         return ss.toString();
     }
 
-    public int delete(BigInteger idByTag){
-        return  mapper.delete(idByTag);
+    @Transactional(rollbackFor = Exception.class)
+    //这里要加事务，因为有可能关系表 1个tagId对应的2个Relation，1个已经被删除，再update时候 返回结果为0,另外1个是1，没办法判断返回结果0和1
+    public void deleteByTagId(BigInteger tagId){
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.deleteByTagId(tagId,updateTime);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByCourseId(BigInteger courseId){
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.deleteByCourseId(courseId,updateTime);
     }
 
     public String getCourseIds(String idsByTag){
@@ -55,10 +94,16 @@ public class CourseTagRelationService {
             ss.append(c+",");
         }
         if(ss.length()==0){
-            return "-1";
+            return null;
         }
         int len = ss.length();
         ss.delete(len-1,len);
         return ss.toString();
+    }
+
+    public List<BigInteger> extractIdByCourseId(BigInteger courseId){
+        List<BigInteger> relationIds = mapper.extractIdByCourseId(courseId);
+
+        return relationIds;
     }
 }

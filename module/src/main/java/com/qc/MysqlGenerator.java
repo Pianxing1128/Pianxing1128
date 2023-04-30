@@ -43,6 +43,7 @@ public class MysqlGenerator {
         gc.setAuthor("qq123");
         gc.setOpen(false);
         // gc.setSwagger2(true); 实体属性 Swagger2 注解
+//        gc.setBaseColumnList(true);
         mpg.setGlobalConfig(gc);
 
         // 数据源配置

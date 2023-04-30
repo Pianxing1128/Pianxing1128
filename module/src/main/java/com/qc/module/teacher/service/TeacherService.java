@@ -73,12 +73,12 @@ public class TeacherService{
 
     public String getIdsByUserId(String nickName) {
 
-        String UserIdsForTeacher = userService.getUserIdsByNickName(nickName);
+        String userIdsForTeacher = userService.getUserIdsByNickName(nickName);
 
-        if(UserIdsForTeacher==null){
+        if(userIdsForTeacher==null){
             return null;
         }
-        List<BigInteger> teacherIdsByUserId = mapper.getTeacherIdsByUserId(UserIdsForTeacher);
+        List<BigInteger> teacherIdsByUserId = mapper.getTeacherIdsByUserId(userIdsForTeacher);
         StringBuilder sb = new StringBuilder();
         for(BigInteger x:teacherIdsByUserId){
             sb.append(x+",");
@@ -88,8 +88,8 @@ public class TeacherService{
             return "-1";
         }
         sb.delete(len-1,len);
-        UserIdsForTeacher =sb.toString();
-        return UserIdsForTeacher;
+        userIdsForTeacher =sb.toString();
+        return userIdsForTeacher;
     }
 
     public List<Teacher> getTeachersByNickName(Integer pageNum,Integer pageSize, String nickName){

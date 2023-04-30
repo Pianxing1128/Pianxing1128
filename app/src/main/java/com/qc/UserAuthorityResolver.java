@@ -60,7 +60,6 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
             if(isApp){
                 String signKey = SpringUtils.getProperty("application.sign.key");
                 String sign = sRequest.getHeader(signKey);
-                sign="eyJleHBpcmF0aW9uIjoxNjgyODAwNDcwLCJzYWx0IjoicWMiLCJ1c2VySWQiOjF9";
                 if(!BaseUtils.isEmpty(sign)){
                     BigInteger userId = SignUtils.parseSign(sign);
                     log.info("userId: {}, sign: {}", userId, sign);

@@ -18,8 +18,8 @@ public class ResponseCode {
         //console error
         //article error
         statusMap.put(3001, "请求数据不存在");
-        statusMap.put(3051, "文章必填信息不能为空");
-        statusMap.put(3052, "民宿ID不正确");
+        statusMap.put(3051, "必填信息不能为空");
+        statusMap.put(3052, "老师ID不正确");
 
 
         statusMap.put(4003, "没有权限");

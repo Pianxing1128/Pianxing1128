@@ -1,6 +1,7 @@
 package com.qc.module.course.entity;
 
 import com.qc.module.teacher.entity.Teacher;
+import com.qc.utils.BaseUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -41,7 +42,7 @@ public class Course {
         private String courseIntro;
         private String coursePrice;
         private Integer weight;
-        private Integer updateTime = (int)(System.currentTimeMillis()/1000);
+        private Integer updateTime = BaseUtils.currentSeconds();
         private Integer createTime;
         private Integer isDeleted = 0;
         private Teacher teacher;

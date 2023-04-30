@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class CourseVo {
+public class CourseInfoVo {
 
 
     private BigInteger id;

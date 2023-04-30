@@ -8,13 +8,16 @@
         insert into course_tag_relation(
         <if test="courseTagRelation.courseId!=null and courseTagRelation.courseId!=''">course_id,</if>
         <if test="courseTagRelation.tagId!=null and courseTagRelation.tagId!=''">tag_id,</if>
+        <if test="courseTagRelation.updateTime!=null">update_time,</if>
+        <if test="courseTagRelation.createTime!=null">create_time,</if>
         is_deleted
         ) values (
         <if test="courseTagRelation.courseId!=null and courseTagRelation.courseId!=''">#{courseTagRelation.courseId},</if>
         <if test="courseTagRelation.tagId!=null and courseTagRelation.tagId!=''">#{courseTagRelation.tagId},</if>
-        #{course.isDeleted})
+        <if test="courseTagRelation.updateTime!=null">#{courseTagRelation.updateTime},</if>
+        <if test="courseTagRelation.createTime!=null">#{courseTagRelation.createTime},</if>
+        #{courseTagRelation.isDeleted})
     </insert>
-
 
 
 

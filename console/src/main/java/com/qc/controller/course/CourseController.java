@@ -2,9 +2,9 @@ package com.qc.controller.course;
 
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
-import com.qc.domain.course.CourseVo;
+import com.qc.domain.course.CourseInfoVo;
 import com.qc.module.course.entity.Course;
-import com.qc.module.course.entity.CourseTagRelation;
+import com.qc.module.course.service.BaseCourseService;
 import com.qc.module.course.service.CourseTagRelationService;
 import com.qc.module.course.service.CourseTagService;
 import com.qc.module.teacher.entity.Teacher;
@@ -13,18 +13,14 @@ import com.qc.module.course.service.CourseService;
 import com.qc.module.teacher.service.TeacherService;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
-import com.qc.utils.ImageUtils;
 import com.qc.utils.Response;
 import com.qc.utils.SpringUtils;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
@@ -34,23 +30,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CourseController {
 
-    @Autowired
     private CourseService courseService;
-    @Autowired
-    private CourseTagService courseTagService;
-    @Autowired
     private CourseTagRelationService courseTagRelationService;
-    @Autowired
+    private CourseTagService courseTagService;
     private TeacherService teacherService;
-    @Autowired
     private UserService userService;
+    private BaseCourseService baseCourseService;
+
+    @Autowired
+    public CourseController(BaseCourseService baseCourseService, CourseService courseService, CourseTagService courseTagService, CourseTagRelationService courseTagRelationService,
+                            TeacherService teacherService, UserService userService){
+        this.baseCourseService=baseCourseService;
+        this.courseService=courseService;
+        this.courseTagService=courseTagService;
+        this.courseTagRelationService=courseTagRelationService;
+        this.teacherService=teacherService;
+        this.userService=userService;
+    }
 
     @RequestMapping("course/list")
     public Response courseList(@VerifiedUser User loginUser,
                                @RequestParam(required = false,name = "pageNum")Integer inputPageNum,
                                @RequestParam(required = false, name = "courseName") String courseName,
                                @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false, name = "tag") String tag){
+                               @RequestParam(required = false, name = "tags") String tags){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
@@ -62,11 +65,9 @@ public class CourseController {
         }else {
             pageNum = inputPageNum;
         }
-
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        Integer IsDeleted= null;
         BaseListVo result = new BaseListVo();
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndTag(pageNum,pageSize,courseName,nickName,tag,IsDeleted);
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndTag(pageNum,pageSize,courseName,nickName,tags);
         if(courseList.size()==0){
             return new Response(4004);
         }
@@ -77,9 +78,9 @@ public class CourseController {
         List<User> userList = userService.getByIds(userIds);
         Map<BigInteger, User> idUserMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity()));
 
-        List<CourseVo> courseVoList = new ArrayList<>();
+        List<CourseInfoVo> courseVoList = new ArrayList<>();
         for(Course c:courseList){
-            CourseVo courseVo = new CourseVo();
+            CourseInfoVo courseVo = new CourseInfoVo();
             if(idTeacherMap.containsKey(c.getTeacherId())){
                 Teacher teacher = idTeacherMap.get(c.getTeacherId());
                 courseVo.setRealName(teacher.getRealName());
@@ -114,8 +115,8 @@ public class CourseController {
             }
 
             String tagIds = courseTagRelationService.getTagIds(c.getId());
-            List<String> tags = courseTagService.getTag(tagIds);
-            courseVo.setTags(tags);
+            List<String> tagList = courseTagService.getTagsByTagIds(tagIds);
+            courseVo.setTags(tagList);
             courseVoList.add(courseVo);
         }
         result.setCourseList(courseVoList);
@@ -123,6 +124,7 @@ public class CourseController {
         result.setPageSize(pageSize);
         return new Response(1001,result);
     }
+
     @RequestMapping("/course/info")
     public Response showCourseDetailById(@VerifiedUser User loginUser,
                                          @RequestParam(name="id") BigInteger id) {
@@ -130,7 +132,7 @@ public class CourseController {
         if(BaseUtils.isEmpty(loginUser)){
             return new Response(1002);
         }
-        CourseVo courseInfoVo = new CourseVo();
+        CourseInfoVo courseInfoVo = new CourseInfoVo();
         Course course = courseService.getById(id);
         if(BaseUtils.isEmpty(course)){
             return new Response(3001);
@@ -147,7 +149,7 @@ public class CourseController {
         //根据id = courseId 得到 tagId, 根据tagId = tag表里的id 获得 tag
         String tagIds = courseTagRelationService.getTagIds(id);
         if(!BaseUtils.isEmpty(tagIds)){
-            List<String> tags = courseTagService.getTag(tagIds);
+            List<String> tags = courseTagService.getTagsByTagIds(tagIds);
             if(!BaseUtils.isEmpty(tags)){
                 courseInfoVo.setTags(tags);
             }
@@ -155,19 +157,18 @@ public class CourseController {
         courseInfoVo.setCourseName(course.getCourseName());
         courseInfoVo.setCourseSubName(course.getCourseSubName());
         courseInfoVo.setCourseCount(course.getCourseCount());
-        courseInfoVo.setCourseCount(course.getCourseCount());
         courseInfoVo.setCourseTime(course.getCourseTime());
         courseInfoVo.setCourseIntro(course.getCourseIntro());
         courseInfoVo.setCoursePrice(course.getCoursePrice());
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
         courseInfoVo.setCourseImages(courseList);
+        courseInfoVo.setWeight(course.getWeight());
+        courseInfoVo.setUpdateTime(BaseUtils.timeStamp2Date(course.getUpdateTime()));
+        courseInfoVo.setCreateTime(BaseUtils.timeStamp2Date(course.getCreateTime()));
+        courseInfoVo.setIsDeleted(course.getIsDeleted());
 
         return new Response(1001,courseInfoVo);
     }
-    /**
-     * 在新增的时候，要求必须要输入的属性是：teacherId,courseName,courseCount,courseIntro,coursePrice
-     * 新增的时候，如果课程图片没有，用公司默认的一张课程图片
-     */
 
     @RequestMapping("/course/insert")
     public Response courseInsert(@VerifiedUser User loginUser,
@@ -177,51 +178,72 @@ public class CourseController {
                                  @RequestParam(name = "courseIntro")String courseIntro,
                                  @RequestParam(name = "coursePrice")String coursePrice,
                                  @RequestParam(name = "courseCount")String courseCount,
+                                 @RequestParam(name = "courseSubName")String courseSubName,
                                  @RequestParam(required = false,name = "courseImage")String courseImage,
-                                 @RequestParam(required = false,name = "courseSubName")String courseSubName,
                                  @RequestParam(required = false,name = "courseTime")String courseTime,
                                  @RequestParam(required = false,name = "weight")Integer weight,
                                  @RequestParam(required = false,name = "tags") String tags) {
 
         if (BaseUtils.isEmpty(loginUser)) {
-            return new Response(1002);
+            return new Response(1002); //需要登陆
         }
-
+        //必填信息
+        courseName = courseName.trim();
+        courseSubName = courseSubName.trim();
+        courseIntro = courseIntro.trim();
+        coursePrice = coursePrice.trim();
+        courseCount = courseCount.trim();
+        //非必填信息
+        if(!BaseUtils.isEmpty(courseTime)){  //总时常这里输入 未完结 或者 x小时x分钟
+        courseTime = courseTime.trim();
+        }
+        if(BaseUtils.isEmpty(courseName) || BaseUtils.isEmpty(courseSubName) || BaseUtils.isEmpty(courseIntro)
+                || BaseUtils.isEmpty(coursePrice) || BaseUtils.isEmpty(courseCount)){
+            return new Response(3051); //必填信息不能为空
+        }
+        Teacher teacher = teacherService.getById(teacherId);
+        if (BaseUtils.isEmpty(teacher)){
+            return new Response(3052); // 老师Id不存在
+        }
         try{
-            String result = courseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
+             baseCourseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
                     weight,tags);
 
-            return new Response(1001,result);
+            return new Response(1001); // ok
         }catch(RuntimeException e) {
-            return new Response(4004,e);
+            return new Response(4004); // 链接超时
         }
     }
 
-//    @RequestMapping("/course/update")
-//    public Response courseUpdate(@VerifiedUser User loginUser,
-//                                 @RequestParam(name="id") BigInteger id,
-//                                 @RequestParam(required = false,name = "teacherId")BigInteger teacherId,
-//                                 @RequestParam(required = false,name = "courseName")String courseName,
-//                                 @RequestParam(required = false,name = "courseSubName")String courseSubName,
-//                                 @RequestParam(required = false,name = "courseCount")String courseCount,
-//                                 @RequestParam(required = false,name = "courseTime")String courseTime,
-//                                 @RequestParam(required = false,name = "courseIntro")String courseIntro,
-//                                 @RequestParam(required = false,name = "courseImage")String courseImage,
-//                                 @RequestParam(required = false,name = "coursePrice")String coursePrice,
-//                                 @RequestParam(required = false,name = "weight")Integer weight) {
-//
-//        if (BaseUtils.isEmpty(loginUser)) {
-//            return new Response(1002);
-//        }
-//
-//        try {
-//            BigInteger newId = courseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
-//                    courseImage, coursePrice, weight);
-//            return new Response(1001,newId);
-//        }catch (RuntimeException e){
-//            return new Response(4004);
-//        }
-//    }
+    @RequestMapping("/course/update")
+    public Response courseUpdate(@VerifiedUser User loginUser,
+                                 @RequestParam(name="id") BigInteger id,
+                                 @RequestParam(required = false,name = "teacherId")BigInteger teacherId,
+                                 @RequestParam(required = false,name = "courseName")String courseName,
+                                 @RequestParam(required = false,name = "courseSubName")String courseSubName,
+                                 @RequestParam(required = false,name = "courseCount")String courseCount,
+                                 @RequestParam(required = false,name = "courseTime")String courseTime,
+                                 @RequestParam(required = false,name = "courseIntro")String courseIntro,
+                                 @RequestParam(required = false,name = "courseImage")String courseImage,
+                                 @RequestParam(required = false,name = "coursePrice")String coursePrice,
+                                 @RequestParam(required = false,name = "weight")Integer weight,
+                                 @RequestParam(required = false,name = "tags") String tags) {
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002); //需要登陆
+        }
+        Teacher teacher = teacherService.getById(teacherId);
+        if(BaseUtils.isEmpty(teacher)){
+            return new Response(3052); // 老师Id不存在
+        }
+        try {
+            baseCourseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
+                    courseImage, coursePrice, weight,tags);
+            return new Response(1001); // ok
+        }catch (RuntimeException e){
+            return new Response(4004); // 链接超时
+        }
+    }
 
     @RequestMapping("/course/delete")
     public Response courseDelete(@VerifiedUser User loginUser,
@@ -230,10 +252,9 @@ public class CourseController {
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
         }
-
         try {
-            int newId = courseService.delete(id);
-            return new Response(1001,newId);
+            baseCourseService.delete(id);
+            return new Response(1001);
         }catch (RuntimeException e){
             return new Response(4004);
         }

@@ -1,5 +1,6 @@
 package com.qc.domain;
 
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,8 +15,10 @@ public class BaseListVo {
     private Integer courseTotal;
     private Integer teacherTotal;
     private Integer userTotal;
+    private Integer tagTotal;
     private List courseList;
     private List teacherList;
     private List userList;
+    private List tagList;
 
 }

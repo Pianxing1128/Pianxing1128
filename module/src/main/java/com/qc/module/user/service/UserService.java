@@ -106,19 +106,19 @@ public class UserService {
         if (nickName == null) {
             return null;
         }
-        StringBuilder sb = new StringBuilder();
+        StringBuilder ss = new StringBuilder();
         List<BigInteger> userIdsByNickName = mapper.getUserIdsByNickname(nickName);
         for (BigInteger x : userIdsByNickName) {
-            sb.append(x + ",");
+            ss.append(x + ",");
         }
-        int len = sb.length();
+        int len = ss.length();
 
         if (len == 0) {
             return "-1";
         }
-        sb.delete(len - 1, len);
-        String UserIdsForTeacher = sb.toString();
-        return UserIdsForTeacher;
+        ss.delete(len - 1, len);
+        String userIdsForTeacher = ss.toString();
+        return userIdsForTeacher;
     }
 
     public List<User> getByIds(List<BigInteger> userIds){
@@ -171,7 +171,6 @@ public class UserService {
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
-            user.setAccessKey(avatar);
             user.setNickName(nickName);
             user.setGender(gender);
             user.setBirthday(birthday);
@@ -265,7 +264,7 @@ public class UserService {
         User user = new User();
         user.setId(id);
         user.setLastLoginIp(currentIp);
-        currentTime = (int)(System.currentTimeMillis()/1000);
+        currentTime = BaseUtils.currentSeconds();
         user.setLastLoginTime(currentTime);
         user.setUpdateTime(currentTime);
         try{
