@@ -1,20 +1,20 @@
 package com.qc.module.user.service;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.mapper.UserMapper;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.DataUtils;
 import com.qc.utils.SignUtils;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
 import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -62,7 +62,7 @@ public class UserService {
     }
 
     public List<User> getUsersForConsole(Integer pageNum,Integer size){
-        int begin = pageNum-1;
+        int begin = (pageNum-1)*size;
         return mapper.getUsersForConsole(begin,size);
     }
 
@@ -73,14 +73,6 @@ public class UserService {
          * 1. 更新时间，注册Ip,上次登陆时间，上次登陆Ip，是否删除 为上次的记录
          */
         User user = new User();
-        if (id != null) {
-            User oldUser = getById(id);
-            if (oldUser == null) {
-                throw new RuntimeException("This user does not exist");
-            }
-            mapper.update(user);
-            return id;
-        }
 
         user.setId(id);
         user.setUserAccount(userAccount);
@@ -94,7 +86,15 @@ public class UserService {
         user.setLastLoginIp(user.getLastLoginIp());
         user.setRegisterIp(user.getRegisterIp());
         user.setLastLoginTime(user.getLastLoginTime());
-        int now = (int)System.currentTimeMillis()/1000;
+        if (id != null) {
+            User oldUser = getById(id);
+            if (oldUser == null) {
+                throw new RuntimeException("This user does not exist");
+            }
+            mapper.update(user);
+            return id;
+        }
+        int now = BaseUtils.currentSeconds();
         user.setCreateTime(now);
         user.setIsDeleted(0);
         mapper.insert(user);
@@ -171,6 +171,7 @@ public class UserService {
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setAvatar(avatar);
             user.setNickName(nickName);
             user.setGender(gender);
             user.setBirthday(birthday);
@@ -179,6 +180,7 @@ public class UserService {
             user.setEmail(email);
             Integer createTime = (int)(System.currentTimeMillis()/1000);
             user.setCreateTime(createTime);
+            user.setRegisterIp(currentIp);
             //4.是否存入成功
             int saveResult = mapper.insert(user);
             if (saveResult==0) {
@@ -246,7 +248,7 @@ public class UserService {
         if(user==null){
             return false;
         }
-        if(noPassword || SignUtils.marshal(userPassword).equals(user.getUserPassword())) {
+        if(noPassword || BaseUtils.md5(userPassword).equals(user.getUserPassword())) {
             // write session??
             // lifetime =
             return true;

@@ -40,7 +40,7 @@ public class MysqlGenerator {
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir");
         gc.setOutputDir(projectPath + "/module/src/main/java");
-        gc.setAuthor("qq123");
+        gc.setAuthor("qc1128");
         gc.setOpen(false);
         // gc.setSwagger2(true); 实体属性 Swagger2 注解
 //        gc.setBaseColumnList(true);
@@ -128,7 +128,7 @@ public class MysqlGenerator {
         // 写于父类中的公共字段
         strategy.setSuperEntityColumns("id");
 //      strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
-        strategy.setInclude("user");
+        strategy.setInclude("app_index_banner");
         strategy.setControllerMappingHyphenStyle(true);
         strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);

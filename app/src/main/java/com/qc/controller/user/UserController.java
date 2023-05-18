@@ -6,16 +6,17 @@ import com.qc.domain.user.UserLoginInfoVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
+import com.qc.utils.IpUtils;
 import com.qc.utils.Response;
 import com.qc.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 
@@ -23,7 +24,7 @@ import java.math.BigInteger;
 @Slf4j
 public class UserController {
 
-    @Resource
+    @Autowired
     private UserService userService;
 
     @RequestMapping("/user/register")
@@ -31,15 +32,19 @@ public class UserController {
                                  @RequestParam(name="userAccount")String userAccount,
                                  @RequestParam(name="userPassword") String userPassword,
                                  @RequestParam(name="checkPassword") String checkPassword,
+                                 @RequestParam(name="birthday") Integer birthday,
+                                 @RequestParam(name="email") String email,
                                  @RequestParam(required = false,name="avatar") String avatar,
                                  @RequestParam(required = false,name="gender") Integer gender,
                                  @RequestParam(required = false,name="nickName") String nickName,
-                                 @RequestParam(required = false,name="birthday") Integer birthday,
-                                 @RequestParam(required = false,name="userIntro") String userIntro,
-                                 @RequestParam(required = false,name="email") String email) {
+                                 @RequestParam(required = false,name="userIntro") String userIntro
+                                ) {
 
         if(!BaseUtils.isEmpty(loginUser)){
             return new Response(4004);
+        }
+        if(!BaseUtils.isEmpty(email)){
+            email=email.trim();
         }
         //判断用户是否已经注册
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
@@ -53,8 +58,7 @@ public class UserController {
             }
         }else {
             try {
-                //user = userService.userRegister(userAccount,userPassword,checkPassword,avatar,gender,nickName,birthday,userIntro,email,IpUtils.getIpAddress(request));
-                id = userService.userRegister(userAccount,userPassword,checkPassword,avatar,gender,nickName,birthday,userIntro,email,"123.1.2.3");
+                  id = userService.userRegister(userAccount,userPassword,checkPassword,avatar,gender,nickName,birthday,userIntro,email,IpUtils.getIpAddress(request));
             }catch (Exception e){
                 return new Response(4004);
             }
@@ -95,8 +99,8 @@ public class UserController {
         User user = userService.getUserAccount(userAccount);
 
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-        //userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
-        userService.refreshUserLoginContext(user.getId(), "123.1.1.1", BaseUtils.currentSeconds());
+        userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
+
         UserInfoVo userInfo = new UserInfoVo();
         userInfo.setId(user.getId());
         userInfo.setAvatar(user.getAvatar());

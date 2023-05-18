@@ -3,14 +3,15 @@ package com.qc.controller.teacher;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.teacher.TeacherVo;
 import com.qc.module.teacher.entity.Teacher;
-import com.qc.module.user.entity.User;
 import com.qc.module.teacher.service.TeacherService;
+import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import javax.annotation.Resource;
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,10 +25,10 @@ import java.util.List;
 @Slf4j
 public class TeacherController {
 
-    @Resource
+    @Autowired
     private TeacherService teacherService;
 
-    @Resource
+    @Autowired
     private UserService userService;
 
     @RequestMapping("/teacher/list")

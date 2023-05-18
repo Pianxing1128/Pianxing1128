@@ -2,19 +2,19 @@ package com.qc.controller.course;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qc.annotations.VerifiedUser;
-import com.qc.domain.*;
+import com.qc.domain.BaseListVo;
+import com.qc.domain.ImageVo;
 import com.qc.domain.course.CommentWpVo;
 import com.qc.domain.course.CourseInfoVo;
 import com.qc.domain.course.CourseListVo;
 import com.qc.module.course.entity.Course;
-import com.qc.module.course.entity.NewCourse;
 import com.qc.module.course.service.BaseCourseService;
+import com.qc.module.course.service.CourseService;
 import com.qc.module.course.service.CourseTagRelationService;
 import com.qc.module.course.service.CourseTagService;
 import com.qc.module.teacher.entity.Teacher;
-import com.qc.module.user.entity.User;
-import com.qc.module.course.service.CourseService;
 import com.qc.module.teacher.service.TeacherService;
+import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.ImageUtils;
@@ -102,16 +102,18 @@ public class CourseController {
     }
 
     @RequestMapping("/course/list")
-    public Response courseList(@RequestParam(required = false, name = "courseName") String courseName,
-                               @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false,name = "wp")String wp,
-                               @RequestParam(required = false,name = "tag")String tag){
+    public Response courseList(@RequestParam(required = false,name = "wp")String wp,
+                               @RequestParam(required = false,name = "courseName") String courseName,
+                               @RequestParam(required = false,name = "nickName") String nickName,
+                               @RequestParam(required = false,name = "showTagId")Integer showTagId,
+                               @RequestParam(required = false,name ="isVip")Integer isVip,
+                               @RequestParam(required = false,name ="orderedType")Integer orderedType){
 
         CommentWpVo wpVo = new CommentWpVo();
         if (BaseUtils.isEmpty(wp)) {
             wpVo.setCourseName(courseName);
             wpVo.setNickName(nickName);
-            wpVo.setTag(tag);
+            wpVo.setShowTagId(showTagId);
             wpVo.setPageNum(1);
         } else {
             try {
@@ -124,7 +126,7 @@ public class CourseController {
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndTag(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
-                                                                                    wpVo.getNickName(),wpVo.getTag());
+                                                                                    wpVo.getNickName(),wpVo.getShowTagId());
 
         if(courseList.size()==0){
             return new Response(3001);
@@ -137,13 +139,13 @@ public class CourseController {
         String wps = JSONObject.toJSONString(wpVo);
         byte[] encodeWp = Base64.getUrlEncoder().encode(wps.getBytes(StandardCharsets.UTF_8));
         baseListVo.setWp(new String(encodeWp, StandardCharsets.UTF_8).trim());
+
         List<BigInteger> teacherIds = courseList.stream().map(Course::getTeacherId).collect(Collectors.toList());
         List<Teacher> teacherList = teacherService.getByIds(teacherIds);
         Map<BigInteger, Teacher> teacherRealNamesMap = teacherList.stream().collect(Collectors.toMap(Teacher::getId, Function.identity()));
         List<BigInteger> userIds =  teacherList.stream().map(Teacher::getUserId).collect(Collectors.toList());
         List<User> userList = userService.getByIds(userIds);
         Map<BigInteger,User> userNickNamesMap = userList.stream().collect(Collectors.toMap(User::getId,Function.identity()));
-
         List<CourseListVo> list = new ArrayList<>();
         for (Course c : courseList) {
 
@@ -182,45 +184,4 @@ public class CourseController {
         return new Response(1001,baseListVo);
     }
 
-    @RequestMapping("/course/test")
-    public Response courseTest(@RequestParam(required = false, name = "courseName") String courseName,
-                               @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false, name="realName")String realName,
-                               @RequestParam(required = false, name = "wp")String wp) {
-        CommentWpVo wpVo = new CommentWpVo();
-        if (wp == null) {
-            wpVo.setCourseName(courseName);
-            wpVo.setNickName(nickName);
-            wpVo.setRealName(realName);
-            wpVo.setPageNum(1);
-        } else {
-            byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
-            wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
-        }
-        Integer pageSize =6;
-        List<NewCourse> courseTeacherList = courseService.getCourseByRealName(wpVo.getPageNum(), pageSize, wpVo.getRealName(),wpVo.getNickName());
-        log.info(String.valueOf(courseTeacherList));
-        BaseListVo baseListVo = new BaseListVo();
-        baseListVo.setIsEnd(courseTeacherList.size()<pageSize);
-
-        wpVo.setPageNum(wpVo.getPageNum()+1);
-        String wps = JSONObject.toJSONString(wpVo);
-        byte[] encodeWp = Base64.getUrlEncoder().encode(wps.getBytes(StandardCharsets.UTF_8));
-        baseListVo.setWp(new String(encodeWp, StandardCharsets.UTF_8).trim());
-
-        List<CourseListVo> list = new ArrayList<>();
-        for (NewCourse c : courseTeacherList) {
-
-            CourseListVo courseListVo = new CourseListVo();
-            courseListVo.setId(c.getId());
-            courseListVo.setCourseName(c.getCourseName());
-            courseListVo.setCourseCount(c.getCourseCount());
-            courseListVo.setCoursePrice(c.getCoursePrice());
-            courseListVo.setTeacherRealName(c.getNewTeacher().getRealName());
-            courseListVo.setTeacherNickName(c.getNewTeacher().getNewUser().getNickName());
-            list.add(courseListVo);
-        }
-        baseListVo.setCourseList(list);
-        return new Response(1001,baseListVo);
-    }
 }

@@ -7,7 +7,7 @@
 
     <insert id="insert" parameterType="com.qc.module.user.entity.User" useGeneratedKeys="true" keyProperty="id">
 
-        insert into User(
+        insert into user(
         <if test="user.userAccount!=null and user.userAccount!=''">user_account,</if>
         <if test="user.userPassword!=null and user.userPassword!=''">user_password,</if>
         <if test="user.avatar!=null and user.avatar!=''">avatar,</if>

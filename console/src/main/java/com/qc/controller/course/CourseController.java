@@ -5,12 +5,12 @@ import com.qc.domain.BaseListVo;
 import com.qc.domain.course.CourseInfoVo;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.service.BaseCourseService;
+import com.qc.module.course.service.CourseService;
 import com.qc.module.course.service.CourseTagRelationService;
 import com.qc.module.course.service.CourseTagService;
 import com.qc.module.teacher.entity.Teacher;
-import com.qc.module.user.entity.User;
-import com.qc.module.course.service.CourseService;
 import com.qc.module.teacher.service.TeacherService;
+import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.Response;
@@ -22,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,23 +33,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CourseController {
 
-    private CourseService courseService;
-    private CourseTagRelationService courseTagRelationService;
-    private CourseTagService courseTagService;
-    private TeacherService teacherService;
-    private UserService userService;
-    private BaseCourseService baseCourseService;
-
     @Autowired
-    public CourseController(BaseCourseService baseCourseService, CourseService courseService, CourseTagService courseTagService, CourseTagRelationService courseTagRelationService,
-                            TeacherService teacherService, UserService userService){
-        this.baseCourseService=baseCourseService;
-        this.courseService=courseService;
-        this.courseTagService=courseTagService;
-        this.courseTagRelationService=courseTagRelationService;
-        this.teacherService=teacherService;
-        this.userService=userService;
-    }
+    private CourseService courseService;
+    @Autowired
+    private CourseTagRelationService courseTagRelationService;
+    @Autowired
+    private CourseTagService courseTagService;
+    @Autowired
+    private TeacherService teacherService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private BaseCourseService baseCourseService;
 
     @RequestMapping("course/list")
     public Response courseList(@VerifiedUser User loginUser,
