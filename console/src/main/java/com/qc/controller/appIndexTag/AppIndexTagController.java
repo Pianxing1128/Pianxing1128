@@ -118,13 +118,13 @@ public class AppIndexTagController {
         }
     }
 
-    @RequestMapping("/index/tag/update/all")
+    @RequestMapping("/index/tag/show")
     public Response indexTagUpdateAll(@VerifiedUser User loginUser,
                                      @RequestParam(name = "ids")String ids){
 
-//        if(BaseUtils.isEmpty(loginUser)){
-//            return new Response(1002); //需要登陆操作
-//        }
+        if(BaseUtils.isEmpty(loginUser)){
+            return new Response(1002); //需要登陆操作
+        }
 
         ids = ids.trim();
         if(BaseUtils.isEmpty(ids)){

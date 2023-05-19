@@ -126,7 +126,7 @@ public class AppIndexBannerController {
         }
     }
 
-    @RequestMapping("/index/banner/update/all")
+    @RequestMapping("/index/banner/show")
     public Response indexBannerUpdateAll(@VerifiedUser User loginUser,
                                          @RequestParam(name = "ids")String ids){
 
