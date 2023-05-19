@@ -19,7 +19,7 @@ public interface CourseMapper {
     @Select("select * from course where id=#{id}")
     Course extractById(@Param("id")BigInteger id);
 
-    @Update("update course set is_deleted=1 and update_time=#{updateTime} where id = #{id}")
+    @Update("update course set is_deleted=1,update_time=#{updateTime} where id = #{id}")
     int delete(@Param("id") BigInteger id,@Param("updateTime") int updateTime);
 
     @Select("select count(*) from course")

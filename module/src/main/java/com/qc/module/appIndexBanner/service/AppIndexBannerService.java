@@ -4,9 +4,11 @@ import com.qc.module.appIndexBanner.entity.AppIndexBanner;
 import com.qc.module.appIndexBanner.mapper.AppIndexBannerMapper;
 import com.qc.utils.BaseUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -28,6 +30,7 @@ public class AppIndexBannerService {
         return mapper.extractTotal();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public BigInteger edit(BigInteger id,String bannerName, String bannerImage, String bannerLink) {
 
         AppIndexBanner appIndexBanner = new AppIndexBanner();
@@ -52,12 +55,32 @@ public class AppIndexBannerService {
         return appIndexBanner.getId();
     }
 
-    public int delete(BigInteger id) {
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(BigInteger id) {
         AppIndexBanner oldAppIndexBanner = mapper.extractById(id);
         if(BaseUtils.isEmpty(oldAppIndexBanner)){
             throw new RuntimeException("This oldAppIndexBanner does not exist!");
         }
-        Integer updateTime = BaseUtils.currentSeconds();
-        return mapper.delete(id,updateTime);
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.delete(id,updateTime);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String updateAll(String ids){
+        List<String> idList = Arrays.asList(ids.split("\\$"));
+        StringBuilder ss = new StringBuilder();
+        for(String x:idList){
+            ss.append(x+",");
+        }
+        int len  = ss.length();
+        if(len==0){
+            return null;
+        }
+        ss.delete(len-1,len);
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.deleteAll(updateTime);
+        String newIdList = ss.toString();
+        mapper.recover(newIdList,updateTime);
+        return newIdList;
     }
 }

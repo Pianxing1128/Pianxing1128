@@ -10,6 +10,7 @@ public class BaseListVo{
 
         private List courseList;
         private List indexBannerList;
+        private List indexTagList;
         private String wp;
         private Boolean isEnd;
 

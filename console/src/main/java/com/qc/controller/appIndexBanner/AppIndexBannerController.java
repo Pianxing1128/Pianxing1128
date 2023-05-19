@@ -111,7 +111,12 @@ public class AppIndexBannerController {
     }
 
     @RequestMapping("/index/banner/delete")
-    public Response indexBannerDelete(@RequestParam(name="id")BigInteger id){
+    public Response indexBannerDelete(@VerifiedUser User loginUser,
+                                      @RequestParam(name="id")BigInteger id){
+
+        if(BaseUtils.isEmpty(loginUser)){
+            return new Response(1002);
+        }
 
         try {
             appIndexBannerService.delete(id);
@@ -121,4 +126,23 @@ public class AppIndexBannerController {
         }
     }
 
+    @RequestMapping("/index/banner/update/all")
+    public Response indexBannerUpdateAll(@VerifiedUser User loginUser,
+                                         @RequestParam(name = "ids")String ids){
+
+        if(BaseUtils.isEmpty(loginUser)){
+            return new Response(1002); //需要登陆操作
+        }
+
+        ids = ids.trim();
+        if(BaseUtils.isEmpty(ids)){
+            return new Response(3052); //必填信息不能为空
+        }
+        try {
+            String bannerShowIdList = appIndexBannerService.updateAll(ids);
+            return new Response(1001, bannerShowIdList);
+        }catch(RuntimeException e) {
+            return new Response(4004); // 链接超时
+        }
+    }
 }

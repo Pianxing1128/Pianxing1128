@@ -22,8 +22,8 @@ public interface AppIndexBannerMapper {
     @Select("select * from app_index_banner where id =#{id}")
     AppIndexBanner extractById(@Param("id") BigInteger id);
 
-    @Update("update app_index_banner set is_deleted=1 and update_time = #{updateTime} where id =#{id}")
-    int delete(@Param("id")BigInteger id,@Param("updateTime")Integer updateTime);
+    @Update("update app_index_banner set is_deleted=1,update_time = #{updateTime} where id =#{id}")
+    int delete(@Param("id")BigInteger id,@Param("updateTime")int updateTime);
 
     @Select("select * from app_index_banner where is_deleted=0")
     List<AppIndexBanner> getIndexBannerList();
@@ -33,6 +33,12 @@ public interface AppIndexBannerMapper {
 
     @Select("select count(*) from app_index_banner")
     Integer extractTotal();
+
+    @Update("update app_index_banner set is_deleted=1, update_time = #{updateTime}")
+    void deleteAll(@Param("updateTime")int updateTime);
+
+    @Update("update app_index_banner set is_deleted=0,update_time = #{updateTime} where id in (${newIdList})")
+    void recover(@Param("newIdList") String newIdList,@Param("updateTime") int updateTime);
 }
 
 
