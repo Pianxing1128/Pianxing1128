@@ -1,7 +1,10 @@
 package com.qc.module.appIndexBanner.entity;
 
+import com.qc.utils.BaseUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.math.BigInteger;
 
 /**
  * <p>
@@ -15,6 +18,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class AppIndexBanner{
 
+
+    private BigInteger id;
     /**
      * 轮播图名字
      */
@@ -33,7 +38,7 @@ public class AppIndexBanner{
     /**
      * 更新时间
      */
-    private Integer updateTime;
+    private Integer updateTime = BaseUtils.currentSeconds();
 
     /**
      * 创建时间
@@ -43,7 +48,7 @@ public class AppIndexBanner{
     /**
      * 是否删除
      */
-    private Integer isDeleted;
+    private Integer isDeleted = 0;
 
 
 }

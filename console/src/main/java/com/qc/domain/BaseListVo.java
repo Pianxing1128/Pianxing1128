@@ -1,10 +1,8 @@
 package com.qc.domain;
 
-import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -16,9 +14,11 @@ public class BaseListVo {
     private Integer teacherTotal;
     private Integer userTotal;
     private Integer tagTotal;
+    private Integer appIndexBannerTotal;
     private List courseList;
     private List teacherList;
     private List userList;
     private List tagList;
+    private List appIndexBannerList;
 
 }

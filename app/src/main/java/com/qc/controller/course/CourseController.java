@@ -125,7 +125,7 @@ public class CourseController {
         }
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndTag(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagId(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
                                                                                     wpVo.getNickName(),wpVo.getShowTagId());
 
         if(courseList.size()==0){
@@ -175,7 +175,6 @@ public class CourseController {
             imageVo.setAr(ar);
             courseListVo.setWallImage(imageVo);
             String tagIds = courseTagRelationService.getTagIds(c.getId());
-            System.out.println(tagIds);
             List<String> tags = courseTagService.getTagsByTagIds(tagIds);
             courseListVo.setTags(tags);
             list.add(courseListVo);

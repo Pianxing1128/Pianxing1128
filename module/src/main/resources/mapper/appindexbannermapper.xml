@@ -25,14 +25,22 @@
 
     <update id="update" parameterType="com.qc.module.appIndexBanner.entity.AppIndexBanner">
         update app_index_banner set
-        update_time = #{appIndexBanner.updatetime}
+        update_time = #{appIndexBanner.updateTime}
         <if test="appIndexBanner.bannerName!=null and appIndexBanner.bannerName!=''">,banner_name=#{appIndexBanner.bannerName}</if>
         <if test="appIndexBanner.bannerImage!=null and appIndexBanner.bannerImage!=''">,banner_image=#{appIndexBanner.bannerImage}</if>
         <if test="appIndexBanner.bannerLink!=null and appIndexBanner.bannerLink!=''">,banner_link=#{appIndexBanner.bannerLink}</if>
-        <if test="appIndexBanner.updateTime!=null">,update_time=#{appIndexBanner.updateTime}</if>
         <if test="appIndexBanner.createTime!=null">,create_time=#{appIndexBanner.createTime}</if>
         <if test="appIndexBanner.isDeleted!=null">,is_deleted=#{appIndexBanner.isDeleted}</if>
         where id =#{appIndexBanner.id}
     </update>
+    <select id="extractIndexBannerList" resultType="com.qc.module.appIndexBanner.entity.AppIndexBanner">
+        select * from app_index_banner
+        <where>
+            <if test="bannerName!=null and bannerName!=''">
+                banner_name like concat ('%',#{bannerName},'%')
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
 
 </mapper>

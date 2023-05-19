@@ -9,7 +9,7 @@ import java.util.List;
 public class BaseListVo{
 
         private List courseList;
-        private List teacherList;
+        private List indexBannerList;
         private String wp;
         private Boolean isEnd;
 

@@ -1,10 +1,9 @@
 package com.qc.module.course.service;
 
-import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.entity.NewCourse;
-import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.course.mapper.CourseMapper;
+import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.teacher.service.TeacherService;
 import com.qc.utils.BaseUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -68,16 +64,16 @@ public class CourseService {
         course.setCoursePrice(coursePrice);
         course.setWeight(weight);
 
-            if(!BaseUtils.isEmpty(id)) {
-                Course oldCourse = mapper.extractById(id);
-                if (BaseUtils.isEmpty(oldCourse)) {
-                    throw new RuntimeException("The course does not exist!");
-                }
-                BigInteger oldCourseTeacherId = oldCourse.getTeacherId();
-                Teacher teacher = teacherService.getById(oldCourseTeacherId);
-                if (BaseUtils.isEmpty(teacher)) {
-                    throw new RuntimeException("The teacher does not exist!");
-                }
+        if(!BaseUtils.isEmpty(id)) {
+            Course oldCourse = mapper.extractById(id);
+            if (BaseUtils.isEmpty(oldCourse)) {
+                throw new RuntimeException("The course does not exist!");
+            }
+            BigInteger oldCourseTeacherId = oldCourse.getTeacherId();
+            Teacher teacher = teacherService.getById(oldCourseTeacherId);
+            if (BaseUtils.isEmpty(teacher)) {
+                throw new RuntimeException("The teacher does not exist!");
+            }
             int update = mapper.update(course);
             if(update==0){
                 throw new RuntimeException("Update failed!");

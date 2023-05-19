@@ -51,7 +51,7 @@ public class CourseController {
                                @RequestParam(required = false,name = "pageNum")Integer inputPageNum,
                                @RequestParam(required = false, name = "courseName") String courseName,
                                @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false, name = "tags") String tags){
+                               @RequestParam(required = false, name = "showTagId") Integer showTagId){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
@@ -65,7 +65,7 @@ public class CourseController {
         }
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         BaseListVo result = new BaseListVo();
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndTag(pageNum,pageSize,courseName,nickName,tags);
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagId(pageNum,pageSize,courseName,nickName,showTagId);
         if(courseList.size()==0){
             return new Response(4004);
         }

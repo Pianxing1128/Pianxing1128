@@ -35,7 +35,7 @@ public class BaseCourseService {
             return courseId;
     }
 
-    public List<Course> getCourseByCourseNameAndNickNameAndTag(Integer pageNum, Integer pageSize, String courseName, String nickName, Integer showTagId) {
+    public List<Course> getCourseByCourseNameAndNickNameAndShowTagId(Integer pageNum, Integer pageSize, String courseName, String nickName, Integer showTagId) {
 
 //        String tagIds = appIndexTagIdRelationService.getByShowTagId(showTagId);
         String tagIds = null;
