@@ -18,7 +18,7 @@ public class AppIndexTagController {
     @Autowired
     private AppIndexTagService appIndexTagService;
 
-    @RequestMapping("/app/index/tag/list")
+    @RequestMapping("/index/tag/list")
     public Response appIndexTagList(){
 
         List<AppIndexTag> appIndexTagListForApp = appIndexTagService.getAppIndexTagListForApp();
