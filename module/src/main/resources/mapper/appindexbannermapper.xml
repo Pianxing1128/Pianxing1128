@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.appIndexBanner.mapper.AppIndexBannerMapper">
+
+    <insert id="insert" parameterType="com.qc.module.appIndexBanner.entity.AppIndexBanner" useGeneratedKeys="true" keyProperty="id">
+        insert into app_index_banner(
+        <if test="appIndexBanner.bannerName!=null and appIndexBanner.bannerName!=''">banner_name,</if>
+        <if test="appIndexBanner.bannerImage!=null and appIndexBanner.bannerImage!=''">banner_image,</if>
+        <if test="appIndexBanner.bannerLink!=null and appIndexBanner.bannerLink!=''">banner_link,</if>
+        <if test="appIndexBanner.updateTime!=null">update_time,</if>
+        <if test="appIndexBanner.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="appIndexBanner.bannerName!=null and appIndexBanner.bannerName!=''">#{appIndexBanner.bannerName},</if>
+        <if test="appIndexBanner.bannerImage!=null and appIndexBanner.bannerImage!=''">#{appIndexBanner.bannerImage},</if>
+        <if test="appIndexBanner.bannerLink!=null and appIndexBanner.bannerLink!=''">#{appIndexBanner.bannerLink},</if>
+        <if test="appIndexBanner.updateTime!=null">#{appIndexBanner.updateTime},</if>
+        <if test="appIndexBanner.createTime!=null">#{appIndexBanner.createTime},</if>
+        #{appIndexBanner.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.appIndexBanner.entity.AppIndexBanner">
+        update app_index_banner set
+        update_time = #{appIndexBanner.updatetime}
+        <if test="appIndexBanner.bannerName!=null and appIndexBanner.bannerName!=''">,banner_name=#{appIndexBanner.bannerName}</if>
+        <if test="appIndexBanner.bannerImage!=null and appIndexBanner.bannerImage!=''">,banner_image=#{appIndexBanner.bannerImage}</if>
+        <if test="appIndexBanner.bannerLink!=null and appIndexBanner.bannerLink!=''">,banner_link=#{appIndexBanner.bannerLink}</if>
+        <if test="appIndexBanner.updateTime!=null">,update_time=#{appIndexBanner.updateTime}</if>
+        <if test="appIndexBanner.createTime!=null">,create_time=#{appIndexBanner.createTime}</if>
+        <if test="appIndexBanner.isDeleted!=null">,is_deleted=#{appIndexBanner.isDeleted}</if>
+        where id =#{appIndexBanner.id}
+    </update>
+
+</mapper>

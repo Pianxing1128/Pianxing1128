@@ -21,7 +21,7 @@ public interface AppIndexBannerMapper {
     @Select("select * from app_index_banner where id =#{id}")
     AppIndexBanner extractById(@Param("id") BigInteger id);
 
-    @Update("update app_index_banner set is_delete=1 and updateTime = #{updateTime} where id =#{id}")
+    @Update("update app_index_banner set is_deleted=1 and updateTime = #{updateTime} where id =#{id}")
     int delete(@Param("id")BigInteger id,@Param("updateTime")int updateTime);
 
 }
