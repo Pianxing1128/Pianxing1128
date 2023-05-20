@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.appIndexTag.mapper.AppIndexTagMapper">
+
+    <insert id="insert" parameterType="com.qc.module.appIndexTag.entity.AppIndexTag" useGeneratedKeys="true" keyProperty="id">
+        insert into app_index_tag(
+        <if test="appIndexTag.showTagName!=null and appIndexTag.showTagName!=''">show_tag_Name,</if>
+        <if test="appIndexTag.updateTime!=null">update_time,</if>
+        <if test="appIndexTag.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="appIndexTag.showTagName!=null and appIndexTag.showTagName!=''">#{appIndexTag.showTagName},</if>
+        <if test="appIndexTag.updateTime!=null">#{appIndexTag.updateTime},</if>
+        <if test="appIndexTag.createTime!=null">#{appIndexTag.createTime},</if>
+        #{appIndexTag.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.appIndexTag.entity.AppIndexTag">
+        update app_index_tag set
+        update_time = #{appIndexTag.updateTime}
+        <if test="appIndexTag.showTagName!=null and appIndexTag.showTagName!=''">,show_tag_Name=#{appIndexTag.showTagName}</if>
+        <if test="appIndexTag.createTime!=null">,create_time=#{appIndexTag.createTime}</if>
+        <if test="appIndexTag.isDeleted!=null">,is_deleted=#{appIndexTag.isDeleted}</if>
+        where id =#{appIndexTag.id}
+    </update>
+    <select id="extractAppIndexTagListForConsole" resultType="com.qc.module.appIndexTag.entity.AppIndexTag">
+        select * from app_index_tag
+        <where>
+            <if test="showTagName!=null and showTagName!=''">
+                show_tag_name like concat('%',#{showTagName},'%')
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
+
+</mapper>
