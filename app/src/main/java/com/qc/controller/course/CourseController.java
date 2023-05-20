@@ -83,7 +83,7 @@ public class CourseController {
         courseInfoVo.setCourseCount(course.getCourseCount());
         courseInfoVo.setCourseTime(course.getCourseTime());
         courseInfoVo.setCourseIntro(course.getCourseIntro());
-        courseInfoVo.setCoursePrice(course.getCoursePrice());
+        courseInfoVo.setCoursePrice("￥"+course.getCoursePrice());
 
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
         Float ar;
@@ -114,6 +114,8 @@ public class CourseController {
             wpVo.setCourseName(courseName);
             wpVo.setNickName(nickName);
             wpVo.setShowTagId(showTagId);
+            wpVo.setIsVip(isVip);
+            wpVo.setOrderedType(orderedType);
             wpVo.setPageNum(1);
         } else {
             try {
@@ -125,8 +127,8 @@ public class CourseController {
         }
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagId(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
-                                                                                    wpVo.getNickName(),wpVo.getShowTagId());
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
+                                                                                    wpVo.getNickName(),wpVo.getShowTagId(),wpVo.getOrderedType(),wpVo.getIsVip());
 
         if(courseList.size()==0){
             return new Response(3001);
@@ -164,7 +166,10 @@ public class CourseController {
                 continue;
             }
             courseListVo.setCourseCount(c.getCourseCount());
-            courseListVo.setCoursePrice(c.getCoursePrice());
+            courseListVo.setCoursePrice("￥"+c.getCoursePrice());
+            courseListVo.setPurchasedTotal(c.getPurchasedTotal());
+            courseListVo.setIsVip(c.getIsVip());
+            courseListVo.setIsMarketable(c.getIsMarketable());
 
             List<String> images = Arrays.asList(c.getCourseImage().split("\\$"));
             ImageVo imageVo = new ImageVo();

@@ -1,10 +1,12 @@
 package com.qc.module.course.service;
 
+import com.qc.module.appIndexTagIdRelation.service.AppIndexTagIdRelationService;
 import com.qc.module.course.entity.Course;
 import com.qc.utils.BaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -18,16 +20,19 @@ public class BaseCourseService {
     private CourseTagRelationService courseTagRelationService;
     private CourseService courseService;
     private CourseTagService courseTagService;
+    private AppIndexTagIdRelationService appIndexTagIdRelationService;
     @Autowired
-    public BaseCourseService(CourseTagRelationService courseTagRelationService,CourseService courseService,CourseTagService courseTagService){
+    public BaseCourseService(CourseTagRelationService courseTagRelationService,CourseService courseService,CourseTagService courseTagService,
+                             AppIndexTagIdRelationService appIndexTagIdRelationService){
         this.courseTagRelationService = courseTagRelationService;
         this.courseService = courseService;
         this.courseTagService = courseTagService;
+        this.appIndexTagIdRelationService=appIndexTagIdRelationService;
     };
 
     @Transactional(rollbackFor = Exception.class)
     public BigInteger editCourse(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime,
-                           String courseIntro, String courseImage, String coursePrice, Integer weight, String tags){
+                           String courseIntro, String courseImage, Integer coursePrice, Integer weight, String tags){
 
             BigInteger courseId =courseService.edit(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro, courseImage, coursePrice, weight);
             List<BigInteger> tagsList = courseTagService.edit(tags);
@@ -35,15 +40,28 @@ public class BaseCourseService {
             return courseId;
     }
 
-    public List<Course> getCourseByCourseNameAndNickNameAndShowTagId(Integer pageNum, Integer pageSize, String courseName, String nickName, Integer showTagId) {
+    public List<Course> getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(Integer pageNum, Integer pageSize, String courseName, String nickName,
+                                                                                           Integer showTagId,Integer orderedType,Integer isVip) {
 
-//        String tagIds = appIndexTagIdRelationService.getByShowTagId(showTagId);
-        String tagIds = null;
+        String tagIds = appIndexTagIdRelationService.getTagIdByShowTagId(showTagId);
         String courseIds = null;
         if(!BaseUtils.isEmpty(tagIds)){
              courseIds = courseTagRelationService.getCourseIds(tagIds);
         }
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndTag(pageNum, pageSize, courseName, nickName, courseIds);
+        String orderedName =null;
+        if(orderedType==null){
+            orderedName="id";
+        }else if(orderedType==1){
+            orderedName = "create_time desc";
+        }else if(orderedType==2){
+            orderedName = "purchased_total desc";
+        }else if(orderedType==3){
+            orderedName = "course_price desc";
+        }else if(orderedType==4){
+            orderedName = "course_price asc";
+        }
+
+        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndShowTagId(pageNum, pageSize, courseName, nickName, courseIds,orderedName,isVip);
         return courseList;
         }
 

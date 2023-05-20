@@ -9,5 +9,6 @@ public class CommentWpVo{
     private String nickName;
     private Integer showTagId;
     private Integer pageNum;
-    private String realName;
+    private Integer isVip;
+    private Integer orderedType;
 }

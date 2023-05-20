@@ -46,7 +46,7 @@ public class CourseService {
 
     @Transactional(rollbackFor = Exception.class)
     public BigInteger edit(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime, String courseIntro,
-                                     String courseImage, String coursePrice, Integer weight){
+                                     String courseImage, Integer coursePrice, Integer weight){
 
         Course course = new Course();
         course.setId(id);
@@ -101,11 +101,12 @@ public class CourseService {
         return mapper.getTotal();
     }
 
-    public List<Course> getCourseByCourseNameAndNickNameAndTag(Integer pageNum, Integer pageSize,String courseName,String nickName,String courseIds) {
+    public List<Course> getCourseByCourseNameAndNickNameAndShowTagId(Integer pageNum, Integer pageSize,String courseName,String nickName,String courseIds,
+                                                                     String orderedName,Integer isVip) {
 
         Integer begin = (pageNum - 1) * pageSize;
         String idsByTeacherId = teacherService.getIdsByUserId(nickName);
-        return mapper.getCoursesByCourseNameAndNickNameAndTag(begin,pageSize,courseName,idsByTeacherId,courseIds);
+        return mapper.getCoursesByCourseNameAndNickNameAndShowTagId(begin,pageSize,courseName,idsByTeacherId,courseIds,orderedName,isVip);
     }
 
     public List<NewCourse> getCourseByRealName(@Param("pageNum") Integer pageNum, @Param("size") Integer pageSize, String realName, String nickName){

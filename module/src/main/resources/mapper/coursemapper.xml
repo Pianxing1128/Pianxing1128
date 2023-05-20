@@ -52,7 +52,7 @@
         where id = #{course.id}
     </update>
 
-    <select id="getCoursesByCourseNameAndNickNameAndTag" parameterType="com.qc.module.course.entity.Course" resultType="com.qc.module.course.entity.Course">
+    <select id="getCoursesByCourseNameAndNickNameAndShowTagId" parameterType="com.qc.module.course.entity.Course" resultType="com.qc.module.course.entity.Course">
         select * from course
         <where>
             <if test="courseName!=null and courseName!='' ">
@@ -64,9 +64,13 @@
             <if test="courseIds !=null and courseIds !=''">
                 and id in(${courseIds})
             </if>
-            and is_deleted=0
+            <if test="isVip !=null">
+                and is_vip = #{isVip}
+            </if>
+            and is_deleted=0 and is_marketable=1
         </where>
-        limit #{begin},#{size}
+        order by ${orderedName} limit #{begin},#{size}
+
     </select>
 
     <resultMap id="CourseTeacherMap" type="com.qc.module.course.entity.NewCourse">
