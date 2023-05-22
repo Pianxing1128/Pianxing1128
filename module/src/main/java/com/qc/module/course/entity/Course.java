@@ -23,7 +23,7 @@ public class Course {
         private Integer coursePrice;
         private Integer weight;
         private Integer isVip;
-        private Integer isMarketable = 1;
+        private Integer isMarketable;
         private Integer purchasedTotal;
         private Integer updateTime = BaseUtils.currentSeconds();
         private Integer createTime;

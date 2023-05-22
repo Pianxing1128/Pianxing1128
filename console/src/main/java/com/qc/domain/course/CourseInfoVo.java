@@ -26,6 +26,9 @@ public class CourseInfoVo {
     private String coursePrice;
     private List<String> tags;
     private Integer weight;
+    private Integer isVip;
+    private Integer isMarketable;
+    private Integer purchasedTotal;
     private String createTime;
     private String updateTime;
     private Integer isDeleted;

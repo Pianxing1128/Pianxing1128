@@ -16,6 +16,9 @@
         <if test="course.courseImage!=null and course.courseImage!=''">course_image,</if>
         <if test="course.coursePrice!=null and course.coursePrice!=''">course_price,</if>
         <if test="course.teacherId!=null">teacher_id,</if>
+        <if test="course.isVip!=null">is_vip,</if>
+        <if test="course.isMarketable!=null">is_marketable,</if>
+        <if test="course.purchasedTotal!=null">purchased_total,</if>
         <if test="course.weight!=null">weight,</if>
         <if test="course.createTime!=null">create_time,</if>
         <if test="course.updateTime!=null">update_time,</if>
@@ -29,6 +32,9 @@
         <if test="course.courseImage!=null and course.courseImage!=''">#{course.courseImage},</if>
         <if test="course.coursePrice!=null and course.coursePrice!=''">#{course.coursePrice},</if>
         <if test="course.teacherId!=null">#{course.teacherId},</if>
+        <if test="course.isVip!=null">#{course.isVip},</if>
+        <if test="course.isMarketable!=null">#{course.isMarketable},</if>
+        <if test="course.purchasedTotal!=null">#{course.purchasedTotal},</if>
         <if test="course.weight!=null">#{course.weight},</if>
         <if test="course.updateTime!=null">#{course.updateTime},</if>
         <if test="course.createTime!=null">#{course.createTime},</if>
@@ -46,6 +52,9 @@
         <if test="course.courseImage!=null and course.courseImage!=''">,course_image=#{course.courseImage}</if>
         <if test="course.coursePrice!=null and course.coursePrice!=''">,course_price=#{course.coursePrice}</if>
         <if test="course.teacherId!=null">,teacher_id=#{course.teacherId}</if>
+        <if test="course.isVip!=null">,is_vip=#{course.isVip}</if>
+        <if test="course.isMarketable!=null">,is_marketable=#{course.isMarketable}</if>
+        <if test="course.purchasedTotal!=null">,purchased_total=#{course.purchasedTotal}</if>
         <if test="course.weight!=null">,weight=#{course.weight}</if>
         <if test="course.createTime!=null">,create_time=#{course.createTime}</if>
         <if test="course.isDeleted!=null">,is_deleted=#{course.isDeleted}</if>

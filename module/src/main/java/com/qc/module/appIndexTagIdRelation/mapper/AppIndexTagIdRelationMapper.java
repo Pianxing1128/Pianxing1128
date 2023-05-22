@@ -35,4 +35,9 @@ public interface AppIndexTagIdRelationMapper {
 
     @Select("select tag_id from app_index_tag_id_relation where show_tag_id=#{showTagId}")
     List<BigInteger> getTagIdByShowTagId(Integer showTagId);
+
+    List<AppIndexTagIdRelation> extractIndexTagIdRelationListForConsole(@Param("begin") int begin,@Param("size") Integer pageSize,@Param("showTagId") Integer showTagId,@Param("tagId") Integer tagId);
+
+    @Select("select count(*) from app_index_tag_id_relation")
+    Integer extractTotal();
 }

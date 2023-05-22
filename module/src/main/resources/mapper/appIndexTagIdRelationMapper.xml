@@ -30,5 +30,17 @@
         <if test="appIndexTagIdRelation.isDeleted!=null">,is_deleted=#{appIndexTagIdRelation.isDeleted}</if>
         where id =#{appIndexTagIdRelation.id}
     </update>
+    <select id="extractIndexTagIdRelationListForConsole" resultType="com.qc.module.appIndexTagIdRelation.entity.AppIndexTagIdRelation">
+        select * from app_index_tag_id_relation
+        <where>
+            <if test="showTagId!=null">
+                show_tag_id = #{showTagId}
+            </if>
+            <if test="tagId!=null">
+                and tag_id = #{tagId}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
 
 </mapper>

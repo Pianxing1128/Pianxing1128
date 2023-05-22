@@ -51,7 +51,9 @@ public class CourseController {
                                @RequestParam(required = false,name = "pageNum")Integer inputPageNum,
                                @RequestParam(required = false, name = "courseName") String courseName,
                                @RequestParam(required = false, name = "nickName") String nickName,
-                               @RequestParam(required = false, name = "showTagId") Integer showTagId){
+                               @RequestParam(required = false, name = "showTagId") Integer showTagId,
+                               @RequestParam(required = false, name = "orderedType")Integer orderedType,
+                               @RequestParam(required = false, name = "isVip")Integer isVip){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
@@ -65,7 +67,8 @@ public class CourseController {
         }
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         BaseListVo result = new BaseListVo();
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagId(pageNum,pageSize,courseName,nickName,showTagId);
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(pageNum,pageSize,courseName,nickName,
+                                                                                                                        showTagId,orderedType,isVip);
         if(courseList.size()==0){
             return new Response(4004);
         }
@@ -100,10 +103,13 @@ public class CourseController {
             courseVo.setCourseCount(c.getCourseCount());
             courseVo.setCourseTime(c.getCourseTime());
             courseVo.setCourseIntro(c.getCourseIntro());
-            courseVo.setCoursePrice(c.getCoursePrice());
+            courseVo.setCoursePrice("￥"+c.getCoursePrice());
             courseVo.setWeight(c.getWeight());
-            courseVo.setCreateTime(c.getCreateTime().toString());
-            courseVo.setUpdateTime(c.getUpdateTime().toString());
+            courseVo.setIsVip(c.getIsVip());
+            courseVo.setIsMarketable(c.getIsMarketable());
+            courseVo.setPurchasedTotal(c.getPurchasedTotal());
+            courseVo.setUpdateTime(BaseUtils.timeStamp2Date(c.getUpdateTime()));
+            courseVo.setCreateTime(BaseUtils.timeStamp2Date(c.getCreateTime()));
             courseVo.setIsDeleted(c.getIsDeleted());
 
             try{
@@ -157,10 +163,13 @@ public class CourseController {
         courseInfoVo.setCourseCount(course.getCourseCount());
         courseInfoVo.setCourseTime(course.getCourseTime());
         courseInfoVo.setCourseIntro(course.getCourseIntro());
-        courseInfoVo.setCoursePrice(course.getCoursePrice());
+        courseInfoVo.setCoursePrice("￥"+course.getCoursePrice());
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
         courseInfoVo.setCourseImages(courseList);
         courseInfoVo.setWeight(course.getWeight());
+        courseInfoVo.setIsVip(course.getIsVip());
+        courseInfoVo.setIsMarketable(course.getIsMarketable());
+        courseInfoVo.setPurchasedTotal(course.getPurchasedTotal());
         courseInfoVo.setUpdateTime(BaseUtils.timeStamp2Date(course.getUpdateTime()));
         courseInfoVo.setCreateTime(BaseUtils.timeStamp2Date(course.getCreateTime()));
         courseInfoVo.setIsDeleted(course.getIsDeleted());
@@ -174,9 +183,12 @@ public class CourseController {
                                  @RequestParam(name="teacherId") BigInteger teacherId,
                                  @RequestParam(name="courseName")String courseName,
                                  @RequestParam(name = "courseIntro")String courseIntro,
-                                 @RequestParam(name = "coursePrice")String coursePrice,
+                                 @RequestParam(name = "coursePrice")Integer coursePrice,
                                  @RequestParam(name = "courseCount")String courseCount,
                                  @RequestParam(name = "courseSubName")String courseSubName,
+                                 @RequestParam(name = "isVip")Integer isVip,
+                                 @RequestParam(name = "isMarketable")Integer isMarketable,
+                                 @RequestParam(required = false,name = "purchasedTotal")Integer purchasedTotal,
                                  @RequestParam(required = false,name = "courseImage")String courseImage,
                                  @RequestParam(required = false,name = "courseTime")String courseTime,
                                  @RequestParam(required = false,name = "weight")Integer weight,
@@ -189,14 +201,13 @@ public class CourseController {
         courseName = courseName.trim();
         courseSubName = courseSubName.trim();
         courseIntro = courseIntro.trim();
-        coursePrice = coursePrice.trim();
         courseCount = courseCount.trim();
         //非必填信息
         if(!BaseUtils.isEmpty(courseTime)){  //总时常这里输入 未完结 或者 x小时x分钟
         courseTime = courseTime.trim();
         }
         if(BaseUtils.isEmpty(courseName) || BaseUtils.isEmpty(courseSubName) || BaseUtils.isEmpty(courseIntro)
-                || BaseUtils.isEmpty(coursePrice) || BaseUtils.isEmpty(courseCount)){
+                || BaseUtils.isEmpty(coursePrice) || BaseUtils.isEmpty(courseCount) || BaseUtils.isEmpty(isVip) || BaseUtils.isEmpty(isMarketable)){
             return new Response(3051); //必填信息不能为空
         }
         Teacher teacher = teacherService.getById(teacherId);
@@ -205,7 +216,7 @@ public class CourseController {
         }
         try{
              baseCourseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
-                    weight,tags);
+                     isVip,isMarketable,purchasedTotal,weight,tags);
 
             return new Response(1001); // ok
         }catch(RuntimeException e) {
@@ -223,20 +234,25 @@ public class CourseController {
                                  @RequestParam(required = false,name = "courseTime")String courseTime,
                                  @RequestParam(required = false,name = "courseIntro")String courseIntro,
                                  @RequestParam(required = false,name = "courseImage")String courseImage,
-                                 @RequestParam(required = false,name = "coursePrice")String coursePrice,
+                                 @RequestParam(required = false,name = "coursePrice")Integer coursePrice,
                                  @RequestParam(required = false,name = "weight")Integer weight,
+                                 @RequestParam(required = false,name = "isVip")Integer isVip,
+                                 @RequestParam(required = false,name = "isMarketable")Integer isMarketable,
+                                 @RequestParam(required = false,name = "purchasedTotal")Integer purchasedTotal,
                                  @RequestParam(required = false,name = "tags") String tags) {
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002); //需要登陆
         }
-        Teacher teacher = teacherService.getById(teacherId);
-        if(BaseUtils.isEmpty(teacher)){
-            return new Response(3052); // 老师Id不存在
+        if(!BaseUtils.isEmpty(teacherId)){
+            Teacher teacher = teacherService.getById(teacherId);
+            if(BaseUtils.isEmpty(teacher)){
+                return new Response(3052); // 老师Id不存在
+            }
         }
+
         try {
-            baseCourseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro,
-                    courseImage, coursePrice, weight,tags);
+            baseCourseService.editCourse(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro, courseImage, coursePrice,isVip,isMarketable,purchasedTotal,weight,tags);
             return new Response(1001); // ok
         }catch (RuntimeException e){
             return new Response(4004); // 链接超时

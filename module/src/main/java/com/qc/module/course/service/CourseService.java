@@ -45,8 +45,7 @@ public class CourseService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public BigInteger edit(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime, String courseIntro,
-                                     String courseImage, Integer coursePrice, Integer weight){
+    public BigInteger edit(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime, String courseIntro, String courseImage, Integer coursePrice,Integer isVip,Integer isMarketable, Integer purchasedTotal, Integer weight){
 
         Course course = new Course();
         course.setId(id);
@@ -62,6 +61,9 @@ public class CourseService {
             course.setCourseImage(courseImage);
         }
         course.setCoursePrice(coursePrice);
+        course.setIsVip(isVip);
+        course.setIsMarketable(isMarketable);
+        course.setPurchasedTotal(purchasedTotal);
         course.setWeight(weight);
 
         if(!BaseUtils.isEmpty(id)) {

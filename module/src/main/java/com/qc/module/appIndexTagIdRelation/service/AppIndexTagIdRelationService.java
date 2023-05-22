@@ -1,7 +1,10 @@
 package com.qc.module.appIndexTagIdRelation.service;
 
+import com.qc.module.appIndexTagIdRelation.entity.AppIndexTagIdRelation;
 import com.qc.module.appIndexTagIdRelation.mapper.AppIndexTagIdRelationMapper;
+import com.qc.utils.BaseUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
@@ -33,5 +36,44 @@ import java.util.List;
         }
         ss.delete(len-1,len);
         return ss.toString();
+    }
+
+    public List<AppIndexTagIdRelation> extractIndexTagIdRelationListForConsole(Integer pageNum, Integer pageSize, Integer showTagId, Integer tagId) {
+        int begin = (pageNum-1)*pageSize;
+        return mapper.extractIndexTagIdRelationListForConsole(begin,pageSize,showTagId,tagId);
+
+    }
+
+    public Integer extractTotal() {
+        return mapper.extractTotal();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger edit(BigInteger id, BigInteger showTagId, BigInteger tagId) {
+        AppIndexTagIdRelation appIndexTagIdRelation = new AppIndexTagIdRelation();
+        appIndexTagIdRelation.setId(id);
+        appIndexTagIdRelation.setShowTagId(showTagId);
+        appIndexTagIdRelation.setTagId(tagId);
+
+        if(!BaseUtils.isEmpty(id)){
+            AppIndexTagIdRelation oldAppIndexTagIdRelation = mapper.extractById(id);
+            if(BaseUtils.isEmpty(oldAppIndexTagIdRelation)){
+                throw new RuntimeException("This appIndexTagIdRelation does not exist!");
+            }
+            int update = mapper.update(oldAppIndexTagIdRelation);
+            if(update==0){
+                throw new RuntimeException("Update Failed!");
+            }
+            return id;
+        }
+        appIndexTagIdRelation.setCreateTime(BaseUtils.currentSeconds());
+        mapper.insert(appIndexTagIdRelation);
+        return appIndexTagIdRelation.getId();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public int delete(BigInteger id) {
+        int updateTime = BaseUtils.currentSeconds();
+        return mapper.delete(id,updateTime);
     }
 }
