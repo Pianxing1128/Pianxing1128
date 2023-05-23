@@ -84,8 +84,8 @@ public class AppIndexBannerController {
         }
 
         try {
-            BigInteger bannerId = appIndexBannerService.edit(id, bannerName, bannerImage, bannerLink);
-            return new Response(1001, bannerId);
+            appIndexBannerService.edit(id, bannerName, bannerImage, bannerLink);
+            return new Response(1001);
         }catch(RuntimeException e) {
             return new Response(4004); // 链接超时
         }
@@ -103,8 +103,8 @@ public class AppIndexBannerController {
         }
 
         try {
-            BigInteger bannerId = appIndexBannerService.edit(id, bannerName, bannerImage, bannerLink);
-            return new Response(1001, bannerId);
+            appIndexBannerService.edit(id, bannerName, bannerImage, bannerLink);
+            return new Response(1001);
         }catch(RuntimeException e) {
             return new Response(4004); // 链接超时
         }

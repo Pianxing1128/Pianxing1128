@@ -34,8 +34,8 @@ public class BaseCourseService {
     public BigInteger editCourse(BigInteger id, BigInteger teacherId, String courseName, String courseSubName, String courseCount, String courseTime,String courseIntro, String courseImage, Integer coursePrice, Integer isVip,Integer isMarketable, Integer purchasedTotal,Integer weight, String tags){
 
             BigInteger courseId =courseService.edit(id, teacherId, courseName, courseSubName, courseCount, courseTime, courseIntro, courseImage, coursePrice,isVip,isMarketable,purchasedTotal,weight);
-            List<BigInteger> tagsList = courseTagService.edit(tags);
-            courseTagRelationService.edit(courseId, tagsList);
+            List<BigInteger> tagsList = courseTagService.editTags(tags);
+            courseTagRelationService.editCourseTagRelation(courseId, tagsList);
             return courseId;
     }
 

@@ -3,7 +3,6 @@ package com.qc.module.course.service;
 import com.qc.module.course.entity.CourseTag;
 import com.qc.module.course.mapper.CourseTagMapper;
 import com.qc.utils.BaseUtils;
-import javassist.util.HotSwapAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +20,12 @@ public class CourseTagService {
     @Resource
     private CourseTagMapper mapper;
 
-    public List<CourseTag> getTagList(Integer pageNum,Integer pageSize){
-        Integer begin = (pageNum-1)*pageSize;
-        return mapper.getTagList(begin,pageSize);
+    public List<CourseTag> extractCourseTagList(Integer pageNum,Integer pageSize,String tag){
+        int begin = (pageNum-1)*pageSize;
+        return mapper.extractCourseTagList(begin,pageSize,tag);
     }
     @Transactional(rollbackFor = Exception.class)
-    public List<BigInteger> edit(String tags) {
+    public List<BigInteger> editTags(String tags) {
         if (!BaseUtils.isEmpty(tags)) {
             List<String> tagList = Arrays.asList(tags.split("\\$"));
             int len = tagList.size();
@@ -92,5 +91,42 @@ public class CourseTagService {
 
     public Integer getTotal(){
         return mapper.getTotal();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger edit(BigInteger id,String tag) {
+        CourseTag courseTag = new CourseTag();
+        courseTag.setId(id);
+        courseTag.setTag(tag);
+        if(!BaseUtils.isEmpty(id)){
+            CourseTag oldCourseTag = mapper.extractById(id);
+            if(BaseUtils.isEmpty(oldCourseTag)){
+                throw new RuntimeException("This courseTag does not exist!");
+            }
+            int update = mapper.update(courseTag);
+            if(update == 0){
+                throw new RuntimeException("Update failed!");
+            }
+            return id;
+        }
+
+        Integer now = BaseUtils.currentSeconds();
+        courseTag.setCreateTime(now);
+        mapper.insert(courseTag);
+        return courseTag.getId();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger delete(BigInteger id) {
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.delete(id,updateTime);
+        return id;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger recover(BigInteger id) {
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.recover(id,updateTime);
+        return id;
     }
 }

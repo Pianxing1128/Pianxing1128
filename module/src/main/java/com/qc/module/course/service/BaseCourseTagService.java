@@ -20,4 +20,16 @@ public class BaseCourseTagService {
         BigInteger tagId = courseTagService.deleteByTag(tag);
         courseTagRelationService.deleteByTagId(tagId);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByTagId(BigInteger id) {
+        courseTagService.delete(id);
+        courseTagRelationService.deleteByTagId(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void recoverByTagId(BigInteger id) {
+        courseTagService.recover(id);
+        courseTagRelationService.recoverByTag(id);
+    }
 }

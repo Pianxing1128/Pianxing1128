@@ -1,9 +1,11 @@
 package com.qc.module.course.mapper;
 
-import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.qc.module.course.entity.CourseTagRelation;
-import io.swagger.models.auth.In;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -40,7 +42,10 @@ public interface CourseTagRelationMapper {
     int deleteByCourseId(@Param("courseId") BigInteger courseId,@Param("updateTime")Integer updateTime);
 
     @Update("update course_tag_relation set is_deleted = 1 , update_time = #{updateTime} where tag_id =#{tagId}")
-    int deleteByTagId(@Param("tagId") BigInteger tagId,@Param("updateTime")Integer updateTime);
+    int deleteByTagId(@Param("tagId") BigInteger tagId,@Param("updateTime")int updateTime);
+
+    @Update("update course_tag_relation set is_deleted = 0 , update_time = #{updateTime} where tag_id =#{tagId}")
+    int recoverByTagId(BigInteger tagId, int updateTime);
 
     @Update("update course_tag_relation set is_deleted = 0 , update_time = #{updateTime} where id =#{id}")
     int recover(BigInteger id,Integer updateTime);
@@ -51,4 +56,13 @@ public interface CourseTagRelationMapper {
     @Select("select id from course_tag_relation where tag_id = #{tagId}")
     List<BigInteger> extractIdByTagId(BigInteger tagId);
 
+    List<CourseTagRelation> extractCourseTagRelationList(@Param("begin") int begin,@Param("size") Integer pageSize,@Param("courseId")BigInteger courseId,@Param("tagId") BigInteger tagId);
+
+    @Select("select count(*) from course_tag_relation")
+    Integer extractTotal();
+
+    int update(@Param("courseTagRelation")CourseTagRelation courseTagRelation);
+
+    @Select("select * from course_tag_relation where id =#{id}")
+    CourseTagRelation extractById(BigInteger id);
 }

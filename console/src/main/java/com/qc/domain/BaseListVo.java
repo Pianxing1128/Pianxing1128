@@ -13,12 +13,14 @@ public class BaseListVo {
     private Integer courseTotal;
     private Integer teacherTotal;
     private Integer userTotal;
-    private Integer tagTotal;
+    private Integer courseTagTotal;
     private Integer appIndexBannerTotal;
+    private Integer courseTagRelationTotal;
     private List courseList;
     private List teacherList;
     private List userList;
-    private List tagList;
+    private List courseTagList;
     private List appIndexBannerList;
+    private List courseTagRelationList;
 
 }

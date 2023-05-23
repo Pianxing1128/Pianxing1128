@@ -6,10 +6,10 @@ import com.qc.utils.BaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -25,7 +25,7 @@ public class CourseTagRelationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public List<BigInteger> edit(BigInteger courseId,List<BigInteger> tagsList ) { //(100, (1,2,40))
+    public List<BigInteger> editCourseTagRelation(BigInteger courseId,List<BigInteger> tagsList ) { //(100, (1,2,40))
 
         int now = BaseUtils.currentSeconds();
 
@@ -73,12 +73,7 @@ public class CourseTagRelationService {
         return ss.toString();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    //这里要加事务，因为有可能关系表 1个tagId对应的2个Relation，1个已经被删除，再update时候 返回结果为0,另外1个是1，没办法判断返回结果0和1
-    public void deleteByTagId(BigInteger tagId){
-        int updateTime = BaseUtils.currentSeconds();
-        mapper.deleteByTagId(tagId,updateTime);
-    }
+
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteByCourseId(BigInteger courseId){
@@ -103,7 +98,57 @@ public class CourseTagRelationService {
 
     public List<BigInteger> extractIdByCourseId(BigInteger courseId){
         List<BigInteger> relationIds = mapper.extractIdByCourseId(courseId);
-
         return relationIds;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    //这里要加事务，因为有可能关系表 1个tagId对应的2个Relation，1个已经被删除，再update时候 返回结果为0,另外1个是1，没办法判断返回结果0和1
+    public void deleteByTagId(BigInteger tagId){
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.deleteByTagId(tagId,updateTime);
+    }
+
+    public void recoverByTag(BigInteger tagId) {
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.recoverByTagId(tagId,updateTime);
+    }
+
+    public List<CourseTagRelation> extractCourseTagRelationList(Integer pageNum, Integer pageSize, BigInteger courseId, BigInteger tagId) {
+        int begin = (pageNum-1)*pageSize;
+        return mapper.extractCourseTagRelationList(begin,pageSize,courseId,tagId);
+    }
+
+    public Integer extractTotal() {
+        return mapper.extractTotal();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger edit(BigInteger id, BigInteger courseId, BigInteger tagId) {
+        CourseTagRelation courseTagRelation = new CourseTagRelation();
+        courseTagRelation.setId(id);
+        courseTagRelation.setCourseId(courseId);
+        courseTagRelation.setTagId(tagId);
+
+        if(!BaseUtils.isEmpty(id)){
+            CourseTagRelation oldCourseTagRelation = mapper.extractById(id);
+            if(BaseUtils.isEmpty(oldCourseTagRelation)){
+                throw new RuntimeException("This courseTagRelation doest not exist!");
+            }
+            int update = mapper.update(courseTagRelation);
+            if(update==0){
+                throw new RuntimeException("Update Failed!");
+            }
+            return id;
+        }
+
+        int now = BaseUtils.currentSeconds();
+        courseTagRelation.setCreateTime(now);
+        mapper.insert(courseTagRelation);
+        return courseTagRelation.getId();
+    }
+
+    public void delete(BigInteger id) {
+        int updateTime = BaseUtils.currentSeconds();
+        mapper.delete(id, updateTime);
     }
 }

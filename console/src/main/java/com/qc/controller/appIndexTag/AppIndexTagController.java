@@ -78,8 +78,8 @@ public class AppIndexTagController {
         }
 
         try {
-            BigInteger bannerId = appIndexTagService.edit(id,showTagName);
-            return new Response(1001, bannerId);
+            appIndexTagService.edit(id,showTagName);
+            return new Response(1001);
         }catch(RuntimeException e) {
             return new Response(4004); // 链接超时
         }
@@ -95,8 +95,8 @@ public class AppIndexTagController {
         }
 
         try {
-            BigInteger bannerId = appIndexTagService.edit(id,showTagName);
-            return new Response(1001, bannerId);
+            appIndexTagService.edit(id,showTagName);
+            return new Response(1001);
         }catch(RuntimeException e) {
             return new Response(4004); // 链接超时
         }

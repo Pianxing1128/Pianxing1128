@@ -18,8 +18,27 @@
         <if test="courseTagRelation.createTime!=null">#{courseTagRelation.createTime},</if>
         #{courseTagRelation.isDeleted})
     </insert>
-
-
+    <update id="update" parameterType="com.qc.module.course.entity.CourseTagRelation">
+        update course_tag_relation set
+        update_time = #{courseTagRelation.updateTime}
+        <if test="courseTagRelation.courseId!=null">,course_id=#{courseTagRelation.courseId}</if>
+        <if test="courseTagRelation.tagId!=null">,tag_id=#{courseTagRelation.tagId}</if>
+        <if test="courseTagRelation.createTime!=null">,create_time=#{courseTagRelation.createTime}</if>
+        <if test="courseTagRelation.isDeleted!=null">,is_deleted=#{courseTagRelation.isDeleted}</if>
+        where id = #{courseTagRelation.id}
+    </update>
+    <select id="extractCourseTagRelationList" resultType="com.qc.module.course.entity.CourseTagRelation">
+        select * from course_tag_relation
+        <where>
+            <if test="courseId!=null">
+                course_id = #{courseId}
+            </if>
+            <if test="tagId!=null">
+                and tag_id = #{tagId}
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
 
 
 </mapper>

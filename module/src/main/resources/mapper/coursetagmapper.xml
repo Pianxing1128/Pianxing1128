@@ -3,20 +3,37 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-    <mapper namespace="com.qc.module.course.mapper.CourseTagMapper">
+<mapper namespace="com.qc.module.course.mapper.CourseTagMapper">
 
-        <insert id="insert" parameterType="com.qc.module.course.entity.CourseTag" useGeneratedKeys="true" keyProperty="id">
-            insert into course_tag(
-            <if test="courseTag.tag!=null and courseTag.tag!=''">tag,</if>
-            <if test="courseTag.updateTime!=null">update_time,</if>
-            <if test="courseTag.createTime!=null">create_time,</if>
-            is_deleted
-            ) values (
-            <if test="courseTag.tag!=null and courseTag.tag!=''">#{courseTag.tag},</if>
-            <if test="courseTag.updateTime!=null">#{courseTag.updateTime},</if>
-            <if test="courseTag.createTime!=null">#{courseTag.createTime},</if>
-            #{courseTag.isDeleted})
-        </insert>
+    <insert id="insert" parameterType="com.qc.module.course.entity.CourseTag" useGeneratedKeys="true" keyProperty="id">
+        insert into course_tag(
+        <if test="courseTag.tag!=null and courseTag.tag!=''">tag,</if>
+        <if test="courseTag.updateTime!=null">update_time,</if>
+        <if test="courseTag.createTime!=null">create_time,</if>
+        is_deleted
+        ) values (
+        <if test="courseTag.tag!=null and courseTag.tag!=''">#{courseTag.tag},</if>
+        <if test="courseTag.updateTime!=null">#{courseTag.updateTime},</if>
+        <if test="courseTag.createTime!=null">#{courseTag.createTime},</if>
+        #{courseTag.isDeleted})
+    </insert>
+    <update id="update" parameterType="com.qc.module.course.entity.CourseTag">
+        update course_tag set
+        update_time = #{courseTag.updateTime}
+        <if test="courseTag.tag!=null and courseTag.tag!=''">,tag=#{courseTag.tag}</if>
+        <if test="courseTag.createTime!=null">,create_time=#{courseTag.createTime}</if>
+        <if test="courseTag.isDeleted!=null">,is_deleted=#{courseTag.isDeleted}</if>
+        where id =#{courseTag.id}
+    </update>
+    <select id="extractCourseTagList" resultType="com.qc.module.course.entity.CourseTag">
+        select * from course_tag
+        <where>
+            <if test="tag!=null and tag!=''">
+                tag like concat ('%',#{tag},'%')
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
 
 
 </mapper>

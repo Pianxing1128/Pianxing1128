@@ -2,7 +2,7 @@ package com.qc.controller.course;
 
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
-import com.qc.domain.tag.TagInfoVo;
+import com.qc.domain.courseTag.TagInfoVo;
 import com.qc.module.course.entity.CourseTag;
 import com.qc.module.course.service.BaseCourseTagService;
 import com.qc.module.course.service.CourseTagService;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,24 +28,11 @@ public class CourseTagController {
     @Autowired
     private BaseCourseTagService baseCourseTagService;
 
-    @RequestMapping("/tag/delete")
-    public Response delete(@VerifiedUser User loginUser,
-                           @RequestParam(required = false,name = "tag") String tag){
 
-        if (BaseUtils.isEmpty(loginUser)) {
-            return new Response(1002);
-        }
-        try {
-            baseCourseTagService.deleteByTag(tag);
-            return new Response(1001);
-        }catch (Exception e){
-            return new Response(4004);
-        }
-    }
-
-    @RequestMapping("/tag/list")
+    @RequestMapping("/course/tag/list")
     public Response tagList(@VerifiedUser User loginUser,
-                            @RequestParam(required = false,name="pageNum") Integer inputPageNum){
+                            @RequestParam(required = false,name="pageNum") Integer inputPageNum,
+                            @RequestParam(required = false,name="tag")String tag){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
@@ -55,7 +44,7 @@ public class CourseTagController {
             pageNum = inputPageNum;
         }
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        List<CourseTag> courseTags = courseTagService.getTagList(pageNum,pageSize);
+        List<CourseTag> courseTags = courseTagService.extractCourseTagList(pageNum,pageSize,tag);
         BaseListVo baseListVo = new BaseListVo();
         List<TagInfoVo> tagInfoVoList = new ArrayList<>();
 
@@ -69,8 +58,73 @@ public class CourseTagController {
             tagInfoVoList.add(tagInfoVo);
         }
         baseListVo.setPageSize(pageSize);
-        baseListVo.setTagTotal(courseTagService.getTotal());
-        baseListVo.setTagList(tagInfoVoList);
+        baseListVo.setCourseTagTotal(courseTagService.getTotal());
+        baseListVo.setCourseTagList(tagInfoVoList);
         return new Response(1001, baseListVo);
     }
+
+    @RequestMapping("/course/tag/insert")
+    public Response courseTagInsert(@VerifiedUser User loginUser,
+                                    @RequestParam(required = false,name = "id") BigInteger id,
+                                    @RequestParam(name = "tag")String tag){
+
+
+         if (BaseUtils.isEmpty(loginUser)) {
+             return new Response(1002);
+         }
+        try {
+            courseTagService.edit(id,tag);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
+    @RequestMapping("/course/tag/update")
+    public Response courseTagUpdate(@VerifiedUser User loginUser,
+                                    @RequestParam(required = false,name = "id") BigInteger id,
+                                    @RequestParam(name = "tag")String tag){
+
+
+         if (BaseUtils.isEmpty(loginUser)) {
+             return new Response(1002);
+         }
+        try {
+            courseTagService.edit(id,tag);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
+    @RequestMapping("/course/tag/delete")
+    public Response courseTagDelete(@VerifiedUser User loginUser,
+                           @RequestParam(name = "id")BigInteger id){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        try {
+            baseCourseTagService.deleteByTagId(id);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
+    @RequestMapping("/course/tag/recover")
+    public Response courseTagRecover(@VerifiedUser User loginUser,
+                           @RequestParam(name = "id")BigInteger id){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        try {
+            baseCourseTagService.recoverByTagId(id);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
 }
