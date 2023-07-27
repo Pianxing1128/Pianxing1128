@@ -9,7 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-
 @Configuration
 public class MySecurityUserConfig {
 
@@ -19,13 +18,12 @@ public class MySecurityUserConfig {
                 username("qc1128").
                 password(passwordEncoder().encode("qc1128")).
                 roles("teacher").
-                authorities("teacher:add","teacher:delete").
+                authorities("teacher:add","teacher:delete","teacher:query").
                 build();
         UserDetails user2 = User.builder().
                 username("cc2023").
                 password(passwordEncoder().encode("cc2023")).
                 roles("teacher").
-                authorities("teacher:add","teacher:delete").
                 build();
         UserDetails user3 = User.builder().
                 username("cc1128").

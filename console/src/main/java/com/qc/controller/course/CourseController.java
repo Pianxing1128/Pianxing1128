@@ -133,9 +133,9 @@ public class CourseController {
     public Response showCourseDetailById(@VerifiedUser User loginUser,
                                          @RequestParam(name="id") BigInteger id) {
 
-        if(BaseUtils.isEmpty(loginUser)){
-            return new Response(1002);
-        }
+//        if(BaseUtils.isEmpty(loginUser)){
+//            return new Response(1002);
+//        }
         CourseVo courseVo = new CourseVo();
         Course course = courseService.getById(id);
         if(BaseUtils.isEmpty(course)){
