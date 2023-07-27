@@ -42,7 +42,7 @@ public class BaseCourseService {
     public List<Course> getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(Integer pageNum, Integer pageSize, String courseName, String nickName,
                                                                                            Integer showTagId,Integer orderedType,Integer isVip) {
 
-        String tagIds = appIndexTagIdRelationService.getTagIdByShowTagId(showTagId);
+        String tagIds = appIndexTagIdRelationService.getTagIdsByShowTagId(showTagId);
         String courseIds = null;
         if(!BaseUtils.isEmpty(tagIds)){
              courseIds = courseTagRelationService.getCourseIds(tagIds);
@@ -65,7 +65,7 @@ public class BaseCourseService {
         }
 
     @Transactional(rollbackFor = Exception.class)
-    public void delete(BigInteger id){
+    public void deleteCourse(BigInteger id){
         courseService.delete(id);
         courseTagRelationService.deleteByCourseId(id);
     }

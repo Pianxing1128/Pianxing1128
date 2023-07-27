@@ -1,4 +1,4 @@
-package com.qc.controller.appIndexTag;
+package com.qc.controller.index;
 
 import com.qc.domain.BaseListVo;
 import com.qc.domain.appIndexTag.AppIndexTagVo;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class AppIndexTagController {
+public class IndexTagController {
 
     @Autowired
     private AppIndexTagService appIndexTagService;

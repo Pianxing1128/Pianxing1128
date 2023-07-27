@@ -52,8 +52,8 @@ public class UserService {
         return mapper.delete(id,updateTime);
     }
 
-    public Integer getTotal(){
-        return mapper.getTotal();
+    public Integer extractTotal(){
+        return mapper.extractTotal();
     }
 
     public List<User> getUsersForApp(Integer pageNum,Integer pageSize){
@@ -261,18 +261,17 @@ public class UserService {
     public User getUserAccount(String userAccount) {
         return mapper.getUserAccount(userAccount);
     }
-    //登陆的时候，就会update 当前ip，登陆时间和更新时间
+
     public void refreshUserLoginContext(BigInteger id, String currentIp, int currentTime) {
         User user = new User();
         user.setId(id);
         user.setLastLoginIp(currentIp);
-        currentTime = BaseUtils.currentSeconds();
         user.setLastLoginTime(currentTime);
         user.setUpdateTime(currentTime);
         try{
             mapper.update(user);
         }catch (Exception e){
-            throw new RuntimeException("无法更新登陆信息");
+            throw new RuntimeException("Login Failed!");
         }
     }
 

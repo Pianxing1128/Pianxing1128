@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 @Data
 @Accessors(chain = true)
-public class TagInfoVo {
+public class CourseTagVo {
 
     private BigInteger id;
     private String tag;

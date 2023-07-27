@@ -34,7 +34,7 @@ public interface UserMapper{
     int delete(@Param("id") BigInteger id,@Param("updateTime") Integer updateTime);
 
     @Select("select count(*) from user")
-    Integer getTotal();
+    Integer extractTotal();
 
     @Select("select * from user where is_deleted=0 limit #{begin},#{size}")
     List<User> getUsersForApp(@Param("begin") Integer begin,@Param("size") Integer pageSize);

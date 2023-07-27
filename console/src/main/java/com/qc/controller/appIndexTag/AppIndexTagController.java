@@ -56,8 +56,8 @@ public class AppIndexTagController {
         }
 
         baseListVo.setPageSize(pageSize);
-        baseListVo.setAppIndexBannerTotal(appIndexTagService.extractTotal());
-        baseListVo.setAppIndexBannerList(list);
+        baseListVo.setAppIndexTagTotal(appIndexTagService.extractTotal());
+        baseListVo.setAppIndexTagList(list);
 
         return new Response(1001,baseListVo);
     }

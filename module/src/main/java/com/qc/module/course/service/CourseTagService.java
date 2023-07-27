@@ -29,7 +29,7 @@ public class CourseTagService {
         if (!BaseUtils.isEmpty(tags)) {
             List<String> tagList = Arrays.asList(tags.split("\\$"));
             int len = tagList.size();
-            Integer now = BaseUtils.currentSeconds();
+            int now = BaseUtils.currentSeconds();
             List list = new ArrayList<>();
             if (len != 0) {
                 for (String tag : tagList) {

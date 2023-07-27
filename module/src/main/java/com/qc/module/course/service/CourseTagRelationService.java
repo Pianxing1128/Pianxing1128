@@ -58,6 +58,7 @@ public class CourseTagRelationService {
         }
         return oldRelationIdList;
     }
+
     public String getTagIds(BigInteger id){
         BigInteger courseId = id;
         List<BigInteger> tagIdList = mapper.getTagIds(courseId);

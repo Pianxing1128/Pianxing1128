@@ -2,7 +2,7 @@ package com.qc.controller.course;
 
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
-import com.qc.domain.course.CourseInfoVo;
+import com.qc.domain.course.CourseVo;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.service.BaseCourseService;
 import com.qc.module.course.service.CourseService;
@@ -55,9 +55,9 @@ public class CourseController {
                                @RequestParam(required = false, name = "orderedType")Integer orderedType,
                                @RequestParam(required = false, name = "isVip")Integer isVip){
 
-        if (BaseUtils.isEmpty(loginUser)) {
-            return new Response(1002);
-        }
+//        if (BaseUtils.isEmpty(loginUser)) {
+//            return new Response(1002);
+//        }
 
         Integer pageNum;
         if(inputPageNum==null || inputPageNum<=0){
@@ -79,9 +79,9 @@ public class CourseController {
         List<User> userList = userService.getByIds(userIds);
         Map<BigInteger, User> idUserMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity()));
 
-        List<CourseInfoVo> courseVoList = new ArrayList<>();
+        List<CourseVo> courseVoList = new ArrayList<>();
         for(Course c:courseList){
-            CourseInfoVo courseVo = new CourseInfoVo();
+            CourseVo courseVo = new CourseVo();
             if(idTeacherMap.containsKey(c.getTeacherId())){
                 Teacher teacher = idTeacherMap.get(c.getTeacherId());
                 courseVo.setRealName(teacher.getRealName());
@@ -136,45 +136,45 @@ public class CourseController {
         if(BaseUtils.isEmpty(loginUser)){
             return new Response(1002);
         }
-        CourseInfoVo courseInfoVo = new CourseInfoVo();
+        CourseVo courseVo = new CourseVo();
         Course course = courseService.getById(id);
         if(BaseUtils.isEmpty(course)){
             return new Response(3001);
         }
         Teacher teacher = teacherService.getById(course.getTeacherId());
         if(!BaseUtils.isEmpty(teacher)){
-            courseInfoVo.setRealName(teacher.getRealName());
+            courseVo.setRealName(teacher.getRealName());
         }
         User user = userService.getById(teacher.getUserId());
         if(!BaseUtils.isEmpty(user)){
-            courseInfoVo.setNickName(user.getNickName());
-            courseInfoVo.setTeacherIntro(user.getUserIntro());
+            courseVo.setNickName(user.getNickName());
+            courseVo.setTeacherIntro(user.getUserIntro());
         }
         //根据id = courseId 得到 tagId, 根据tagId = tag表里的id 获得 tag
         String tagIds = courseTagRelationService.getTagIds(id);
         if(!BaseUtils.isEmpty(tagIds)){
             List<String> tags = courseTagService.getTagsByTagIds(tagIds);
             if(!BaseUtils.isEmpty(tags)){
-                courseInfoVo.setTags(tags);
+                courseVo.setTags(tags);
             }
         }
-        courseInfoVo.setCourseName(course.getCourseName());
-        courseInfoVo.setCourseSubName(course.getCourseSubName());
-        courseInfoVo.setCourseCount(course.getCourseCount());
-        courseInfoVo.setCourseTime(course.getCourseTime());
-        courseInfoVo.setCourseIntro(course.getCourseIntro());
-        courseInfoVo.setCoursePrice("￥"+course.getCoursePrice());
+        courseVo.setCourseName(course.getCourseName());
+        courseVo.setCourseSubName(course.getCourseSubName());
+        courseVo.setCourseCount(course.getCourseCount());
+        courseVo.setCourseTime(course.getCourseTime());
+        courseVo.setCourseIntro(course.getCourseIntro());
+        courseVo.setCoursePrice("￥"+course.getCoursePrice());
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
-        courseInfoVo.setCourseImages(courseList);
-        courseInfoVo.setWeight(course.getWeight());
-        courseInfoVo.setIsVip(course.getIsVip());
-        courseInfoVo.setIsMarketable(course.getIsMarketable());
-        courseInfoVo.setPurchasedTotal(course.getPurchasedTotal());
-        courseInfoVo.setUpdateTime(BaseUtils.timeStamp2Date(course.getUpdateTime()));
-        courseInfoVo.setCreateTime(BaseUtils.timeStamp2Date(course.getCreateTime()));
-        courseInfoVo.setIsDeleted(course.getIsDeleted());
+        courseVo.setCourseImages(courseList);
+        courseVo.setWeight(course.getWeight());
+        courseVo.setIsVip(course.getIsVip());
+        courseVo.setIsMarketable(course.getIsMarketable());
+        courseVo.setPurchasedTotal(course.getPurchasedTotal());
+        courseVo.setUpdateTime(BaseUtils.timeStamp2Date(course.getUpdateTime()));
+        courseVo.setCreateTime(BaseUtils.timeStamp2Date(course.getCreateTime()));
+        courseVo.setIsDeleted(course.getIsDeleted());
 
-        return new Response(1001,courseInfoVo);
+        return new Response(1001, courseVo);
     }
 
     @RequestMapping("/course/insert")
@@ -215,8 +215,7 @@ public class CourseController {
             return new Response(3052); // 老师Id不存在
         }
         try{
-             baseCourseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice,
-                     isVip,isMarketable,purchasedTotal,weight,tags);
+             baseCourseService.editCourse(id,teacherId, courseName,courseSubName,courseCount, courseTime, courseIntro, courseImage, coursePrice, isVip,isMarketable,purchasedTotal,weight,tags);
 
             return new Response(1001); // ok
         }catch(RuntimeException e) {
@@ -267,7 +266,7 @@ public class CourseController {
             return new Response(1002);
         }
         try {
-            baseCourseService.delete(id);
+            baseCourseService.deleteCourse(id);
             return new Response(1001);
         }catch (RuntimeException e){
             return new Response(4004);

@@ -1,11 +1,12 @@
 package com.qc.module.teacher.entity;
 
-import java.math.BigInteger;
-import java.util.Objects;
-
 import com.qc.module.user.entity.User;
+import com.qc.utils.BaseUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.math.BigInteger;
+import java.util.Objects;
 
 @Data
 @Accessors(chain = true)
@@ -33,7 +34,7 @@ public class Teacher{
     /**
      * 更新时间
      */
-    private Integer updateTime = (int)(System.currentTimeMillis()/1000);
+    private Integer updateTime = BaseUtils.currentSeconds();
 
     /**
      * 创建时间
@@ -43,7 +44,7 @@ public class Teacher{
     /**
      * 是否删除
      */
-    private Integer isDeleted;
+    private Integer isDeleted = 0;
 
     private User user;
 

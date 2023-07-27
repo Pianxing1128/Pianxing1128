@@ -24,8 +24,8 @@ public class DruidConfig {
     }
     @Bean
     public ServletRegistrationBean<StatViewServlet> statViewServlet() {
-        ServletRegistrationBean<StatViewServlet> bean = new ServletRegistrationBean<>(new StatViewServlet(),
-                "/druid/*");
+            ServletRegistrationBean<StatViewServlet> bean = new ServletRegistrationBean<>(new StatViewServlet(),
+                    "/druid/*");
 
         // 这些参数可以在 com.alibaba.druid.support.http.StatViewServlet
         // 的父类 com.alibaba.druid.support.http.ResourceServlet 中找到

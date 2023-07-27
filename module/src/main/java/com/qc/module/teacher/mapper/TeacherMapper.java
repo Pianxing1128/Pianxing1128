@@ -21,8 +21,8 @@ public interface TeacherMapper{
     @Select("select * from teacher where id=#{id}")
     Teacher extractById(@Param("id")BigInteger id);
 
-    @Update("update teacher set is_deleted=1 and update_time =#{updateTime} where id=#{id}")
-    int delete(@Param("id") BigInteger id,@Param("updateTime")Integer updateTime);
+    @Update("update teacher set is_deleted=1,update_time =#{updateTime} where id=#{id}")
+    int delete(@Param("id") BigInteger id,@Param("updateTime")int updateTime);
 
     @Select("select count(*) from teacher")
     Integer getTotal();
@@ -30,8 +30,7 @@ public interface TeacherMapper{
     @Select("select * from teacher where is_deleted=0 limit #{begin},#{pageSize}")
     List<Teacher> getTeachersForApp(@Param("begin") Integer begin,@Param("pageSize") Integer pageSize);
 
-    @Select("select * from teacher limit #{begin},#{pageSize}")
-    List<Teacher> getTeachersForConsole(@Param("begin") Integer begin,@Param("pageSize") Integer pageSize);
+    List<Teacher> extractTeacherList(@Param("begin") int begin,@Param("size") Integer pageSize,@Param("realName")String realName);
 
     List<BigInteger> getTeacherIdsByUserId(String UserIdsForTeacher);
 

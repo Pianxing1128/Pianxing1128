@@ -57,8 +57,8 @@ public class AppIndexTagIdRelationController {
         }
 
         baseListVo.setPageSize(pageSize);
-        baseListVo.setAppIndexBannerTotal(appIndexTagIdRelationService.extractTotal());
-        baseListVo.setAppIndexBannerList(list);
+        baseListVo.setAppIndexTagIdRelationTotal(appIndexTagIdRelationService.extractTotal());
+        baseListVo.setAppIndexTagIdRelationList(list);
 
         return new Response(1001,baseListVo);
     }

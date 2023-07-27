@@ -83,7 +83,7 @@ public class CourseController {
         courseInfoVo.setCourseCount(course.getCourseCount());
         courseInfoVo.setCourseTime(course.getCourseTime());
         courseInfoVo.setCourseIntro(course.getCourseIntro());
-        courseInfoVo.setCoursePrice("￥"+course.getCoursePrice());
+        courseInfoVo.setCoursePrice(BaseUtils.formatPrice(course.getCoursePrice()));
 
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
         Float ar;
@@ -106,8 +106,8 @@ public class CourseController {
                                @RequestParam(required = false,name = "courseName") String courseName,
                                @RequestParam(required = false,name = "nickName") String nickName,
                                @RequestParam(required = false,name = "showTagId")Integer showTagId,
-                               @RequestParam(required = false,name ="isVip")Integer isVip,
-                               @RequestParam(required = false,name ="orderedType")Integer orderedType){
+                               @RequestParam(required = false,name = "isVip")Integer isVip,
+                               @RequestParam(required = false,name = "orderedType")Integer orderedType){
 
         CommentWpVo wpVo = new CommentWpVo();
         if (BaseUtils.isEmpty(wp)) {
@@ -154,7 +154,7 @@ public class CourseController {
             CourseListVo courseListVo = new CourseListVo();
             courseListVo.setId(c.getId());
             courseListVo.setCourseName(c.getCourseName());
-            if(teacherRealNamesMap.containsKey(c.getTeacherId())){  //通过course的teacherId拿到 teacher表里的realName
+            if(teacherRealNamesMap.containsKey(c.getTeacherId())){
                 Teacher teacher = teacherRealNamesMap.get(c.getTeacherId());
                 courseListVo.setTeacherRealName(teacher.getRealName());
                 if(userNickNamesMap.containsKey(teacher.getUserId())){
@@ -166,7 +166,7 @@ public class CourseController {
                 continue;
             }
             courseListVo.setCourseCount(c.getCourseCount());
-            courseListVo.setCoursePrice("￥"+c.getCoursePrice());
+            courseListVo.setCoursePrice(BaseUtils.formatPrice(c.getCoursePrice()));
             courseListVo.setPurchasedTotal(c.getPurchasedTotal());
             courseListVo.setIsVip(c.getIsVip());
             courseListVo.setIsMarketable(c.getIsMarketable());

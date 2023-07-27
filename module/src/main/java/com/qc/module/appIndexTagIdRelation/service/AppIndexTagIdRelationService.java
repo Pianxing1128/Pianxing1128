@@ -22,9 +22,9 @@ import java.util.List;
  public class AppIndexTagIdRelationService {
 
     @Resource
-    AppIndexTagIdRelationMapper mapper;
+    private AppIndexTagIdRelationMapper mapper;
 
-    public String getTagIdByShowTagId(Integer showTagId) {
+    public String getTagIdsByShowTagId(Integer showTagId) {
         List<BigInteger> tagIdByShowTagId = mapper.getTagIdByShowTagId(showTagId);
         StringBuilder ss = new StringBuilder();
         for(BigInteger t:tagIdByShowTagId){

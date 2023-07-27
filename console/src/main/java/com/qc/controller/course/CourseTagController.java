@@ -2,7 +2,7 @@ package com.qc.controller.course;
 
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
-import com.qc.domain.courseTag.TagInfoVo;
+import com.qc.domain.courseTag.CourseTagVo;
 import com.qc.module.course.entity.CourseTag;
 import com.qc.module.course.service.BaseCourseTagService;
 import com.qc.module.course.service.CourseTagService;
@@ -46,20 +46,20 @@ public class CourseTagController {
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         List<CourseTag> courseTags = courseTagService.extractCourseTagList(pageNum,pageSize,tag);
         BaseListVo baseListVo = new BaseListVo();
-        List<TagInfoVo> tagInfoVoList = new ArrayList<>();
+        List<CourseTagVo> courseTagVoList = new ArrayList<>();
 
         for(CourseTag c:courseTags){
-            TagInfoVo tagInfoVo = new TagInfoVo();
-            tagInfoVo.setId(c.getId());
-            tagInfoVo.setTag(c.getTag());
-            tagInfoVo.setUpdateTime(BaseUtils.timeStamp2Date(c.getUpdateTime()));
-            tagInfoVo.setCreateTime(BaseUtils.timeStamp2Date(c.getCreateTime()));
-            tagInfoVo.setIsDeleted(c.getIsDeleted());
-            tagInfoVoList.add(tagInfoVo);
+            CourseTagVo courseTagVo = new CourseTagVo();
+            courseTagVo.setId(c.getId());
+            courseTagVo.setTag(c.getTag());
+            courseTagVo.setUpdateTime(BaseUtils.timeStamp2Date(c.getUpdateTime()));
+            courseTagVo.setCreateTime(BaseUtils.timeStamp2Date(c.getCreateTime()));
+            courseTagVo.setIsDeleted(c.getIsDeleted());
+            courseTagVoList.add(courseTagVo);
         }
         baseListVo.setPageSize(pageSize);
         baseListVo.setCourseTagTotal(courseTagService.getTotal());
-        baseListVo.setCourseTagList(tagInfoVoList);
+        baseListVo.setCourseTagList(courseTagVoList);
         return new Response(1001, baseListVo);
     }
 

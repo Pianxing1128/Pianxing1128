@@ -31,10 +31,10 @@ public class UploadController {
         //拼接图片上传的路径 url+图片名
         ApplicationHome applicationHome = new ApplicationHome(this.getClass());
         String location = "d:\\documents\\";
-        System.out.println("applicationHome.getDir():"+applicationHome.getDir());
-        System.out.println(" applicationHome.getDir().getParentFile():"+ applicationHome.getDir().getParentFile());
-        System.out.println("applicationHome.getDir().getParentFile().getParentFile():"+applicationHome.getDir().getParentFile().getParentFile());
-        System.out.println("applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath():"+applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath());
+        log.infor("applicationHome.getDir():"+applicationHome.getDir());
+        log.infor(" applicationHome.getDir().getParentFile():"+ applicationHome.getDir().getParentFile());
+        log.infor("applicationHome.getDir().getParentFile().getParentFile():"+applicationHome.getDir().getParentFile().getParentFile());
+        log.infor("applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath():"+applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath());
 //      applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() + "\\src\\main\\resources\\static\\images\\";
         //E:\Users\qc112\course-server\app\src\main\resources\static\images\39b35160093b4c12b83731451e640f2c.png
         String wholeName = location + newName;

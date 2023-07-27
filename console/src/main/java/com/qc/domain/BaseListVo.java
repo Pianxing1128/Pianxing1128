@@ -10,17 +10,30 @@ import java.util.List;
 public class BaseListVo {
 
     private Integer pageSize;
-    private Integer courseTotal;
+
     private Integer teacherTotal;
-    private Integer userTotal;
-    private Integer courseTagTotal;
-    private Integer appIndexBannerTotal;
-    private Integer courseTagRelationTotal;
-    private List courseList;
     private List teacherList;
+
+    private Integer userTotal;
     private List userList;
+
+    private Integer courseTotal;
+    private List courseList;
+
+    private Integer courseTagTotal;
     private List courseTagList;
-    private List appIndexBannerList;
+
+    private Integer courseTagRelationTotal;
     private List courseTagRelationList;
+
+    private Integer appIndexBannerTotal;
+    private List appIndexBannerList;
+
+    private Integer appIndexTagTotal;
+    private List appIndexTagList;
+
+    private Integer appIndexTagIdRelationTotal;
+    private List appIndexTagIdRelationList;
+
 
 }

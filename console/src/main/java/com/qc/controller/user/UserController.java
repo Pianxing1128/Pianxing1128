@@ -6,10 +6,7 @@ import com.qc.domain.BaseListVo;
 import com.qc.domain.user.UserVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
-import com.qc.utils.BaseUtils;
-import com.qc.utils.IpUtils;
-import com.qc.utils.Response;
-import com.qc.utils.SpringUtils;
+import com.qc.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +54,6 @@ public class UserController {
         User user = userService.getUserAccount(userAccount);
         //获取request更新登陆账户的信息
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-//        userService.refreshUserLoginContext(user.getId(), "123.1.2.3", BaseUtils.currentSeconds());
         userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
 
         UserVo userVo = new UserVo();
@@ -75,6 +71,7 @@ public class UserController {
         userVo.setRegisterIp(user.getRegisterIp());
         userVo.setLastLoginIp(user.getLastLoginIp());
         userVo.setIsBan(user.getIsBan());
+        //需要修改---
         String creatTime = sdf.format(new Date(Long.valueOf(user.getCreateTime()+"000")));
         userVo.setCreateTime(creatTime);
         String updateTime = sdf.format(new Date(Long.valueOf(user.getUpdateTime()+"000")));
@@ -89,20 +86,23 @@ public class UserController {
     }
     @RequestMapping("/user/list")
     public Response userList(@VerifiedUser User loginUser,
-                             @RequestParam(required = false,name = "pageNum")Integer pageNum){
+                             @RequestParam(required = false,name = "pageNum")Integer inputPageNum){
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);
         }
+        Integer pageNum = null;
         if(pageNum==null || pageNum<=0){
             pageNum = 1;
+        }else {
+            pageNum = inputPageNum;
         }
-        int pageSize = 6;
+        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
         BaseListVo baseListVo = new BaseListVo();
-        List<User> users = userService.getUsersForConsole(pageNum, pageSize);
+        List<User> userList = userService.getUsersForConsole(pageNum, pageSize);
         List<UserVo> userVoList = new ArrayList<>();
 
-        for(User u:users){
+        for(User u:userList){
             UserVo entry = new UserVo();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -133,7 +133,7 @@ public class UserController {
         }
         baseListVo.setUserList(userVoList);
         baseListVo.setPageSize(pageSize);
-        baseListVo.setUserTotal(userService.getTotal());
+        baseListVo.setUserTotal(userService.extractTotal());
 
         return new Response(1001,baseListVo);
     }

@@ -3,30 +3,31 @@ package com.qc.module.teacher.service;
 import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.teacher.mapper.TeacherMapper;
 import com.qc.module.user.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import com.qc.utils.BaseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-@Slf4j
 public class TeacherService{
 
     @Resource
     private TeacherMapper mapper;
 
     private UserService userService;
-
     @Autowired
-    private TeacherService(UserService userService){
+    public TeacherService(UserService userService){
         this.userService = userService;
     }
 
-    public  List<Teacher> getTeachersForConsole(Integer pageNum, Integer pageSize){
+    public  List<Teacher> extractTeacherList(Integer pageNum, Integer pageSize,String realName){
         int begin = (pageNum-1)*pageSize;
-        return mapper.getTeachersForConsole(begin,pageSize);
+        return mapper.extractTeacherList(begin,pageSize,realName);
     }
 
     public Teacher getById(BigInteger teacherId) {
@@ -37,8 +38,8 @@ public class TeacherService{
         return mapper.getTotal();
     }
 
-
-    public BigInteger editTeacher(BigInteger id, BigInteger userId, String enrollmentTime, String realName) {
+    @Transactional(rollbackFor = Exception.class)
+    public BigInteger edit(BigInteger id, BigInteger userId, String enrollmentTime, String realName) {
 
         Teacher teacher = new Teacher();
         teacher.setId(id);
@@ -46,28 +47,31 @@ public class TeacherService{
         teacher.setEnrollmentTime(enrollmentTime);
         teacher.setRealName(realName);
 
-        if(id!=null){
+        if(!BaseUtils.isEmpty(id)){
             Teacher oldTeacher = mapper.extractById(id);
             if(oldTeacher==null){
                 throw new RuntimeException("This teacher does not exist");
             }
-            mapper.update(teacher);
+            int update = mapper.update(teacher);
+            if(update==0){
+                throw new RuntimeException("Update Failed!");
+            }
             return id;
         }
 
-        int now = (int)System.currentTimeMillis()/1000;
+        int now = BaseUtils.currentSeconds();
         teacher.setCreateTime(now);
-        teacher.setIsDeleted(0);
-        mapper.update(teacher);
+        mapper.insert(teacher);
         return teacher.getId();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public int delete(BigInteger id){
         Teacher oldTeacher = mapper.extractById(id);
-        if(oldTeacher==null){
+        if(BaseUtils.isEmpty(oldTeacher)){
             throw new RuntimeException("This teacher does not exist");
         }
-        Integer updateTime = (int)System.currentTimeMillis()/1000;
+        int updateTime = BaseUtils.currentSeconds();
         return mapper.delete(id,updateTime);
     }
 
@@ -99,7 +103,6 @@ public class TeacherService{
     }
 
     public List<Teacher> getByIds(List<BigInteger> teacherIds){
-        log.info(teacherIds.toString());
         StringBuilder ss = new StringBuilder();
         for(BigInteger x:teacherIds){
             ss.append(x+",");

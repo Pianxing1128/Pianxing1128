@@ -56,6 +56,15 @@
     <select id="getByIds" resultType="com.qc.module.teacher.entity.Teacher" parameterType="java.lang.String">
         select * from teacher where id in (${teacherIdsFromCourse})
     </select>
+    <select id="extractTeacherList" resultType="com.qc.module.teacher.entity.Teacher">
+        select * from teacher
+        <where>
+            <if test="realName!=null and realName!=''">
+                real_name like concat('%',#{realName},'%')
+            </if>
+        </where>
+        limit #{begin},#{size}
+    </select>
 
     <resultMap id="teacherResultMap" type="com.qc.module.teacher.entity.NewTeacher" >
         <id column="id" property="id"  />

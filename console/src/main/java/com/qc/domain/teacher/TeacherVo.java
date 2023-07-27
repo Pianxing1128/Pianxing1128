@@ -1,15 +1,11 @@
 package com.qc.domain.teacher;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.math.BigInteger;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Accessors(chain = true)
 public class TeacherVo {
 
@@ -17,7 +13,7 @@ public class TeacherVo {
     private BigInteger userId;
     private String realName;
     private String enrollmentTime;
-    private String createTime;
     private String updateTime;
+    private String createTime;
     private Integer isDeleted;
 }

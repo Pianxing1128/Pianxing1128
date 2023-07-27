@@ -1,28 +1,28 @@
 package com.qc.controller.teacher;
 
+import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.teacher.TeacherVo;
 import com.qc.module.teacher.entity.Teacher;
 import com.qc.module.teacher.service.TeacherService;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import com.qc.utils.BaseUtils;
+import com.qc.utils.Response;
+import com.qc.utils.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author qc112
  */
 @RestController
-@Slf4j
 public class TeacherController {
 
     @Autowired
@@ -32,88 +32,107 @@ public class TeacherController {
     private UserService userService;
 
     @RequestMapping("/teacher/list")
-    public BaseListVo teacherList(@RequestParam(name = "pageNum") Integer pageNum){
-        int pageSize = 2;
-        BaseListVo result = new BaseListVo();
-        List<Teacher> teachers = teacherService.getTeachersForConsole(pageNum,pageSize);
+    public Response teacherList(@VerifiedUser User loginUser,
+                                @RequestParam(required = false,name = "pageNum") Integer inputPageNum,
+                                @RequestParam(required = false,name = "realName")String realName){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        Integer pageNum;
+        if(inputPageNum==null || inputPageNum<=0){
+            pageNum=1;
+        }else {
+            pageNum = inputPageNum;
+        }
+        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
+        BaseListVo baseListVo = new BaseListVo();
+        List<Teacher> teacherList = teacherService.extractTeacherList(pageNum,pageSize,realName);
         List<TeacherVo> list = new ArrayList<>();
 
-        for(Teacher t:teachers){
-            TeacherVo entry = new TeacherVo();
+        for(Teacher t:teacherList){
+            TeacherVo teacherVo = new TeacherVo();
 
             User user = userService.getById(t.getUserId());
-            if(user==null){
+            if(BaseUtils.isEmpty(user)){
                 continue;
             }
-            entry.setId(t.getId());
-            entry.setUserId(t.getUserId());
-            entry.setEnrollmentTime(t.getEnrollmentTime());
-            entry.setRealName(t.getRealName());
-            entry.setIsDeleted(t.getIsDeleted());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            Long time1 = Long.valueOf(t.getCreateTime()+"000");
-            String creteTime = sdf.format(new Date(time1));
-            entry.setCreateTime(creteTime);
-
-            Long time2 = Long.valueOf(t.getUpdateTime()+"000");
-            String updateTime = sdf.format(new Date(time2));
-            entry.setUpdateTime(updateTime);
-
-            list.add(entry);
+            teacherVo.setId(t.getId());
+            teacherVo.setUserId(t.getUserId());
+            teacherVo.setEnrollmentTime(t.getEnrollmentTime());
+            teacherVo.setRealName(t.getRealName());
+            teacherVo.setUpdateTime(BaseUtils.timeStamp2Date(t.getUpdateTime()));
+            teacherVo.setCreateTime(BaseUtils.timeStamp2Date(t.getCreateTime()));
+            teacherVo.setIsDeleted(t.getIsDeleted());
+            list.add(teacherVo);
         }
-        result.setTeacherTotal(teacherService.getTotal());
-        result.setPageSize(pageSize);
-        result.setTeacherList(list);
-        return result;
+        baseListVo.setTeacherTotal(teacherService.getTotal());
+        baseListVo.setPageSize(pageSize);
+        baseListVo.setTeacherList(list);
+
+        return new Response(1001,baseListVo);
     }
-
-    @RequestMapping("/teacher/id")
-    public Teacher getTeacherById(BigInteger id){
-        return teacherService.getById(id);
-    }
-
-    @RequestMapping("teacher/total")
-    public Integer getTeacherTotal(){
-        return teacherService.getTotal();
-    }
-
-    @RequestMapping("/teacher/update")
-    public String teacherUpdate(@RequestParam(name="id")BigInteger id,
-                                @RequestParam(required = false)BigInteger userId,
-                                @RequestParam(required = false)String enrollmentTime,
-                                @RequestParam(required = false)String realName){
-
-        try {
-            teacherService.editTeacher(id,userId,enrollmentTime,realName);
-            return "修改成功";
-        }catch (RuntimeException e){
-            return e.getMessage();
-        }
-    }
-
     @RequestMapping("/teacher/insert")
-    public String teacherInsert(@RequestParam(name = "id")BigInteger id,
-                                @RequestParam(name = "userId")BigInteger userId,
-                                @RequestParam(required = false)String enrollmentTime,
-                                @RequestParam(required = false)String realName
-                                ){
-
-         try{
-             teacherService.editTeacher(id,userId,enrollmentTime,realName);
-             return "新增教师成功";
-         }catch (Exception e){
-             return e.getMessage();
-         }
+    public Response teacherInsert(@VerifiedUser User loginUser,
+                                  @RequestParam(required = false,name = "id")BigInteger id,
+                                  @RequestParam(name = "userId")BigInteger userId,
+                                  @RequestParam(name = "enrollmentTime")String enrollmentTime,
+                                  @RequestParam(name = "realName")String realName){
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        User user = userService.getById(userId);
+        if(BaseUtils.isEmpty(user)){
+            return new Response(3052); //老师ID不正确
+        }
+        try{
+            teacherService.edit(id,userId,enrollmentTime,realName);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
     }
+    @RequestMapping("/teacher/update")
+    public Response teacherUpdate(@VerifiedUser User loginUser,
+                                  @RequestParam(name="id")BigInteger id,
+                                  @RequestParam(required = false,name = "userId")BigInteger userId,
+                                  @RequestParam(required = false,name = "enrollmentTime")String enrollmentTime,
+                                  @RequestParam(required = false,name = "realName")String realName){
+
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        if(!BaseUtils.isEmpty(userId)) {
+            User user = userService.getById(userId);
+            if (BaseUtils.isEmpty(user)) {
+                return new Response(3052); //老师ID不正确
+            }
+        }
+
+        try{
+            teacherService.edit(id,userId,enrollmentTime,realName);
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(4004);
+        }
+    }
+
+
     @RequestMapping("/teacher/delete")
-    public String teacherDelete(@RequestParam(name="id") BigInteger id
-                                ){
+    public Response teacherDelete(@VerifiedUser User loginUser,
+                                  @RequestParam(name="id")BigInteger id){
+
+         if (BaseUtils.isEmpty(loginUser)) {
+             return new Response(1002);
+         }
+
          try {
              teacherService.delete(id);
-             return "删除或者恢复成功";
+             return new Response(1001);
          }catch (Exception e){
-             return e.getMessage();
+             return new Response(4004);
          }
     }
 }

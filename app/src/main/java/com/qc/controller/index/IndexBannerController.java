@@ -1,4 +1,4 @@
-package com.qc.controller.appIndexBanner;
+package com.qc.controller.index;
 
 import com.qc.domain.BaseListVo;
 import com.qc.domain.appIndexBanner.AppIndexBannerVo;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class AppIndexBannerController {
+public class IndexBannerController {
 
     @Autowired
     private AppIndexBannerService appIndexBannerService;
