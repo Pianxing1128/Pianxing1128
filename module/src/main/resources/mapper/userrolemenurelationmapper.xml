@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.userRoleMenuRelation.mapper.UserRoleMenuRelationMapper">
+
+    <insert id="insert" parameterType="com.qc.module.userRoleMenuRelation.entity.UserRoleMenuRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into user_role_menu_relation(
+        <if test="UserRoleMenuRelation.roleId!=null and UserRoleMenuRelation.roleId!=''">role_id,</if>
+        <if test="UserRoleMenuRelation.menuId!=null and UserRoleMenuRelation.menuId!=''">menu_id,</if>
+        <if test="UserRoleMenuRelation.updateTime!=null and UserRoleMenuRelation.updateTime!=''">update_time,</if>
+        <if test="UserRoleMenuRelation.createTime!=null and UserRoleMenuRelation.createTime!=''">create_time,</if>
+        <if test="UserRoleMenuRelation.isDeleted!=null and UserRoleMenuRelation.isDeleted!=''">is_deleted,</if>
+        is_deleted
+        )values(
+        <if test="UserRoleMenuRelation.roleId!=null and UserRoleMenuRelation.roleId!=''">#{UserRoleMenuRelation.roleId},</if>
+        <if test="UserRoleMenuRelation.menuId!=null and UserRoleMenuRelation.menuId!=''">#{UserRoleMenuRelation.menuId},</if>
+        <if test="UserRoleMenuRelation.updateTime!=null and UserRoleMenuRelation.updateTime!=''">#{UserRoleMenuRelation.updateTime},</if>
+        <if test="UserRoleMenuRelation.createTime!=null and UserRoleMenuRelation.createTime!=''">#{UserRoleMenuRelation.createTime},</if>
+        <if test="UserRoleMenuRelation.isDeleted!=null and UserRoleMenuRelation.isDeleted!=''">#{UserRoleMenuRelation.isDeleted},</if>
+        #{UserRoleMenuRelation.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.userRoleMenuRelation.entity.UserRoleMenuRelation">
+        update user_role_menu_relation set
+        update_time = #{UserRoleMenuRelation.updatetime}
+        <if test="UserRoleMenuRelation.roleId!=null and UserRoleMenuRelation.roleId!=''">,role_id=#{UserRoleMenuRelation.roleId}</if>
+        <if test="UserRoleMenuRelation.menuId!=null and UserRoleMenuRelation.menuId!=''">,menu_id=#{UserRoleMenuRelation.menuId}</if>
+        <if test="UserRoleMenuRelation.updateTime!=null and UserRoleMenuRelation.updateTime!=''">,update_time=#{UserRoleMenuRelation.updateTime}</if>
+        <if test="UserRoleMenuRelation.createTime!=null and UserRoleMenuRelation.createTime!=''">,create_time=#{UserRoleMenuRelation.createTime}</if>
+        <if test="UserRoleMenuRelation.isDeleted!=null and UserRoleMenuRelation.isDeleted!=''">,is_deleted=#{UserRoleMenuRelation.isDeleted}</if>
+        where id =#{UserRoleMenuRelation.id}
+    </update>
+
+</mapper>

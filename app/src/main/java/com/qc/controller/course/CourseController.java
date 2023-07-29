@@ -127,8 +127,7 @@ public class CourseController {
         }
 
         Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),
-                                                                                    wpVo.getNickName(),wpVo.getShowTagId(),wpVo.getOrderedType(),wpVo.getIsVip());
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName(),wpVo.getShowTagId(),wpVo.getOrderedType(),wpVo.getIsVip());
 
         if(courseList.size()==0){
             return new Response(3001);

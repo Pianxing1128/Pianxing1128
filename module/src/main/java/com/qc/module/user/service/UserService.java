@@ -244,7 +244,7 @@ public class UserService {
         if(lifeTime < 0){
             return false;
         }
-        User user = mapper.getUserAccount(userAccount);
+        User user = mapper.getUser(userAccount);
         if(user==null){
             return false;
         }
@@ -258,8 +258,8 @@ public class UserService {
 
     }
 
-    public User getUserAccount(String userAccount) {
-        return mapper.getUserAccount(userAccount);
+    public User getUser(String userName) {
+        return mapper.getUser(userName);
     }
 
     public void refreshUserLoginContext(BigInteger id, String currentIp, int currentTime) {
@@ -278,5 +278,6 @@ public class UserService {
     public User extractByUserAccount(String userAccount) {
         return mapper.extractByAccount(userAccount);
     }
+
 }
 

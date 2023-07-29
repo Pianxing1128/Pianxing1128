@@ -6,7 +6,10 @@ import com.qc.domain.BaseListVo;
 import com.qc.domain.user.UserVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
-import com.qc.utils.*;
+import com.qc.utils.BaseUtils;
+import com.qc.utils.IpUtils;
+import com.qc.utils.Response;
+import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -51,31 +52,26 @@ public class UserController {
         if (!result) {
             return new Response(1010);
         }
-        User user = userService.getUserAccount(userAccount);
+        User user = userService.getUser(userAccount);
         //获取request更新登陆账户的信息
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
         userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());
 
         UserVo userVo = new UserVo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         userVo.setId(user.getId());
         userVo.setAvatar(user.getAvatar());
         userVo.setUserAccount(user.getUserAccount());
         userVo.setNickName(user.getNickName());
         userVo.setEmail(user.getEmail());
-        String birthday = sdf.format(new Date(Long.valueOf(user.getBirthday()+"000")));
-        userVo.setBirthday(birthday);
+        userVo.setBirthday(BaseUtils.timeStamp2Date(user.getBirthday()));
         userVo.setGender(user.getGender());
         userVo.setUserIntro(user.getUserIntro());
         userVo.setRegisterIp(user.getRegisterIp());
         userVo.setLastLoginIp(user.getLastLoginIp());
         userVo.setIsBan(user.getIsBan());
-        //需要修改---
-        String creatTime = sdf.format(new Date(Long.valueOf(user.getCreateTime()+"000")));
-        userVo.setCreateTime(creatTime);
-        String updateTime = sdf.format(new Date(Long.valueOf(user.getUpdateTime()+"000")));
-        userVo.setUpdateTime(updateTime);
+        userVo.setCreateTime(BaseUtils.timeStamp2Date(user.getCreateTime()));
+        userVo.setUpdateTime(BaseUtils.timeStamp2Date(user.getUpdateTime()));
         userVo.setIsDeleted(user.getIsDeleted());
 
         // web登陆时候写session
@@ -103,33 +99,21 @@ public class UserController {
         List<UserVo> userVoList = new ArrayList<>();
 
         for(User u:userList){
-            UserVo entry = new UserVo();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            UserVo userVo = new UserVo();
 
-            entry.setId(u.getId());
-            entry.setAvatar(u.getAvatar());
-            entry.setGender(u.getGender());
+            userVo.setId(u.getId());
+            userVo.setAvatar(u.getAvatar());
+            userVo.setGender(u.getGender());
+            userVo.setBirthday(BaseUtils.timeStamp2Date(u.getBirthday()));
+            userVo.setNickName(u.getNickName());
+            userVo.setEmail(u.getEmail());
+            userVo.setLastLoginIp(u.getLastLoginIp());
+            userVo.setRegisterIp(u.getRegisterIp());
+            userVo.setIsDeleted(u.getIsDeleted());
+            userVo.setCreateTime(BaseUtils.timeStamp2Date(u.getCreateTime()));
+            userVo.setUpdateTime(BaseUtils.timeStamp2Date(u.getUpdateTime()));
 
-            Long time0=Long.valueOf(u.getBirthday()+"000");
-            String birthday = sdf.format(new Date(time0));
-            entry.setBirthday(birthday);
-
-            entry.setNickName(u.getNickName());
-            entry.setEmail(u.getEmail());
-            entry.setLastLoginIp(u.getLastLoginIp());
-            entry.setRegisterIp(u.getRegisterIp());
-            entry.setIsDeleted(u.getIsDeleted());
-
-
-            Long time1 = Long.valueOf(u.getCreateTime()+"000");
-            String createTime = sdf.format(new Date(time1));
-            entry.setCreateTime(createTime);
-
-            Long time2 = Long.valueOf(u.getUpdateTime()+"000");
-            String updateTime = sdf.format(new Date(time2));
-            entry.setUpdateTime(updateTime);
-
-            userVoList.add(entry);
+            userVoList.add(userVo);
         }
         baseListVo.setUserList(userVoList);
         baseListVo.setPageSize(pageSize);
@@ -149,15 +133,15 @@ public class UserController {
 
     @RequestMapping("/user/update")
     public Response userUpdate(@VerifiedUser User loginUser,
-                             @RequestParam(name = "id")BigInteger id,
-                             @RequestParam(required = false,name="userAccount")String userAccount,
-                             @RequestParam(required = false,name="userPassword")String userPassword,
-                             @RequestParam(required = false,name="avatar")String avatar,
-                             @RequestParam(required = false,name="nickName")String nickName,
-                             @RequestParam(required = false,name="gender")Integer gender,
-                             @RequestParam(required = false,name="email")String email,
-                             @RequestParam(required = false,name="userIntro")String userIntro,
-                             @RequestParam(required = false,name="birthday")Integer birthday) {
+                               @RequestParam(name = "id")BigInteger id,
+                               @RequestParam(required = false,name="userAccount")String userAccount,
+                               @RequestParam(required = false,name="userPassword")String userPassword,
+                               @RequestParam(required = false,name="avatar")String avatar,
+                               @RequestParam(required = false,name="nickName")String nickName,
+                               @RequestParam(required = false,name="gender")Integer gender,
+                               @RequestParam(required = false,name="email")String email,
+                               @RequestParam(required = false,name="userIntro")String userIntro,
+                               @RequestParam(required = false,name="birthday")Integer birthday) {
 
         if (BaseUtils.isEmpty(loginUser)) {
             return new Response(1002);

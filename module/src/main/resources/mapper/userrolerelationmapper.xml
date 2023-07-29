@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.userRoleRelation.mapper.UserRoleRelationMapper">
+
+    <insert id="insert" parameterType="com.qc.module.userRoleRelation.entity.UserRoleRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into user_role_relation(
+        <if test="UserRoleRelation.userId!=null and UserRoleRelation.userId!=''">user_id,</if>
+        <if test="UserRoleRelation.roleId!=null and UserRoleRelation.roleId!=''">role_id,</if>
+        <if test="UserRoleRelation.updateTime!=null and UserRoleRelation.updateTime!=''">update_time,</if>
+        <if test="UserRoleRelation.createTime!=null and UserRoleRelation.createTime!=''">create_time,</if>
+        <if test="UserRoleRelation.isDeleted!=null and UserRoleRelation.isDeleted!=''">is_deleted,</if>
+        is_deleted
+        )values(
+        <if test="UserRoleRelation.userId!=null and UserRoleRelation.userId!=''">#{UserRoleRelation.userId},</if>
+        <if test="UserRoleRelation.roleId!=null and UserRoleRelation.roleId!=''">#{UserRoleRelation.roleId},</if>
+        <if test="UserRoleRelation.updateTime!=null and UserRoleRelation.updateTime!=''">#{UserRoleRelation.updateTime},</if>
+        <if test="UserRoleRelation.createTime!=null and UserRoleRelation.createTime!=''">#{UserRoleRelation.createTime},</if>
+        <if test="UserRoleRelation.isDeleted!=null and UserRoleRelation.isDeleted!=''">#{UserRoleRelation.isDeleted},</if>
+        #{UserRoleRelation.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.userRoleRelation.entity.UserRoleRelation">
+        update user_role_relation set
+        update_time = #{UserRoleRelation.updatetime}
+        <if test="UserRoleRelation.userId!=null and UserRoleRelation.userId!=''">,user_id=#{UserRoleRelation.userId}</if>
+        <if test="UserRoleRelation.roleId!=null and UserRoleRelation.roleId!=''">,role_id=#{UserRoleRelation.roleId}</if>
+        <if test="UserRoleRelation.updateTime!=null and UserRoleRelation.updateTime!=''">,update_time=#{UserRoleRelation.updateTime}</if>
+        <if test="UserRoleRelation.createTime!=null and UserRoleRelation.createTime!=''">,create_time=#{UserRoleRelation.createTime}</if>
+        <if test="UserRoleRelation.isDeleted!=null and UserRoleRelation.isDeleted!=''">,is_deleted=#{UserRoleRelation.isDeleted}</if>
+        where id =#{UserRoleRelation.id}
+    </update>
+
+</mapper>

@@ -1,10 +1,11 @@
 package com.qc.module.user.entity;
 
-import java.math.BigInteger;
-
-import io.swagger.models.auth.In;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.math.BigInteger;
 /**
  * <p>
  * 用户详情
@@ -16,6 +17,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class User{
 
     private BigInteger id;
@@ -95,6 +98,10 @@ public class User{
      */
     private Integer isDeleted = 0;
 
+    private Integer enabled;
+    private Integer accountNoExpired;
+    private Integer credentialsNoExpired;
+    private Integer accountNoLocked;
     /**
      * CREATE TABLE `user` (
      * 	 `id` bigint unsigned NOT NULL AUTO_INCREMENT,

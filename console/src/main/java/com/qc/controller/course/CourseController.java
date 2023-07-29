@@ -17,6 +17,7 @@ import com.qc.utils.Response;
 import com.qc.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +47,8 @@ public class CourseController {
     @Autowired
     private BaseCourseService baseCourseService;
 
-    @RequestMapping("course/list")
+    @RequestMapping("/course/list")
+    @PreAuthorize("hasAuthority('/course/**')") //预授权
     public Response courseList(@VerifiedUser User loginUser,
                                @RequestParam(required = false,name = "pageNum")Integer inputPageNum,
                                @RequestParam(required = false, name = "courseName") String courseName,

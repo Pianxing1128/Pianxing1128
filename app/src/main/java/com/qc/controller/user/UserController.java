@@ -96,7 +96,7 @@ public class UserController {
         if (!result) {
             return new Response(4004);
         }
-        User user = userService.getUserAccount(userAccount);
+        User user = userService.getUser(userAccount);
 
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
         userService.refreshUserLoginContext(user.getId(), IpUtils.getIpAddress(request), BaseUtils.currentSeconds());

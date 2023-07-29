@@ -1,6 +1,5 @@
 package com.qc;
 
-import com.alibaba.fastjson.JSON;
 import com.qc.annotations.VerifiedUser;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
@@ -15,8 +14,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -67,19 +66,20 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
                     }
                 }
                 return null;
-            }else{
-                HttpSession session = sRequest.getSession(false);
-                if(BaseUtils.isEmpty(session)){
-                    return null;
-                }
-                String signKey = SpringUtils.getProperty("application.session.key");
-                Object value = session.getAttribute(signKey);
-                if (value == null) {
-                    return null;
-                }
-                String sValue = (String)value;
-                return JSON.parseObject(sValue, User.class);
             }
+//            else{
+//                HttpSession session = sRequest.getSession(false);
+//                if(BaseUtils.isEmpty(session)){
+//                    return null;
+//                }
+//                String signKey = SpringUtils.getProperty("application.session.key");
+//                Object value = session.getAttribute(signKey);
+//                if (value == null) {
+//                    return null;
+//                }
+//                String sValue = (String)value;
+//                return JSON.parseObject(sValue, User.class);
+//            }
         }
         return userService.getById(BigInteger.valueOf(1));
     }

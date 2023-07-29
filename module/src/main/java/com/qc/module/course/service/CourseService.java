@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +36,7 @@ public class CourseService {
         return mapper.getCoursesForApp(begin, pageSize);
     }
 
-    @PreAuthorize("hasAnyAuthority('teacher:query')") //预授权
+
     public Course getById(BigInteger id){
         return mapper.getById(id);
     }

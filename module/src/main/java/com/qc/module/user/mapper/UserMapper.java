@@ -53,6 +53,6 @@ public interface UserMapper{
 
     List<User> getByIds(String userIdsFromTeacher);
 
-    @Select("select * from user where user_account =#{userAccount} and is_deleted =0")
-    User getUserAccount(String userAccount);
+    @Select("select * from user where user_account =#{userName} and is_deleted =0")
+    User getUser(String userName);
 }
