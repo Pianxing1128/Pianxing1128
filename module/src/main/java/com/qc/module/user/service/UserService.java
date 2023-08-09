@@ -141,7 +141,7 @@ public class UserService {
     private static final String SALT = "qc";
 
     public BigInteger userRegister(String userAccount, String userPassword, String checkPassword,
-                                   String avatar, Integer gender, String nickName, Integer birthday, String userIntro,String email, String currentIp) {
+                                   Integer gender, String nickName, Integer birthday, String email, String currentIp) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new RuntimeException("参数为空");
@@ -171,14 +171,18 @@ public class UserService {
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            String avatar = null;
+            if(gender==0){
+                avatar = "www.0000.icon";
+            }else if (gender == 1){
+                avatar = "www.1111.icon";
+            }
             user.setAvatar(avatar);
             user.setNickName(nickName);
             user.setGender(gender);
             user.setBirthday(birthday);
-            user.setNickName(nickName);
-            user.setUserIntro(userIntro);
             user.setEmail(email);
-            Integer createTime = (int)(System.currentTimeMillis()/1000);
+            Integer createTime = BaseUtils.currentSeconds();
             user.setCreateTime(createTime);
             user.setRegisterIp(currentIp);
             //4.是否存入成功
@@ -279,5 +283,8 @@ public class UserService {
         return mapper.extractByAccount(userAccount);
     }
 
+    public User extractByEmail(String email) {
+        return mapper.extractByEmail(email);
+    }
 }
 

@@ -4,6 +4,7 @@ import com.qc.annotations.VerifiedUser;
 import com.qc.domain.user.UserInfoVo;
 import com.qc.domain.user.UserLoginInfoVo;
 import com.qc.module.user.entity.User;
+import com.qc.module.user.service.BasePointService;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.IpUtils;
@@ -27,17 +28,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private BasePointService basePointService;
+
     @RequestMapping("/user/register")
     public Response userRegister(@VerifiedUser User loginUser,
                                  @RequestParam(name="userAccount")String userAccount,
                                  @RequestParam(name="userPassword") String userPassword,
                                  @RequestParam(name="checkPassword") String checkPassword,
+                                 @RequestParam(name="nickName") String nickName,
+                                 @RequestParam(name="gender") Integer gender,
                                  @RequestParam(name="birthday") Integer birthday,
-                                 @RequestParam(name="email") String email,
-                                 @RequestParam(required = false,name="avatar") String avatar,
-                                 @RequestParam(required = false,name="gender") Integer gender,
-                                 @RequestParam(required = false,name="nickName") String nickName,
-                                 @RequestParam(required = false,name="userIntro") String userIntro
+                                 @RequestParam(name="email") String email
                                 ) {
 
         if(!BaseUtils.isEmpty(loginUser)){
@@ -48,17 +50,20 @@ public class UserController {
         }
         //判断用户是否已经注册
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-        User oldUser = userService.extractByUserAccount(userAccount);
+        User oldUserByUserAccount = userService.extractByUserAccount(userAccount);
+        User oldUserByEmail = userService.extractByEmail(email);
         BigInteger id;
-        if(!BaseUtils.isEmpty(oldUser)){
-            if(oldUser.getIsDeleted() ==1 || oldUser.getIsBan() == 1){
+        Integer userCurrentPoint;
+        if(!BaseUtils.isEmpty(oldUserByUserAccount) || !BaseUtils.isEmpty(oldUserByEmail)){
+            if(oldUserByUserAccount.getIsDeleted() ==1 || oldUserByUserAccount.getIsBan() == 1){
                 return new Response(1010);
             }else {
                 return new Response(1011);
             }
-        }else {
+        }else{
             try {
-                  id = userService.userRegister(userAccount,userPassword,checkPassword,avatar,gender,nickName,birthday,userIntro,email,IpUtils.getIpAddress(request));
+                  id = userService.userRegister(userAccount,userPassword,checkPassword,gender,nickName,birthday,email,IpUtils.getIpAddress(request));
+                  userCurrentPoint = basePointService.registerForGiftPoint(id);
             }catch (Exception e){
                 return new Response(4004);
             }
@@ -74,7 +79,7 @@ public class UserController {
         userInfo.setBirthday(BaseUtils.timeStamp2Date(user.getBirthday()));
         userInfo.setGender(user.getGender());
         userInfo.setUserIntro(user.getUserIntro());
-
+        userInfo.setUserCurrentPoint(userCurrentPoint);
         UserLoginInfoVo loginInfo = new UserLoginInfoVo();
         loginInfo.setSign(SignUtils.makeSign(user.getId()));
         loginInfo.setUserInfo(userInfo);

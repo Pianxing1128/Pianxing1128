@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointUserOrder.mapper.PointUserOrderMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointUserOrder.entity.PointUserOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into point_user_order(
+        <if test="pointUserOrder.userId!=null ">user_id,</if>
+        <if test="pointUserOrder.orderId!=null ">order_id,</if>
+        <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">supplier_name,</if>
+        <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">merchandise_name,</if>
+        <if test="pointUserOrder.merchandiseType!=null ">merchandise_type,</if>
+        <if test="pointUserOrder.merchandisePoint!=null ">merchandise_point,</if>
+        <if test="pointUserOrder.merchandiseNumber!=null ">merchandise_number,</if>
+        <if test="pointUserOrder.consumptionPointAmount!=null ">consumption_point_amount,</if>
+        <if test="pointUserOrder.orderAddress!=null and pointUserOrder.orderAddress!=''">order_address,</if>
+        <if test="pointUserOrder.purchasedTime!=null">purchased_time,</if>
+        <if test="pointUserOrder.updateTime!=null">update_time,</if>
+        <if test="pointUserOrder.createTime!=null">create_time</if>
+
+        )values(
+        <if test="pointUserOrder.userId!=null and pointUserOrder.userId!=''">#{pointUserOrder.userId},</if>
+        <if test="pointUserOrder.orderId!=null ">#{pointUserOrder.orderId},</if>
+        <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">#{pointUserOrder.supplierName},</if>
+        <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">#{pointUserOrder.merchandiseName},</if>
+        <if test="pointUserOrder.merchandiseType!=null ">#{pointUserOrder.merchandiseType},</if>
+        <if test="pointUserOrder.merchandisePoint!=null ">#{pointUserOrder.merchandisePoint},</if>
+        <if test="pointUserOrder.merchandiseNumber!=null ">#{pointUserOrder.merchandiseNumber},</if>
+        <if test="pointUserOrder.consumptionPointAmount!=null ">#{pointUserOrder.consumptionPointAmount},</if>
+        <if test="pointUserOrder.orderAddress!=null and pointUserOrder.orderAddress!=''">#{pointUserOrder.orderAddress},</if>
+        <if test="pointUserOrder.purchasedTime!=null ">#{pointUserOrder.purchasedTime},</if>
+        <if test="pointUserOrder.updateTime!=null ">#{pointUserOrder.updateTime},</if>
+        <if test="pointUserOrder.createTime!=null">#{pointUserOrder.createTime}</if>
+
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointUserOrder.entity.PointUserOrder">
+        update point_user_order set
+        update_time = #{pointUserOrder.updatetime}
+        <if test="pointUserOrder.userId!=null">,user_id=#{pointUserOrder.userId}</if>
+        <if test="pointUserOrder.orderId!=null ">,order_id=#{pointUserOrder.orderId}</if>
+        <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">,supplier_name=#{pointUserOrder.supplierName}</if>
+        <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">,merchandise_name=#{pointUserOrder.merchandiseName}</if>
+        <if test="pointUserOrder.merchandiseType!=null ">,merchandise_type=#{pointUserOrder.merchandiseType}</if>
+        <if test="pointUserOrder.merchandisePoint!=null ">,merchandise_point=#{pointUserOrder.merchandisePoint}</if>
+        <if test="pointUserOrder.merchandiseNumber!=null ">,merchandise_number=#{pointUserOrder.merchandiseNumber}</if>
+        <if test="pointUserOrder.consumptionPointAmount!=null ">,consumption_point_amount=#{pointUserOrder.consumptionPointAmount}</if>
+        <if test="pointUserOrder.orderAddress!=null and pointUserOrder.orderAddress!=''">,order_address=#{pointUserOrder.orderAddress}</if>
+        <if test="pointUserOrder.purchasedTime!=null ">,purchased_time=#{pointUserOrder.purchasedTime}</if>
+        <if test="pointUserOrder.updateTime!=null">,update_time=#{pointUserOrder.updateTime}</if>
+        <if test="pointUserOrder.createTime!=null ">,create_time=#{pointUserOrder.createTime}</if>
+        where id =#{pointUserOrder.id}
+    </update>
+
+</mapper>

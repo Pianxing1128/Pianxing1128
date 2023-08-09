@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointMerchandise.mapper.PointMerchandiseMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointMerchandise.entity.PointMerchandise" useGeneratedKeys="true" keyProperty="id">
+        insert into point_merchandise(
+        <if test="pointMerchandise.merchandiseName!=null and pointMerchandise.merchandiseName!=''">merchandise_name,</if>
+        <if test="pointMerchandise.merchandiseType!=null ">merchandise_type,</if>
+        <if test="pointMerchandise.merchandisePoint!=null ">merchandise_point,</if>
+        <if test="pointMerchandise.isMarketable!=null ">is_marketable,</if>
+        <if test="pointMerchandise.merchandiseDuration!=null ">merchandise_duration,</if>
+        <if test="pointMerchandise.updateTime!=null ">update_time,</if>
+        <if test="pointMerchandise.createTime!=null">create_time,</if>
+        <if test="pointMerchandise.isDeleted!=null ">is_deleted,</if>
+        is_deleted
+        )values(
+        <if test="pointMerchandise.merchandiseName!=null and pointMerchandise.merchandiseName!=''">#{pointMerchandise.merchandiseName},</if>
+        <if test="pointMerchandise.merchandiseType!=null ">#{pointMerchandise.merchandiseType},</if>
+        <if test="pointMerchandise.merchandisePoint!=null ">#{pointMerchandise.merchandisePoint},</if>
+        <if test="pointMerchandise.isMarketable!=null ">#{pointMerchandise.isMarketable},</if>
+        <if test="pointMerchandise.merchandiseDuration!=null ">#{pointMerchandise.merchandiseDuration},</if>
+        <if test="pointMerchandise.updateTime!=null ">#{pointMerchandise.updateTime},</if>
+        <if test="pointMerchandise.createTime!=null">#{pointMerchandise.createTime},</if>
+        <if test="pointMerchandise.isDeleted!=null">#{pointMerchandise.isDeleted},</if>
+        #{pointMerchandise.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointMerchandise.entity.PointMerchandise">
+        update point_merchandise set
+        update_time = #{pointMerchandise.updatetime}
+        <if test="pointMerchandise.merchandiseName!=null and pointMerchandise.merchandiseName!=''">,merchandise_name=#{pointMerchandise.merchandiseName}</if>
+        <if test="pointMerchandise.merchandiseType!=null">,merchandise_type=#{pointMerchandise.merchandiseType}</if>
+        <if test="pointMerchandise.merchandisePoint!=null">,merchandise_point=#{pointMerchandise.merchandisePoint}</if>
+        <if test="pointMerchandise.isMarketable!=null ">#{pointMerchandise.isMarketable},</if>
+        <if test="pointMerchandise.merchandiseDuration!=null ">#{pointMerchandise.merchandiseDuration},</if>
+        <if test="pointMerchandise.updateTime!=null">,update_time=#{pointMerchandise.updateTime}</if>
+        <if test="pointMerchandise.createTime!=null">,create_time=#{pointMerchandise.createTime}</if>
+        <if test="pointMerchandise.isDeleted!=null">,is_deleted=#{pointMerchandise.isDeleted}</if>
+        where id =#{pointMerchandise.id}
+    </update>
+
+</mapper>

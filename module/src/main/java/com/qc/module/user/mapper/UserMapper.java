@@ -55,4 +55,6 @@ public interface UserMapper{
 
     @Select("select * from user where user_account =#{userName} and is_deleted =0")
     User getUser(String userName);
+    @Select("select * from user where email = #{email}")
+    User extractByEmail(String email);
 }

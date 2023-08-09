@@ -18,5 +18,6 @@ public class UserInfoVo {
     private String email;
     private String birthday;
     private String userIntro;
+    private Integer userCurrentPoint;
 
 }

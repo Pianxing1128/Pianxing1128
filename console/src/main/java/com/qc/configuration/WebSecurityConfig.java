@@ -23,9 +23,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private ConsoleAuthenticationFailHandler consoleAuthenticationFailHandler;
 
-//    @Resource
-//    private ConsoleLogoutSuccessHandler consoleLogoutSuccessHandler;
-//
+    @Resource
+    private ConsoleLogoutSuccessHandler consoleLogoutSuccessHandler;
+
 //    @Resource
 //    private ConsoleAccessDenyHandler consoleAccessDenyHandler;
 
@@ -51,7 +51,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authenticated()
 //                .and().csrf().disable().cors();
         http.formLogin().successHandler(consoleAuthenticationSuccessHandler).failureHandler(consoleAuthenticationFailHandler).permitAll();
-//        http.logout().logoutSuccessHandler(consoleLogoutSuccessHandler);
+        http.logout().logoutSuccessHandler(consoleLogoutSuccessHandler);
+        http.csrf().disable(); //禁用跨域请求保护
 //        http.exceptionHandling().accessDeniedHandler(consoleAccessDenyHandler);
         //不创建session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

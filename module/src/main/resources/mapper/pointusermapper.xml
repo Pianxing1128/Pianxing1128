@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointUser.mapper.PointUserMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointUser.entity.PointUser" useGeneratedKeys="true" keyProperty="id">
+        insert into point_user(
+        <if test="pointUser.userId!=null">user_id,</if>
+        <if test="pointUser.point!=null ">point,</if>
+        <if test="pointUser.updateTime!=null ">update_time,</if>
+        <if test="pointUser.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="pointUser.userId!=null">#{pointUser.userId},</if>
+        <if test="pointUser.point!=null">#{pointUser.point},</if>
+        <if test="pointUser.updateTime!=null">#{pointUser.updateTime},</if>
+        <if test="pointUser.createTime!=null">#{pointUser.createTime},</if>
+        #{pointUser.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointUser.entity.PointUser">
+        update point_user set
+        update_time = #{pointUser.updateTime}
+        <if test="pointUser.userId!=null ">,user_id=#{pointUser.userId}</if>
+        <if test="pointUser.point!=null">,point=#{pointUser.point}</if>
+        <if test="pointUser.updateTime!=null ">,update_time=#{pointUser.updateTime}</if>
+        <if test="pointUser.createTime!=null">,create_time=#{pointUser.createTime}</if>
+        <if test="pointUser.isDeleted!=null ">,is_deleted=#{pointUser.isDeleted}</if>
+        where id =#{pointUser.id}
+    </update>
+
+</mapper>

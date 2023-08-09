@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointUserChangeRecord.mapper.PointUserChangeRecordMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointUserChangeRecord.entity.PointUserChangeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into point_user_change_record(
+        <if test="pointUserChangeRecord.userId!=null">user_id,</if>
+        <if test="pointUserChangeRecord.orderId!=null ">order_id,</if>
+        <if test="pointUserChangeRecord.consumptionDescription!=null and pointUserChangeRecord.consumptionDescription!=''">consumption_description,</if>
+        <if test="pointUserChangeRecord.preConsumptionPoint!=null ">pre_consumption_point,</if>
+        <if test="pointUserChangeRecord.consumptionPointsAmount!=null ">consumption_points_amount,</if>
+        <if test="pointUserChangeRecord.afterConsumptionPoint!=null ">after_consumption_point,</if>
+        <if test="pointUserChangeRecord.updateTime!=null ">update_time,</if>
+        <if test="pointUserChangeRecord.createTime!=null">create_time</if>
+
+        )values(
+        <if test="pointUserChangeRecord.userId!=null ">#{pointUserChangeRecord.userId},</if>
+        <if test="pointUserChangeRecord.orderId!=null ">#{pointUserChangeRecord.orderId},</if>
+        <if test="pointUserChangeRecord.consumptionDescription!=null and pointUserChangeRecord.consumptionDescription!=''">#{pointUserChangeRecord.consumptionDescription},</if>
+        <if test="pointUserChangeRecord.preConsumptionPoint!=null ">#{pointUserChangeRecord.preConsumptionPoint},</if>
+        <if test="pointUserChangeRecord.consumptionPointsAmount!=null ">#{pointUserChangeRecord.consumptionPointsAmount},</if>
+        <if test="pointUserChangeRecord.afterConsumptionPoint!=null ">#{pointUserChangeRecord.afterConsumptionPoint},</if>
+        <if test="pointUserChangeRecord.updateTime!=null ">#{pointUserChangeRecord.updateTime},</if>
+        <if test="pointUserChangeRecord.createTime!=null ">#{pointUserChangeRecord.createTime}</if>
+
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointUserChangeRecord.entity.PointUserChangeRecord">
+        update point_user_change_record set
+        update_time = #{pointUserChangeRecord.updatetime}
+        <if test="pointUserChangeRecord.userId!=null and pointUserChangeRecord.userId!=''">,user_id=#{pointUserChangeRecord.userId}</if>
+        <if test="pointUserChangeRecord.orderId!=null and pointUserChangeRecord.orderId!=''">,order_id=#{pointUserChangeRecord.orderId}</if>
+        <if test="pointUserChangeRecord.consumptionDescription!=null and pointUserChangeRecord.consumptionDescription!=''">,consumption_description=#{pointUserChangeRecord.consumptionDescription}</if>
+        <if test="pointUserChangeRecord.preConsumptionPoint!=null and pointUserChangeRecord.preConsumptionPoint!=''">,pre_consumption_point=#{pointUserChangeRecord.preConsumptionPoint}</if>
+        <if test="pointUserChangeRecord.consumptionPointsAmount!=null and pointUserChangeRecord.consumptionPointsAmount!=''">,consumption_points_amount=#{pointUserChangeRecord.consumptionPointsAmount}</if>
+        <if test="pointUserChangeRecord.afterConsumptionPoint!=null and pointUserChangeRecord.afterConsumptionPoint!=''">,after_consumption_point=#{pointUserChangeRecord.afterConsumptionPoint}</if>
+        <if test="pointUserChangeRecord.updateTime!=null and pointUserChangeRecord.updateTime!=''">,update_time=#{pointUserChangeRecord.updateTime}</if>
+        <if test="pointUserChangeRecord.createTime!=null and pointUserChangeRecord.createTime!=''">,create_time=#{pointUserChangeRecord.createTime}</if>
+        where id =#{pointUserChangeRecord.id}
+    </update>
+
+</mapper>
