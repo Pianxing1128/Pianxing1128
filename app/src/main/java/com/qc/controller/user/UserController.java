@@ -3,8 +3,12 @@ package com.qc.controller.user;
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.user.UserInfoVo;
 import com.qc.domain.user.UserLoginInfoVo;
+import com.qc.module.course.entity.Course;
+import com.qc.module.course.service.CourseService;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.BasePointService;
+import com.qc.module.user.service.BaseUserPurchasedCourseService;
+import com.qc.module.user.service.BaseUserWatchService;
 import com.qc.module.user.service.UserService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.IpUtils;
@@ -29,7 +33,16 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private CourseService courseService;
+
+    @Autowired
     private BasePointService basePointService;
+
+    @Autowired
+    private BaseUserWatchService baseUserWatchService;
+
+    @Autowired
+    private BaseUserPurchasedCourseService baseUserPurchasedCourseService;
 
     @RequestMapping("/user/register")
     public Response userRegister(@VerifiedUser User loginUser,
@@ -151,4 +164,52 @@ public class UserController {
         }
     }
 
+    @RequestMapping("/user/watch/course")
+    public Response userWatchCourse(@VerifiedUser User loginUser,
+                                    @RequestParam(required = false)BigInteger userId,
+                                    @RequestParam(required = false)BigInteger courseId,
+                                    @RequestParam(required = false)BigInteger courseLessonDetailId){
+        //先验证登录
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        try{
+            baseUserWatchService.verifyUserWatchCourse(userId,courseId,courseLessonDetailId);
+            return new Response(1001);
+
+        }catch(Exception e){
+            return new Response(4004);
+        }
+
+    }
+
+    @RequestMapping("/user/purchase/order")
+    public Response userPurchaseOrder(@VerifiedUser User loginUser,
+                                      @RequestParam(required = false)BigInteger courseId,
+                                      @RequestParam(required = false)BigInteger userId
+                                      ){
+
+        //先验证登录
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        //再验证课程是否在架
+        Course course = courseService.getAvailableCourseById(courseId);
+        if(BaseUtils.isEmpty(course)){
+            return new Response(1002);
+        }
+
+        try{
+
+            //创建用户购买课程关系
+            baseUserPurchasedCourseService.createUserPurchasedCourseRelation(userId,courseId);
+            //产生积分订单，积分变化记录，用户积分变化
+            basePointService.purchasingCourseForGiftPoint(userId,course);
+
+            return new Response(1001);
+        }catch (Exception e){
+            return new Response(1002);
+        }
+
+    }
 }

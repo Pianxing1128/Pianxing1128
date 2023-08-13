@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointMailOrder.mapper.PointMailOrderMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointMailOrder.entity.PointMailOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into point_mail_order(
+        <if test="PointMailOrder.userId!=null and PointMailOrder.userId!=''">user_id,</if>
+        <if test="PointMailOrder.orderNumber!=null and PointMailOrder.orderNumber!=''">order_number,</if>
+        <if test="PointMailOrder.merchandiseName!=null and PointMailOrder.merchandiseName!=''">merchandise_name,</if>
+        <if test="PointMailOrder.merchandiseNumber!=null and PointMailOrder.merchandiseNumber!=''">merchandise_number,</if>
+        <if test="PointMailOrder.senderName!=null and PointMailOrder.senderName!=''">sender_name,</if>
+        <if test="PointMailOrder.senderAddress!=null and PointMailOrder.senderAddress!=''">sender_address,</if>
+        <if test="PointMailOrder.senderPhone!=null and PointMailOrder.senderPhone!=''">sender_phone,</if>
+        <if test="PointMailOrder.senderPostCode!=null and PointMailOrder.senderPostCode!=''">sender_post_code,</if>
+        <if test="PointMailOrder.receiverName!=null and PointMailOrder.receiverName!=''">receiver_name,</if>
+        <if test="PointMailOrder.receiverAddress!=null and PointMailOrder.receiverAddress!=''">receiver_address,</if>
+        <if test="PointMailOrder.receiverPhone!=null and PointMailOrder.receiverPhone!=''">receiver_phone,</if>
+        <if test="PointMailOrder.receiverPostCode!=null and PointMailOrder.receiverPostCode!=''">receiver_post_code,</if>
+        <if test="PointMailOrder.updateTime!=null and PointMailOrder.updateTime!=''">update_time,</if>
+        <if test="PointMailOrder.createTime!=null and PointMailOrder.createTime!=''">create_time</if>
+
+        )values(
+        <if test="PointMailOrder.userId!=null and PointMailOrder.userId!=''">#{PointMailOrder.userId},</if>
+        <if test="PointMailOrder.orderNumber!=null and PointMailOrder.orderNumber!=''">#{PointMailOrder.orderNumber},</if>
+        <if test="PointMailOrder.merchandiseName!=null and PointMailOrder.merchandiseName!=''">#{PointMailOrder.merchandiseName},</if>
+        <if test="PointMailOrder.merchandiseNumber!=null and PointMailOrder.merchandiseNumber!=''">#{PointMailOrder.merchandiseNumber},</if>
+        <if test="PointMailOrder.senderName!=null and PointMailOrder.senderName!=''">#{PointMailOrder.senderName},</if>
+        <if test="PointMailOrder.senderAddress!=null and PointMailOrder.senderAddress!=''">#{PointMailOrder.senderAddress},</if>
+        <if test="PointMailOrder.senderPhone!=null and PointMailOrder.senderPhone!=''">#{PointMailOrder.senderPhone},</if>
+        <if test="PointMailOrder.senderPostCode!=null and PointMailOrder.senderPostCode!=''">#{PointMailOrder.senderPostCode},</if>
+        <if test="PointMailOrder.receiverName!=null and PointMailOrder.receiverName!=''">#{PointMailOrder.receiverName},</if>
+        <if test="PointMailOrder.receiverAddress!=null and PointMailOrder.receiverAddress!=''">#{PointMailOrder.receiverAddress},</if>
+        <if test="PointMailOrder.receiverPhone!=null and PointMailOrder.receiverPhone!=''">#{PointMailOrder.receiverPhone},</if>
+        <if test="PointMailOrder.receiverPostCode!=null and PointMailOrder.receiverPostCode!=''">#{PointMailOrder.receiverPostCode},</if>
+        <if test="PointMailOrder.updateTime!=null and PointMailOrder.updateTime!=''">#{PointMailOrder.updateTime},</if>
+        <if test="PointMailOrder.createTime!=null and PointMailOrder.createTime!=''">#{PointMailOrder.createTime},</if>
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointMailOrder.entity.PointMailOrder">
+        update point_mail_order set
+        update_time = #{PointMailOrder.updatetime}
+        <if test="PointMailOrder.userId!=null and PointMailOrder.userId!=''">,user_id=#{PointMailOrder.userId}</if>
+        <if test="PointMailOrder.orderNumber!=null and PointMailOrder.orderNumber!=''">,order_number=#{PointMailOrder.orderNumber}</if>
+        <if test="PointMailOrder.merchandiseName!=null and PointMailOrder.merchandiseName!=''">,merchandise_name=#{PointMailOrder.merchandiseName}</if>
+        <if test="PointMailOrder.merchandiseNumber!=null and PointMailOrder.merchandiseNumber!=''">,merchandise_number=#{PointMailOrder.merchandiseNumber}</if>
+        <if test="PointMailOrder.senderName!=null and PointMailOrder.senderName!=''">,sender_name=#{PointMailOrder.senderName}</if>
+        <if test="PointMailOrder.senderAddress!=null and PointMailOrder.senderAddress!=''">,sender_address=#{PointMailOrder.senderAddress}</if>
+        <if test="PointMailOrder.senderPhone!=null and PointMailOrder.senderPhone!=''">,sender_phone=#{PointMailOrder.senderPhone}</if>
+        <if test="PointMailOrder.senderPostCode!=null and PointMailOrder.senderPostCode!=''">,sender_post_code=#{PointMailOrder.senderPostCode}</if>
+        <if test="PointMailOrder.receiverName!=null and PointMailOrder.receiverName!=''">,receiver_name=#{PointMailOrder.receiverName}</if>
+        <if test="PointMailOrder.receiverAddress!=null and PointMailOrder.receiverAddress!=''">,receiver_address=#{PointMailOrder.receiverAddress}</if>
+        <if test="PointMailOrder.receiverPhone!=null and PointMailOrder.receiverPhone!=''">,receiver_phone=#{PointMailOrder.receiverPhone}</if>
+        <if test="PointMailOrder.receiverPostCode!=null and PointMailOrder.receiverPostCode!=''">,receiver_post_code=#{PointMailOrder.receiverPostCode}</if>
+        <if test="PointMailOrder.updateTime!=null and PointMailOrder.updateTime!=''">,update_time=#{PointMailOrder.updateTime}</if>
+        <if test="PointMailOrder.createTime!=null and PointMailOrder.createTime!=''">,create_time=#{PointMailOrder.createTime}</if>
+        where id =#{PointMailOrder.id}
+    </update>
+
+</mapper>

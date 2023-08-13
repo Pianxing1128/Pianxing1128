@@ -1,7 +1,7 @@
-package com.qc.module.membershipUser.mapper;
+package com.qc.module.userMembership.mapper;
 
 import com.qc.module.course.entity.Course;
-import com.qc.module.membershipUser.entity.MembershipUser;
+import com.qc.module.userMembership.entity.UserMembership;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -18,11 +18,11 @@ import java.math.BigInteger;
  * @since 2023-08-09
  */
 @Mapper
-public interface MembershipUserMapper{
+public interface UserMembershipMapper{
 
-    int insert(@Param("membershipUser") MembershipUser membershipUser);
+    int insert(@Param("membershipUser") UserMembership userMembership);
 
-    int update(@Param("membershipUser") MembershipUser membershipUser);
+    int update(@Param("membershipUser") UserMembership userMembership);
 
     @Select("select * from membership_user where id = #{id} and is_deleted=0")
     Course getById(@Param("id") BigInteger id);
@@ -34,5 +34,8 @@ public interface MembershipUserMapper{
     int delete(@Param("id") BigInteger id,@Param("updateTime") int updateTime);
 
     @Select("select * from membership_user where user_id = #{userId} and is_deleted=0")
-    MembershipUser getByUserId(BigInteger userId);
+    UserMembership getByUserId(BigInteger userId);
+
+    @Select("select is_membership ")
+    Integer getIsMembershipByUserId(BigInteger userId);
 }

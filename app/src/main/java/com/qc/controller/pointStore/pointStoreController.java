@@ -1,10 +1,11 @@
 package com.qc.controller.pointStore;
 
-import com.qc.module.membershipUser.service.MembershipUserService;
+import com.qc.module.pointMailOrder.service.BasePointMailService;
 import com.qc.module.pointMerchandise.entity.PointMerchandise;
 import com.qc.module.pointMerchandise.service.PointMerchandiseService;
 import com.qc.module.pointUser.service.PointUserService;
 import com.qc.module.user.service.BasePointService;
+import com.qc.module.userMembership.service.UserMemberShipService;
 import com.qc.utils.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,13 @@ public class pointStoreController {
     @Autowired
     private BasePointService basePointService;
 
+    @Autowired
+    private BasePointMailService basePointMailService;
 //    @Autowired
 //    private BaseMembershipService baseMembershipService;
 
     @Autowired
-    private MembershipUserService membershipUserService;
+    private UserMemberShipService userMemberShipService;
 
     @RequestMapping("/point/merchandise/purchase")
     public Response pointMerchandisePurchase(BigInteger userId, BigInteger merchandiseId, Integer purchaseMerchandiseNumber){
@@ -46,16 +49,16 @@ public class pointStoreController {
         //产生积分订单，积分变化记录，用户积分变化 + (1会员时间变化 or 2邮寄订单变化）
         try{
 
-            basePointService.changePointForConsumption(userId,userPoint,consumptionPoint,pointMerchandise,purchaseMerchandiseNumber);
+            BigInteger orderNumber = basePointService.changePointForConsumption(userId,userPoint,consumptionPoint,pointMerchandise,purchaseMerchandiseNumber);
             //如果兑换的是会员时间
             if(pointMerchandise.getMerchandiseType()==0){
-                membershipUserService.edit(userId,pointMerchandise,purchaseMerchandiseNumber);
+                userMemberShipService.purchasingForMembership(userId,pointMerchandise,purchaseMerchandiseNumber);
             }
-//            //如果购买是需要邮寄的实物
-//            if(pointMerchandise.getMerchandiseType()==2){
-//                baseMailingService.addMailingOrder(userId,merchandise,purchaseMerchandiseNumber);
-//                return new Response(1001);
-//            }
+            //如果购买是需要邮寄的实物：根据userId拿到订单号 和 用户地址信息；根据商品拿到发货人详情
+            if(pointMerchandise.getMerchandiseType()==1){
+                basePointMailService.createMailingOrder(userId,orderNumber,pointMerchandise,purchaseMerchandiseNumber);
+                return new Response(1001);
+            }
         }catch(Exception e){
             return new Response(4004);
         }

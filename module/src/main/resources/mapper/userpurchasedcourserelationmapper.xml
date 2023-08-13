@@ -1,0 +1,33 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.userPurchasedCourseRelation.mapper.UserPurchasedCourseMapper">
+
+    <insert id="insert" parameterType="com.qc.module.userPurchasedCourseRelation.entity.UserPurchasedCourseRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into user_purchased_course_relation(
+        <if test="userPurchasedCourseRelation.userId!=null and userPurchasedCourseRelation.userId!=''">user_id,</if>
+        <if test="userPurchasedCourseRelation.courseId!=null and userPurchasedCourseRelation.courseId!=''">course_id,</if>
+        <if test="userPurchasedCourseRelation.updateTime!=null and userPurchasedCourseRelation.updateTime!=''">update_time,</if>
+        <if test="userPurchasedCourseRelation.createTime!=null and userPurchasedCourseRelation.createTime!=''">create_time,</if>
+        is_deleted
+        )values(
+        <if test="userPurchasedCourseRelation.userId!=null and userPurchasedCourseRelation.userId!=''">#{userPurchasedCourseRelation.userId},</if>
+        <if test="userPurchasedCourseRelation.courseId!=null and userPurchasedCourseRelation.courseId!=''">#{userPurchasedCourseRelation.courseId},</if>
+        <if test="userPurchasedCourseRelation.updateTime!=null and userPurchasedCourseRelation.updateTime!=''">#{userPurchasedCourseRelation.updateTime},</if>
+        <if test="userPurchasedCourseRelation.createTime!=null and userPurchasedCourseRelation.createTime!=''">#{userPurchasedCourseRelation.createTime},</if>
+        #{userPurchasedCourseRelation.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.userPurchasedCourseRelation.entity.UserPurchasedCourseRelation">
+        update user_purchased_course_relation set
+        update_time = #{userPurchasedCourseRelation.updatetime}
+        <if test="userPurchasedCourseRelation.userId!=null and userPurchasedCourseRelation.userId!=''">,user_id=#{userPurchasedCourseRelation.userId}</if>
+        <if test="userPurchasedCourseRelation.courseId!=null and userPurchasedCourseRelation.courseId!=''">,course_id=#{userPurchasedCourseRelation.courseId}</if>
+        <if test="userPurchasedCourseRelation.createTime!=null and userPurchasedCourseRelation.createTime!=''">,create_time=#{userPurchasedCourseRelation.createTime}</if>
+        <if test="userPurchasedCourseRelation.isDeleted!=null and userPurchasedCourseRelation.isDeleted!=''">,is_deleted=#{userPurchasedCourseRelation.isDeleted}</if>
+        where id =#{userPurchasedCourseRelation.id}
+    </update>
+
+</mapper>

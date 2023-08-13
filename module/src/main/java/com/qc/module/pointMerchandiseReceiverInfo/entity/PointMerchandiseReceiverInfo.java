@@ -1,22 +1,24 @@
-package com.qc.module.membershipUser.entity;
+package com.qc.module.pointMerchandiseReceiverInfo.entity;
 
 import com.qc.utils.BaseUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.math.BigInteger;
 
 /**
  * <p>
- * 用户会员表
+ * 收货人信息
  * </p>
  *
  * @author qc1128
- * @since 2023-08-09
+ * @since 2023-08-10
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class MembershipUser {
+public class PointMerchandiseReceiverInfo{
 
     private BigInteger id;
 
@@ -26,19 +28,24 @@ public class MembershipUser {
     private BigInteger userId;
 
     /**
-     * 是否会员
+     * 收货人名称
      */
-    private Integer isMembership;
+    private String receiverName;
 
     /**
-     * 会员类型名称
+     * 收货人地址
      */
-    private String membershipName;
+    private String receiverAddress;
 
     /**
-     * 会员过期时间
+     * 收货人电话
      */
-    private Integer membershipExpiredTime;
+    private BigInteger receiverPhone;
+
+    /**
+     * 收货地邮编
+     */
+    private Integer receiverPostCode;
 
     /**
      * 更新时间

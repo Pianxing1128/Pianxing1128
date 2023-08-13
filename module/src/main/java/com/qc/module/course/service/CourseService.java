@@ -116,4 +116,12 @@ public class CourseService {
         Integer begin = (pageNum-1)*pageSize;
         return mapper.getCourseTeacherUserByRealNameAndNickName(begin,pageSize,realName,nickName);
     }
+
+    public Integer getCourseTypeById(BigInteger courseId) {
+        return mapper.getCourseTypeById(courseId);
+    }
+
+    public Course getAvailableCourseById(BigInteger courseId) {
+        return mapper.getAvailableCourseById(courseId);
+    }
 }

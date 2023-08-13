@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointMerchandiseReceiverInfo.mapper.PointMerchandiseReceiverInfoMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointMerchandiseReceiverInfo.entity.PointMerchandiseReceiverInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into point_merchandise_receiver_info(
+        <if test="pointMerchandiseReceiverInfo.userId!=null">user_id,</if>
+        <if test="pointMerchandiseReceiverInfo.receiverName!=null and pointMerchandiseReceiverInfo.receiverName!=''">receiver_name,</if>
+        <if test="pointMerchandiseReceiverInfo.receiverAddress!=null and pointMerchandiseReceiverInfo.receiverAddress!=''">receiver_address,</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPhone!=null">receiver_phone,</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPostCode!=null">receiver_post_code,</if>
+        <if test="pointMerchandiseReceiverInfo.updateTime!=null">update_time,</if>
+        <if test="pointMerchandiseReceiverInfo.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="pointMerchandiseReceiverInfo.userId!=null">#{pointMerchandiseReceiverInfo.userId},</if>
+        <if test="pointMerchandiseReceiverInfo.receiverName!=null and pointMerchandiseReceiverInfo.receiverName!=''">#{pointMerchandiseReceiverInfo.receiverName},</if>
+        <if test="pointMerchandiseReceiverInfo.receiverAddress!=null and pointMerchandiseReceiverInfo.receiverAddress!=''">#{pointMerchandiseReceiverInfo.receiverAddress},</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPhone!=null">#{pointMerchandiseReceiverInfo.receiverPhone},</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPostCode!=null">#{pointMerchandiseReceiverInfo.receiverPostCode},</if>
+        <if test="pointMerchandiseReceiverInfo.updateTime!=null">#{pointMerchandiseReceiverInfo.updateTime},</if>
+        <if test="pointMerchandiseReceiverInfo.createTime!=null">#{pointMerchandiseReceiverInfo.createTime},</if>
+        #{pointMerchandiseReceiverInfo.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointMerchandiseReceiverInfo.entity.PointMerchandiseReceiverInfo">
+        update point_merchandise_receiver_info set
+        update_time = #{pointMerchandiseReceiverInfo.updatetime}
+        <if test="pointMerchandiseReceiverInfo.userId!=null">,user_id=#{pointMerchandiseReceiverInfo.userId}</if>
+        <if test="pointMerchandiseReceiverInfo.receiverName!=null and pointMerchandiseReceiverInfo.receiverName!=''">,receiver_name=#{pointMerchandiseReceiverInfo.receiverName}</if>
+        <if test="pointMerchandiseReceiverInfo.receiverAddress!=null and pointMerchandiseReceiverInfo.receiverAddress!=''">,receiver_address=#{pointMerchandiseReceiverInfo.receiverAddress}</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPhone!=null">,receiver_phone=#{pointMerchandiseReceiverInfo.receiverPhone}</if>
+        <if test="pointMerchandiseReceiverInfo.receiverPostCode!=null">,receiver_post_code=#{pointMerchandiseReceiverInfo.receiverPostCode}</if>
+        <if test="pointMerchandiseReceiverInfo.updateTime!=null">,update_time=#{pointMerchandiseReceiverInfo.updateTime}</if>
+        <if test="pointMerchandiseReceiverInfo.createTime!=null">,create_time=#{pointMerchandiseReceiverInfo.createTime}</if>
+        <if test="pointMerchandiseReceiverInfo.isDeleted!=null">,is_deleted=#{pointMerchandiseReceiverInfo.isDeleted}</if>
+        where id =#{pointMerchandiseReceiverInfo.id}
+    </update>
+
+</mapper>

@@ -30,4 +30,7 @@ public interface PointUserOrderMapper {
 
     @Select("select merchandise_point from point_user_order where order_id=#{orderId}")
     Integer getMerchandisePointByOrderId(BigInteger orderId);
+
+    @Select("select order_number from point_user_order where order_id =#{orderId}")
+    BigInteger getOrderNumberById(BigInteger orderId);
 }

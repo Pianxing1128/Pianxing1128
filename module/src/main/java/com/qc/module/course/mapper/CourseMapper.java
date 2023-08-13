@@ -35,5 +35,9 @@ public interface CourseMapper {
     List<NewCourse> getCourseTeacherUserByRealNameAndNickName(@Param("begin") Integer begin,
                                                               @Param("size") Integer pageSize,
                                                               String realName, String nickName);
+    @Select("select course_type from course where id=#{courseId} and is_marketable = 1 and is_deleted =0")
+    Integer getCourseTypeById(BigInteger courseId);
 
+    @Select("select * from course where id=#{courseId} and is_marketable = 1 and is_deleted =0")
+    Course getAvailableCourseById(BigInteger courseId);
 }

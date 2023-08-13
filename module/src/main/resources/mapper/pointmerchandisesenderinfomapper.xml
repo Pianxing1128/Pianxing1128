@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.pointMerchandiseSenderInfo.mapper.PointMerchandiseSenderInfoMapper">
+
+    <insert id="insert" parameterType="com.qc.module.pointMerchandiseSenderInfo.entity.PointMerchandiseSenderInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into point_merchandise_sender_info(
+        <if test="pointMerchandiseSenderInfo.merchandiseId!=null and pointMerchandiseSenderInfo.merchandiseId!=''">merchandise_id,</if>
+        <if test="pointMerchandiseSenderInfo.merchandiseName!=null and pointMerchandiseSenderInfo.merchandiseName!=''">merchandise_name,</if>
+        <if test="pointMerchandiseSenderInfo.senderName!=null and pointMerchandiseSenderInfo.senderName!=''">sender_name,</if>
+        <if test="pointMerchandiseSenderInfo.senderAddress!=null and pointMerchandiseSenderInfo.senderAddress!=''">sender_address,</if>
+        <if test="pointMerchandiseSenderInfo.senderPhone!=null">sender_phone,</if>
+        <if test="pointMerchandiseSenderInfo.senderPostCode!=null">sender_post_code,</if>
+        <if test="pointMerchandiseSenderInfo.updateTime!=null">update_time,</if>
+        <if test="pointMerchandiseSenderInfo.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="pointMerchandiseSenderInfo.merchandiseId!=null">#{pointMerchandiseSenderInfo.merchandiseId},</if>
+        <if test="pointMerchandiseSenderInfo.merchandiseName!=null and pointMerchandiseSenderInfo.merchandiseName!=''">#{pointMerchandiseSenderInfo.merchandiseName},</if>
+        <if test="pointMerchandiseSenderInfo.senderName!=null and pointMerchandiseSenderInfo.senderName!=''">#{pointMerchandiseSenderInfo.senderName},</if>
+        <if test="pointMerchandiseSenderInfo.senderAddress!=null and pointMerchandiseSenderInfo.senderAddress!=''">#{pointMerchandiseSenderInfo.senderAddress},</if>
+        <if test="pointMerchandiseSenderInfo.senderPhone!=null">#{pointMerchandiseSenderInfo.senderPhone},</if>
+        <if test="pointMerchandiseSenderInfo.senderPostCode!=null">#{pointMerchandiseSenderInfo.senderPostCode},</if>
+        <if test="pointMerchandiseSenderInfo.updateTime!=null">#{pointMerchandiseSenderInfo.updateTime},</if>
+        <if test="pointMerchandiseSenderInfo.createTime!=null">#{pointMerchandiseSenderInfo.createTime},</if>
+        #{pointMerchandiseSenderInfo.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.pointMerchandiseSenderInfo.entity.PointMerchandiseSenderInfo">
+        update point_merchandise_sender_info set
+        update_time = #{pointMerchandiseSenderInfo.updatetime}
+        <if test="pointMerchandiseSenderInfo.merchandiseId!=null">,merchandise_id=#{pointMerchandiseSenderInfo.merchandiseId}</if>
+        <if test="pointMerchandiseSenderInfo.merchandiseName!=null and pointMerchandiseSenderInfo.merchandiseName!=''">,merchandise_name=#{pointMerchandiseSenderInfo.merchandiseName}</if>
+        <if test="pointMerchandiseSenderInfo.senderName!=null and pointMerchandiseSenderInfo.senderName!=''">,sender_name=#{pointMerchandiseSenderInfo.senderName}</if>
+        <if test="pointMerchandiseSenderInfo.senderAddress!=null and pointMerchandiseSenderInfo.senderAddress!=''">,sender_address=#{pointMerchandiseSenderInfo.senderAddress}</if>
+        <if test="pointMerchandiseSenderInfo.senderPhone!=null">,sender_phone=#{pointMerchandiseSenderInfo.senderPhone}</if>
+        <if test="pointMerchandiseSenderInfo.senderPostCode!=null">,sender_post_code=#{pointMerchandiseSenderInfo.senderPostCode}</if>
+        <if test="pointMerchandiseSenderInfo.updateTime!=null">,update_time=#{pointMerchandiseSenderInfo.updateTime}</if>
+        <if test="pointMerchandiseSenderInfo.createTime!=null">,create_time=#{pointMerchandiseSenderInfo.createTime}</if>
+        <if test="pointMerchandiseSenderInfo.isDeleted!=null">,is_deleted=#{pointMerchandiseSenderInfo.isDeleted}</if>
+        where id =#{pointMerchandiseSenderInfo.id}
+    </update>
+
+</mapper>

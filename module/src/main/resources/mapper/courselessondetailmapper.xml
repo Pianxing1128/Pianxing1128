@@ -1,0 +1,42 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.courseLessonDetail.mapper.CourseLessonDetailMapper">
+
+    <insert id="insert" parameterType="com.qc.module.courseLessonDetail.entity.CourseLessonDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into course_lesson_detail(
+        <if test="courseLessonDetail.courseId!=null">course_id,</if>
+        <if test="courseLessonDetail.lessonName!=null and courseLessonDetail.lessonName!=''">lesson_name,</if>
+        <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">lesson_link,</if>
+        <if test="courseLessonDetail.lessonTime!=null">lesson_time,</if>
+        <if test="courseLessonDetail.lessonType!=null">lesson_type,</if>
+        <if test="courseLessonDetail.updateTime!=null">update_time,</if>
+        <if test="courseLessonDetail.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="courseLessonDetail.courseId!=null">#{courseLessonDetail.courseId},</if>
+        <if test="courseLessonDetail.lessonName!=null and courseLessonDetail.lessonName!=''">#{courseLessonDetail.lessonName},</if>
+        <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">#{courseLessonDetail.lessonLink},</if>
+        <if test="courseLessonDetail.lessonTime!=null">#{courseLessonDetail.lessonTime},</if>
+        <if test="courseLessonDetail.lessonType!=null">#{courseLessonDetail.lessonType},</if>
+        <if test="courseLessonDetail.updateTime!=null">#{courseLessonDetail.updateTime},</if>
+        <if test="courseLessonDetail.createTime!=null">#{courseLessonDetail.createTime},</if>
+        #{courseLessonDetail.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.courseLessonDetail.entity.CourseLessonDetail">
+        update course_lesson_detail set
+        update_time = #{courseLessonDetail.updatetime}
+        <if test="courseLessonDetail.courseId!=null">,course_id=#{courseLessonDetail.courseId}</if>
+        <if test="courseLessonDetail.lessonName!=null and courseLessonDetail.lessonName!=''">,lesson_name=#{courseLessonDetail.lessonName}</if>
+        <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">,lesson_link=#{courseLessonDetail.lessonLink}</if>
+        <if test="courseLessonDetail.lessonTime!=null">,lesson_time=#{courseLessonDetail.lessonTime}</if>
+        <if test="courseLessonDetail.lessonType!=null">,lesson_type=#{courseLessonDetail.lessonType}</if>
+        <if test="courseLessonDetail.createTime!=null">,create_time=#{courseLessonDetail.createTime}</if>
+        <if test="courseLessonDetail.isDeleted!=null">,is_deleted=#{courseLessonDetail.isDeleted}</if>
+        where id =#{courseLessonDetail.id}
+    </update>
+
+</mapper>

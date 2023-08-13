@@ -243,4 +243,28 @@ public class BaseUtils {
         }
         return date;
     }
+
+
+
+    public static String generateOrderNumber() {
+        // 获取当前时间
+        Date currentTime = new Date();
+
+        // 定义日期格式
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+        // 将当前时间转换为指定格式的日期字符串
+        String dateString = dateFormat.format(currentTime);
+
+        // 生成随机数
+        Random random = new Random();
+        int randomNumber = random.nextInt(900) + 100;
+
+        // 拼接订单编号
+        String orderNumber = dateString + randomNumber;
+
+        // 返回最终的订单编号
+        return orderNumber;
+    }
+
 }

@@ -37,4 +37,8 @@ public class PointUserOrderService{
     public Integer getMerchandisePointByOrderId(BigInteger orderId) {
         return mapper.getMerchandisePointByOrderId(orderId);
     }
+
+    public BigInteger getOrderNumberById(BigInteger orderId) {
+        return mapper.getOrderNumberById(orderId);
+    }
 }

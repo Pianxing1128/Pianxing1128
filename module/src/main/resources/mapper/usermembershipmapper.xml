@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.userMembership.mapper.UserMembershipMapper">
+
+    <insert id="insert" parameterType="com.qc.module.userMembership.entity.UserMembership" useGeneratedKeys="true" keyProperty="id">
+        insert into user_membership(
+        <if test="userMembership.userId!=null">user_id,</if>
+        <if test="userMembership.isMembership!=null">is_membership,</if>
+        <if test="userMembership.membershipName!=null and userMembership.membershipName!=''">membership_name,</if>
+        <if test="userMembership.membershipExpiredTime!=null">membership_expired_time,</if>
+        <if test="userMembership.updateTime!=null">update_time,</if>
+        <if test="userMembership.createTime!=null">create_time,</if>
+        is_deleted
+        )values(
+        <if test="userMembership.userId!=null">#{userMembership.userId},</if>
+        <if test="userMembership.isMembership!=null">#{userMembership.isMembership},</if>
+        <if test="userMembership.membershipName!=null and userMembership.membershipName!=''">#{userMembership.membershipName},</if>
+        <if test="userMembership.membershipExpiredTime!=null">#{userMembership.membershipExpiredTime},</if>
+        <if test="userMembership.updateTime!=null">#{userMembership.updateTime},</if>
+        <if test="userMembership.createTime!=null">#{userMembership.createTime},</if>
+        #{userMembership.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.userMembership.entity.UserMembership">
+        update user_membership set
+        update_time = #{userMembership.updatetime}
+        <if test="userMembership.userId!=null">,user_id=#{userMembership.userId}</if>
+        <if test="userMembership.isMembership!=null">,is_membership=#{userMembership.isMembership}</if>
+        <if test="userMembership.membershipName!=null and userMembership.membershipName!=''">,membership_name=#{userMembership.membershipName}</if>
+        <if test="userMembership.membershipExpiredTime!=null">,membership_expired_time=#{userMembership.membershipExpiredTime}</if>
+        <if test="userMembership.updateTime!=null">,update_time=#{userMembership.updateTime}</if>
+        <if test="userMembership.createTime!=null">,create_time=#{userMembership.createTime}</if>
+        <if test="userMembership.isDeleted!=null">,is_deleted=#{userMembership.isDeleted}</if>
+        where id =#{userMembership.id}
+    </update>
+
+</mapper>
