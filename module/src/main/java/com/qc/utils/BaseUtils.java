@@ -1,16 +1,19 @@
 package com.qc.utils;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import redis.clients.jedis.Jedis;
 
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
-
+@Slf4j
 public class BaseUtils {
     public static int currentSeconds() {
         return (int) (System.currentTimeMillis() / 1000);
@@ -265,6 +268,111 @@ public class BaseUtils {
 
         // 返回最终的订单编号
         return orderNumber;
+    }
+
+    //用户签到实现
+//    public static AjaxResult check(@PathVariable String id) {
+//        //首先拼接key
+//        String day =  DateFormatUtils.format(new Date(), "yyyyMMdd");
+//        String key = id + ":" +day;
+//        //redis中是否存在该key
+//        Boolean flag = redisTemplate.hasKey(key);
+//        if(flag){
+//            return AjaxResult.error(500,"今日用户已签到");
+//        }else{
+//            //设置redis中的过期时间，凌晨0点清空；
+//            redisTemplate.opsForValue().set(key, day, getRefreshTime(), TimeUnit.SECONDS);
+//            //将未签到用户记录在mysql中
+//            int i = iPlatUserService.insert(id);
+//            if(i > 0){
+//                //签到成功
+//                return AjaxResult.success("用户成功签到");
+//            }else {
+//                return AjaxResult.error(500,"由于不正常原因，用户签到失败！");
+//            }
+//        }
+//    }
+
+
+    /*
+     * 获取当前时间离明天凌晨还有多少时间
+     * */
+    public static int getRefreshTime(){
+        Calendar calendar = Calendar.getInstance();
+        int now = (int) (calendar.getTimeInMillis()/1000);
+        calendar.add(Calendar.DATE, 1);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY , 0);
+        return (int) (calendar.getTimeInMillis()/1000-now);
+    }
+
+
+
+    private static final String REDIS_HOST = "localhost";
+    private static final int REDIS_PORT = 6379;
+    private static final String SIGN_IN_KEY_PREFIX = "user_sign_in:";
+
+
+//    public static void main(String[] args) {
+//
+//        signIn(1);
+//        Boolean is1 = hasSignedInToday(1);
+//        log.info(String.valueOf(is1));
+//        Boolean is2 = hasSignedInToday(2);
+//        log.info(String.valueOf(is2));
+//    }
+
+    // 用户签到方法
+    public static void signIn(BigInteger userId) {
+        try (Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT)) {
+            // 使用Set数据结构存储用户的签到日期
+            String signInKey = SIGN_IN_KEY_PREFIX + userId;
+            LocalDate currentDate = LocalDate.now();
+            jedis.sadd(signInKey, currentDate.toString());
+            log.info("用户 " + userId + " 签到成功！");
+        }
+    }
+
+    // 判断用户今天是否签到
+    public static boolean hasSignedInToday(BigInteger userId) {
+        try (Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT)) {
+            String signInKey = SIGN_IN_KEY_PREFIX + userId;
+            LocalDate currentDate = LocalDate.now();
+
+            // 使用Redis的SISMEMBER命令判断今天是否在集合中
+            return jedis.sismember(signInKey, currentDate.toString());
+        }
+    }
+    //获取当前年月
+    public static String getCurrentYearMonth(){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        String currentYear = String.valueOf(year);
+        String currentMonth = String.valueOf(month);
+        String currentYearMonth = currentYear+"年"+currentMonth+"月";
+        return currentYearMonth;
+    }
+
+    //用户分享存到redis
+    public static void shareIn(BigInteger userId) {
+        try (Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT)) {
+            // 使用Set数据结构存储用户的签到日期
+            String signInKey = SIGN_IN_KEY_PREFIX + userId;
+            jedis.sadd(signInKey, getCurrentYearMonth());
+            log.info("用户 " + userId + " 本年本月分享成功！");
+        }
+    }
+    // 判断这个月是否分享
+    public static boolean hasSharedInMonth(BigInteger userId){
+
+        try (Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT)) {
+            String signInKey = SIGN_IN_KEY_PREFIX + userId;
+            // 使用Redis的SISMEMBER命令判断今天是否在集合中
+            return jedis.sismember(signInKey, getCurrentYearMonth());
+        }
+
     }
 
 }

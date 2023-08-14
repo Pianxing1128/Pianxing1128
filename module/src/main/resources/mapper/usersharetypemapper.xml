@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qc.module.userShareType.mapper.UserShareTypeMapper">
+
+    <insert id="insert" parameterType="com.qc.module.userShareType.entity.UserShareType" useGeneratedKeys="true" keyProperty="id">
+        insert into user_share_type(
+        <if test="userShareType.shareName!=null and userShareType.shareName!=''">share_name,</if>
+        <if test="userShareType.updateTime!=null and userShareType.updateTime!=''">update_time,</if>
+        <if test="userShareType.createTime!=null and userShareType.createTime!=''">create_time,</if>
+        is_deleted
+        )values(
+        <if test="userShareType.shareName!=null and userShareType.shareName!=''">#{userShareType.shareName},</if>
+        <if test="userShareType.updateTime!=null and userShareType.updateTime!=''">#{userShareType.updateTime},</if>
+        <if test="userShareType.createTime!=null and userShareType.createTime!=''">#{userShareType.createTime},</if>
+        #{userShareType.isDeleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.qc.module.userShareType.entity.UserShareType">
+        update user_share_type set
+        update_time = #{userShareType.updatetime}
+        <if test="userShareType.shareName!=null and userShareType.shareName!=''">,share_name=#{userShareType.shareName}</if>
+        <if test="userShareType.createTime!=null and userShareType.createTime!=''">,create_time=#{userShareType.createTime}</if>
+        <if test="userShareType.isDeleted!=null and userShareType.isDeleted!=''">,is_deleted=#{userShareType.isDeleted}</if>
+        where id =#{userShareType.id}
+    </update>
+
+</mapper>

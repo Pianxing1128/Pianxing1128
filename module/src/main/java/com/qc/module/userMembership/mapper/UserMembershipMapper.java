@@ -24,18 +24,18 @@ public interface UserMembershipMapper{
 
     int update(@Param("membershipUser") UserMembership userMembership);
 
-    @Select("select * from membership_user where id = #{id} and is_deleted=0")
+    @Select("select * from user_membership where id = #{id} and is_deleted=0")
     Course getById(@Param("id") BigInteger id);
 
-    @Select("select * from membership_user where id=#{id}")
+    @Select("select * from user_membership where id=#{id}")
     Course extractById(@Param("id")BigInteger id);
 
-    @Update("update membership_user set is_deleted=1,update_time=#{updateTime} where id = #{id}")
+    @Update("update user_membership set is_deleted=1,update_time=#{updateTime} where id = #{id}")
     int delete(@Param("id") BigInteger id,@Param("updateTime") int updateTime);
 
-    @Select("select * from membership_user where user_id = #{userId} and is_deleted=0")
+    @Select("select * from user_membership where user_id = #{userId} and is_deleted=0")
     UserMembership getByUserId(BigInteger userId);
 
-    @Select("select is_membership ")
+    @Select("select is_membership from user_membership where user_id =#{userId} and is_deleted = 0")
     Integer getIsMembershipByUserId(BigInteger userId);
 }

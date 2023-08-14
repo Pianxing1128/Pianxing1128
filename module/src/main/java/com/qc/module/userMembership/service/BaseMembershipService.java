@@ -1,7 +1,8 @@
 //package com.qc.module.membershipUser.service;
 //
-//import com.qc.module.membershipUser.entity.MembershipUser;
 //import com.qc.module.pointMerchandise.entity.PointMerchandise;
+//import com.qc.module.userMembership.entity.UserMembership;
+//import com.qc.module.userMembership.service.UserMemberShipService;
 //import com.qc.utils.BaseUtils;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,10 @@
 //@Slf4j
 //public class BaseMembershipService {
 //
-//    private MembershipUserService membershipUserService;
+//    private UserMemberShipService userMemberShipService;
 //    @Autowired
-//    public BaseMembershipService(MembershipUserService membershipUserService){
-//        this.membershipUserService = membershipUserService;
+//    public BaseMembershipService(UserMemberShipService userMemberShipService){
+//        this.userMemberShipService = userMemberShipService;
 //    }
 //    @Transactional(rollbackFor = Exception.class)
 //    public void changeExpiredTimeForConsumption(BigInteger userId, PointMerchandise pointMerchandise, Integer merchandiseNumber) {
@@ -26,14 +27,16 @@
 //        Integer addedTime = pointMerchandise.getMerchandiseDuration() * merchandiseNumber;
 //
 //        //根据userId查到去 用户会员时间表 当前用户的会员时间 如果查不到就在 MembershipUser 表里新增数据
-//        MembershipUser membershipUser  = membershipUserService.getByUserId(userId);
-//        if(BaseUtils.isEmpty(membershipUser)){
-//            membershipUserService.edit(userId,addedTime);
+//        UserMembership userMembership  = userMemberShipService.getByUserId(userId);
+//        if(BaseUtils.isEmpty(userMembership)){
+//            Integer membershipExpiredTime = 0;
+//            membershipExpiredTime = addedTime;
+//            userMemberShipService.edit(userId,membershipExpiredTime);
 //        }else{
-//            Integer membershipExpiredTime = membershipUser.getMembershipExpiredTime();
+//            Integer membershipExpiredTime = userMembership.getMembershipExpiredTime();
 //            // 当前过期时间戳+需要增加的时间戳，更新用户会员时间表里的过期时间
 //            membershipExpiredTime = membershipExpiredTime + addedTime;
-//            membershipUserService.edit(userId,membershipExpiredTime);
+//            userMemberShipService.edit(userId,membershipExpiredTime);
 //        }
 //
 //    }

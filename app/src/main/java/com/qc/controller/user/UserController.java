@@ -10,6 +10,9 @@ import com.qc.module.user.service.BasePointService;
 import com.qc.module.user.service.BaseUserPurchasedCourseService;
 import com.qc.module.user.service.BaseUserWatchService;
 import com.qc.module.user.service.UserService;
+import com.qc.module.userMembership.service.UserMemberShipService;
+import com.qc.module.userShareType.entity.UserShareType;
+import com.qc.module.userShareType.service.UserShareTypeService;
 import com.qc.utils.BaseUtils;
 import com.qc.utils.IpUtils;
 import com.qc.utils.Response;
@@ -34,6 +37,12 @@ public class UserController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private UserMemberShipService userMemberShipService;
+
+    @Autowired
+    private UserShareTypeService userShareTypeService;
 
     @Autowired
     private BasePointService basePointService;
@@ -203,6 +212,8 @@ public class UserController {
 
             //创建用户购买课程关系
             baseUserPurchasedCourseService.createUserPurchasedCourseRelation(userId,courseId);
+            //创建购买课程订单
+
             //产生积分订单，积分变化记录，用户积分变化
             basePointService.purchasingCourseForGiftPoint(userId,course);
 
@@ -212,4 +223,74 @@ public class UserController {
         }
 
     }
+
+
+    @RequestMapping("/user/sign/in") //用户签到送积分
+    public Response userSingIn(@VerifiedUser User loginUser,
+                               @RequestParam(required = false)BigInteger userId){
+
+        //先验证登录
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+        //然后判断用户今天是否已经签到,如果已经签到就不能签到了
+        boolean hasSignedIn = BaseUtils.hasSignedInToday(userId);
+        if(hasSignedIn==true){
+            return new Response(1002);
+        }
+        //没有签到，然后从user_membership表里判断是否会员:只判断是否是会员1就行了；会员过期了是0，没买过会员查不到。
+        Integer isMembership = userMemberShipService.getIsMembershipByUserId(userId);
+        Integer addedPoint = 0;
+        //会员签到积分+2，非会员签到积分+1
+        if(isMembership==1){
+            addedPoint = 2;
+        }else{
+            addedPoint = 1;
+        }
+        try{
+            //产生积分订单，积分变化记录，用户积分变化
+            basePointService.addPointForSingIn(userId,addedPoint);
+            //在redis里写入当前用户的签到标识
+            BaseUtils.signIn(userId);
+            return new Response(1001);
+
+        }catch (Exception e){
+            return new Response(1002);
+        }
+
+    }
+
+    //本月只分享一次获得100积分
+    @RequestMapping("/user/share/course")
+    public Response courseShare(@VerifiedUser User loginUser,
+                                @RequestParam(required = false)BigInteger userId,
+                                @RequestParam(required = false)BigInteger courseId,
+                                @RequestParam(required = false)BigInteger shareId){
+
+        //先验证登录
+        if (BaseUtils.isEmpty(loginUser)) {
+            return new Response(1002);
+        }
+
+        //验证是否这个月分享过，如果分享过不增加积分，直接返回ok，如果没有，就继续下一步
+        boolean shareOrNot = BaseUtils.hasSharedInMonth(userId);
+        if(shareOrNot == true){
+            return new Response(1001);
+        }
+
+        //验证分享成功码是否在表中，如果是从分享成功表中获取 客户是通过哪种渠道分享的
+        // 1.通过微信朋友圈分享 2.通过微博分享
+        UserShareType userShareType = userShareTypeService.getById(shareId);
+        if(BaseUtils.isEmpty(userShareType)){
+            return new Response(1002);
+        }
+        //没分享过分享记录表增加一条数据，积分变化记录表增加一条数据，用户积分增加100
+        try{
+            basePointService.addPointForSharing(userId,courseId,userShareType);
+            return new Response(1001);
+        }catch(Exception e){
+            return new Response(1002);
+        }
+    }
+
 }

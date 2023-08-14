@@ -51,4 +51,17 @@ public class UserMemberShipService {
     public Integer getIsMembershipByUserId(BigInteger userId) {
         return mapper.getIsMembershipByUserId(userId);
     }
+
+    public UserMembership getByUserId(BigInteger userId) {
+        return mapper.getByUserId(userId);
+
+    }
+
+    public void edit(BigInteger userId, Integer addedTime) {
+
+        UserMembership userMembership = new UserMembership();
+        userMembership.setUserId(userId);
+        userMembership.setCreateTime(BaseUtils.currentSeconds());
+
+    }
 }
