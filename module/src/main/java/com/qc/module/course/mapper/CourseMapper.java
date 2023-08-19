@@ -30,7 +30,7 @@ public interface CourseMapper {
 
     List<Course> getCoursesByCourseNameAndNickNameAndShowTagId(@Param("begin") Integer begin, @Param("size") Integer pageSize,@Param("courseName") String courseName,
                                                                @Param("idsByTeacherId")String idsByTeacherId,@Param("courseIds")String courseIds,
-                                                               @Param("orderedName")String orderedName, @Param("isVip")Integer isVip);
+                                                               @Param("orderedName")String orderedName, @Param("courseType")Integer courseType);
 
     List<NewCourse> getCourseTeacherUserByRealNameAndNickName(@Param("begin") Integer begin,
                                                               @Param("size") Integer pageSize,

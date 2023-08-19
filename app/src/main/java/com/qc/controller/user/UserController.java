@@ -5,6 +5,7 @@ import com.qc.domain.user.UserInfoVo;
 import com.qc.domain.user.UserLoginInfoVo;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.service.CourseService;
+import com.qc.module.pointUser.service.PointUserService;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.BasePointService;
 import com.qc.module.user.service.BaseUserPurchasedCourseService;
@@ -37,6 +38,9 @@ public class UserController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private PointUserService pointUserService;
 
     @Autowired
     private UserMemberShipService userMemberShipService;
@@ -137,7 +141,8 @@ public class UserController {
         userInfo.setBirthday(BaseUtils.timeStamp2Date(user.getBirthday()));
         userInfo.setGender(user.getGender());
         userInfo.setUserIntro(user.getUserIntro());
-
+        Integer userCurrentPoint = pointUserService.getPointByUserId(user.getId());
+        userInfo.setUserCurrentPoint(userCurrentPoint);
         UserLoginInfoVo loginInfo = new UserLoginInfoVo();
 
         loginInfo.setSign(SignUtils.makeSign(user.getId()));
@@ -183,8 +188,8 @@ public class UserController {
             return new Response(1002);
         }
         try{
-            baseUserWatchService.verifyUserWatchCourse(userId,courseId,courseLessonDetailId);
-            return new Response(1001);
+            String courseLessonLink = baseUserWatchService.verifyUserWatchCourse(userId,courseId,courseLessonDetailId);
+            return new Response(1001,courseLessonLink);
 
         }catch(Exception e){
             return new Response(4004);
@@ -192,8 +197,8 @@ public class UserController {
 
     }
 
-    @RequestMapping("/user/purchase/order")
-    public Response userPurchaseOrder(@VerifiedUser User loginUser,
+    @RequestMapping("/user/purchase/course")
+    public Response userPurchaseCourse(@VerifiedUser User loginUser,
                                       @RequestParam(required = false)BigInteger courseId,
                                       @RequestParam(required = false)BigInteger userId
                                       ){
@@ -205,7 +210,7 @@ public class UserController {
         //再验证课程是否在架
         Course course = courseService.getAvailableCourseById(courseId);
         if(BaseUtils.isEmpty(course)){
-            return new Response(1002);
+            return new Response(4004);
         }
 
         try{
@@ -219,7 +224,7 @@ public class UserController {
 
             return new Response(1001);
         }catch (Exception e){
-            return new Response(1002);
+            return new Response(4004);
         }
 
     }
@@ -236,17 +241,19 @@ public class UserController {
         //然后判断用户今天是否已经签到,如果已经签到就不能签到了
         boolean hasSignedIn = BaseUtils.hasSignedInToday(userId);
         if(hasSignedIn==true){
-            return new Response(1002);
+            return new Response(1001);
         }
         //没有签到，然后从user_membership表里判断是否会员:只判断是否是会员1就行了；会员过期了是0，没买过会员查不到。
         Integer isMembership = userMemberShipService.getIsMembershipByUserId(userId);
         Integer addedPoint = 0;
         //会员签到积分+2，非会员签到积分+1
-        if(isMembership==1){
+        if(BaseUtils.isEmpty(isMembership)){
             addedPoint = 2;
-        }else{
+        }else {
             addedPoint = 1;
         }
+
+
         try{
             //产生积分订单，积分变化记录，用户积分变化
             basePointService.addPointForSingIn(userId,addedPoint);
@@ -287,6 +294,7 @@ public class UserController {
         //没分享过分享记录表增加一条数据，积分变化记录表增加一条数据，用户积分增加100
         try{
             basePointService.addPointForSharing(userId,courseId,userShareType);
+            BaseUtils.shareIn(userId);
             return new Response(1001);
         }catch(Exception e){
             return new Response(1002);

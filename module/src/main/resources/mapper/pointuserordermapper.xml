@@ -8,7 +8,7 @@
     <insert id="insert" parameterType="com.qc.module.pointUserOrder.entity.PointUserOrder" useGeneratedKeys="true" keyProperty="id">
         insert into point_user_order(
         <if test="pointUserOrder.userId!=null ">user_id,</if>
-        <if test="pointUserOrder.orderId!=null ">order_id,</if>
+        <if test="pointUserOrder.orderNumber!=null ">order_number</if>
         <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">supplier_name,</if>
         <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">merchandise_name,</if>
         <if test="pointUserOrder.merchandiseType!=null ">merchandise_type,</if>
@@ -22,7 +22,7 @@
 
         )values(
         <if test="pointUserOrder.userId!=null and pointUserOrder.userId!=''">#{pointUserOrder.userId},</if>
-        <if test="pointUserOrder.orderId!=null ">#{pointUserOrder.orderId},</if>
+        <if test="pointUserOrder.orderNumber!=null ">#{pointUserOrder.orderNumber},</if>
         <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">#{pointUserOrder.supplierName},</if>
         <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">#{pointUserOrder.merchandiseName},</if>
         <if test="pointUserOrder.merchandiseType!=null ">#{pointUserOrder.merchandiseType},</if>
@@ -41,7 +41,7 @@
         update point_user_order set
         update_time = #{pointUserOrder.updatetime}
         <if test="pointUserOrder.userId!=null">,user_id=#{pointUserOrder.userId}</if>
-        <if test="pointUserOrder.orderId!=null ">,order_id=#{pointUserOrder.orderId}</if>
+        <if test="pointUserOrder.orderNumber!=null ">,order_number=#{pointUserOrder.orderId}</if>
         <if test="pointUserOrder.supplierName!=null and pointUserOrder.supplierName!=''">,supplier_name=#{pointUserOrder.supplierName}</if>
         <if test="pointUserOrder.merchandiseName!=null and pointUserOrder.merchandiseName!=''">,merchandise_name=#{pointUserOrder.merchandiseName}</if>
         <if test="pointUserOrder.merchandiseType!=null ">,merchandise_type=#{pointUserOrder.merchandiseType}</if>
@@ -50,7 +50,6 @@
         <if test="pointUserOrder.consumptionPointAmount!=null ">,consumption_point_amount=#{pointUserOrder.consumptionPointAmount}</if>
         <if test="pointUserOrder.orderAddress!=null and pointUserOrder.orderAddress!=''">,order_address=#{pointUserOrder.orderAddress}</if>
         <if test="pointUserOrder.purchasedTime!=null ">,purchased_time=#{pointUserOrder.purchasedTime}</if>
-        <if test="pointUserOrder.updateTime!=null">,update_time=#{pointUserOrder.updateTime}</if>
         <if test="pointUserOrder.createTime!=null ">,create_time=#{pointUserOrder.createTime}</if>
         where id =#{pointUserOrder.id}
     </update>

@@ -25,6 +25,6 @@ public class CourseListVo {
     private ImageVo wallImage;
     private List<String> tags;
     private Integer PurchasedTotal;
-    private Integer isVip;
+    private String courseType;
     private Integer isMarketable;
 }

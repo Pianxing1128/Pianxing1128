@@ -62,7 +62,7 @@ public class CourseService {
             course.setCourseImage(courseImage);
         }
         course.setCoursePrice(coursePrice);
-        course.setIsVip(isVip);
+        course.setCourseType(coursePrice);
         course.setIsMarketable(isMarketable);
         course.setPurchasedTotal(purchasedTotal);
         course.setWeight(weight);
@@ -105,11 +105,11 @@ public class CourseService {
     }
 
     public List<Course> getCourseByCourseNameAndNickNameAndShowTagId(Integer pageNum, Integer pageSize,String courseName,String nickName,String courseIds,
-                                                                     String orderedName,Integer isVip) {
+                                                                     String orderedName,Integer courseType) {
 
         Integer begin = (pageNum - 1) * pageSize;
         String idsByTeacherId = teacherService.getIdsByUserId(nickName);
-        return mapper.getCoursesByCourseNameAndNickNameAndShowTagId(begin,pageSize,courseName,idsByTeacherId,courseIds,orderedName,isVip);
+        return mapper.getCoursesByCourseNameAndNickNameAndShowTagId(begin,pageSize,courseName,idsByTeacherId,courseIds,orderedName,courseType);
     }
 
     public List<NewCourse> getCourseByRealName(@Param("pageNum") Integer pageNum, @Param("size") Integer pageSize, String realName, String nickName){

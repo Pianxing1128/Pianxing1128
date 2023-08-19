@@ -40,7 +40,7 @@ public class BaseCourseService {
     }
 
     public List<Course> getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(Integer pageNum, Integer pageSize, String courseName, String nickName,
-                                                                                           Integer showTagId,Integer orderedType,Integer isVip) {
+                                                                                           Integer showTagId,Integer orderedType,Integer courseType) {
 
         String tagIds = appIndexTagIdRelationService.getTagIdsByShowTagId(showTagId);
         String courseIds = null;
@@ -60,7 +60,7 @@ public class BaseCourseService {
             orderedName = "course_price asc";
         }
 
-        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndShowTagId(pageNum, pageSize, courseName, nickName, courseIds,orderedName,isVip);
+        List<Course> courseList = courseService.getCourseByCourseNameAndNickNameAndShowTagId(pageNum, pageSize, courseName, nickName, courseIds,orderedName,courseType);
         return courseList;
         }
 

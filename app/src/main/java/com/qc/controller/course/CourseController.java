@@ -1,12 +1,12 @@
 package com.qc.controller.course;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+
 import com.qc.annotations.VerifiedUser;
+import com.qc.controller.Redis.RedisService;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.ImageVo;
-import com.qc.domain.course.CommentWpVo;
 import com.qc.domain.course.CourseInfoVo;
 import com.qc.domain.course.CourseListVo;
+import com.qc.domain.course.CourseTypeEnum;
 import com.qc.module.course.entity.Course;
 import com.qc.module.course.service.BaseCourseService;
 import com.qc.module.course.service.CourseService;
@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,9 @@ public class CourseController {
     private UserService userService;
     @Autowired
     private BaseCourseService baseCourseService;
+
+    @Autowired
+    private RedisService redisService;
 
     @RequestMapping("/course/info")
     public Response showCourseDetailById(@VerifiedUser User loginUser,
@@ -102,33 +107,46 @@ public class CourseController {
     }
 
     @RequestMapping("/course/list")
-    public Response courseList(@RequestParam(required = false,name = "wp")String wp,
+    public Response courseList(
                                @RequestParam(required = false,name = "courseName") String courseName,
                                @RequestParam(required = false,name = "nickName") String nickName,
                                @RequestParam(required = false,name = "showTagId")Integer showTagId,
-                               @RequestParam(required = false,name = "isVip")Integer isVip,
-                               @RequestParam(required = false,name = "orderedType")Integer orderedType){
-
-        CommentWpVo wpVo = new CommentWpVo();
-        if (BaseUtils.isEmpty(wp)) {
-            wpVo.setCourseName(courseName);
-            wpVo.setNickName(nickName);
-            wpVo.setShowTagId(showTagId);
-            wpVo.setIsVip(isVip);
-            wpVo.setOrderedType(orderedType);
-            wpVo.setPageNum(1);
-        } else {
-            try {
-                byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
-                wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
-            }catch (Exception e){
-                return new Response(4004);
-            }
+                               @RequestParam(required = false,name = "courseType")Integer courseType,
+                               @RequestParam(required = false,name = "orderedType")Integer orderedType,
+                               @RequestParam(name = "pageNum")Integer pageNum){
+        //删除String中的空格
+        if( !BaseUtils.isEmpty(courseName) || !BaseUtils.isEmpty(nickName)) {
+            courseName = courseName.trim();
+            nickName = nickName.trim();
         }
 
-        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
-        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName(),wpVo.getShowTagId(),wpVo.getOrderedType(),wpVo.getIsVip());
+        // 拼接键的方法
+        String redisKey = BaseUtils.generateKey(courseName,nickName,showTagId,courseType,orderedType,pageNum);
+        BaseListVo redisStoredBaseListVo = redisService.getBaseListVoByKey(redisKey);
+        if(!BaseUtils.isEmpty(redisStoredBaseListVo)){
+            return new Response(1001,redisStoredBaseListVo);
+        }
 
+//        CommentWpVo wpVo = new CommentWpVo();
+//        if (BaseUtils.isEmpty(wp)) {
+//            wpVo.setCourseName(courseName);
+//            wpVo.setNickName(nickName);
+//            wpVo.setShowTagId(showTagId);
+//            wpVo.setIsVip(isVip);
+//            wpVo.setOrderedType(orderedType);
+//            wpVo.setPageNum(1);
+//        } else {
+//            try {
+//                byte[] decodeWp = Base64.getUrlDecoder().decode(wp.getBytes(StandardCharsets.UTF_8));
+//                wpVo = JSON.parseObject(decodeWp, CommentWpVo.class);
+//            }catch (Exception e){
+//                return new Response(4004);
+//            }
+//        }
+
+        Integer pageSize = Integer.valueOf(SpringUtils.getProperty("application.pagesize"));
+//        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(wpVo.getPageNum(), pageSize, wpVo.getCourseName(),wpVo.getNickName(),wpVo.getShowTagId(),wpVo.getOrderedType(),wpVo.getIsVip());
+        List<Course> courseList = baseCourseService.getCourseByCourseNameAndNickNameAndShowTagIdAndOrderedTypeAndIsVip(pageNum,pageSize,courseName,nickName,showTagId,orderedType,courseType);
         if(courseList.size()==0){
             return new Response(3001);
         }
@@ -136,10 +154,10 @@ public class CourseController {
         BaseListVo baseListVo = new BaseListVo();
         baseListVo.setIsEnd(courseList.size()<pageSize);
 
-        wpVo.setPageNum(wpVo.getPageNum()+1);
-        String wps = JSONObject.toJSONString(wpVo);
-        byte[] encodeWp = Base64.getUrlEncoder().encode(wps.getBytes(StandardCharsets.UTF_8));
-        baseListVo.setWp(new String(encodeWp, StandardCharsets.UTF_8).trim());
+//        wpVo.setPageNum(wpVo.getPageNum()+1);
+//        String wps = JSONObject.toJSONString(wpVo);
+//        byte[] encodeWp = Base64.getUrlEncoder().encode(wps.getBytes(StandardCharsets.UTF_8));
+//        baseListVo.setWp(new String(encodeWp, StandardCharsets.UTF_8).trim());
 
         List<BigInteger> teacherIds = courseList.stream().map(Course::getTeacherId).collect(Collectors.toList());
         List<Teacher> teacherList = teacherService.getByIds(teacherIds);
@@ -167,7 +185,8 @@ public class CourseController {
             courseListVo.setCourseCount(c.getCourseCount());
             courseListVo.setCoursePrice(BaseUtils.formatPrice(c.getCoursePrice()));
             courseListVo.setPurchasedTotal(c.getPurchasedTotal());
-            courseListVo.setIsVip(c.getIsVip());
+            CourseTypeEnum courseTypeEnum = CourseTypeEnum.fromValue(c.getCourseType());
+            courseListVo.setCourseType(courseTypeEnum.name());
             courseListVo.setIsMarketable(c.getIsMarketable());
 
             List<String> images = Arrays.asList(c.getCourseImage().split("\\$"));
@@ -184,6 +203,8 @@ public class CourseController {
             list.add(courseListVo);
         }
         baseListVo.setCourseList(list);
+        //将key和baseListVo存到redis中
+        redisService.setBaseListVoToKey(redisKey,baseListVo);
         return new Response(1001,baseListVo);
     }
 

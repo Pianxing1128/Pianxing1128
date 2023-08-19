@@ -11,6 +11,7 @@
         <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">lesson_link,</if>
         <if test="courseLessonDetail.lessonTime!=null">lesson_time,</if>
         <if test="courseLessonDetail.lessonType!=null">lesson_type,</if>
+        <if test="courseLessonDetail.isMarketable!=null">is_marketable,</if>
         <if test="courseLessonDetail.updateTime!=null">update_time,</if>
         <if test="courseLessonDetail.createTime!=null">create_time,</if>
         is_deleted
@@ -20,6 +21,7 @@
         <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">#{courseLessonDetail.lessonLink},</if>
         <if test="courseLessonDetail.lessonTime!=null">#{courseLessonDetail.lessonTime},</if>
         <if test="courseLessonDetail.lessonType!=null">#{courseLessonDetail.lessonType},</if>
+        <if test="courseLessonDetail.isMarketable!=null">#{courseLessonDetail.isMarketable},</if>
         <if test="courseLessonDetail.updateTime!=null">#{courseLessonDetail.updateTime},</if>
         <if test="courseLessonDetail.createTime!=null">#{courseLessonDetail.createTime},</if>
         #{courseLessonDetail.isDeleted}
@@ -34,6 +36,7 @@
         <if test="courseLessonDetail.lessonLink!=null and courseLessonDetail.lessonLink!=''">,lesson_link=#{courseLessonDetail.lessonLink}</if>
         <if test="courseLessonDetail.lessonTime!=null">,lesson_time=#{courseLessonDetail.lessonTime}</if>
         <if test="courseLessonDetail.lessonType!=null">,lesson_type=#{courseLessonDetail.lessonType}</if>
+        <if test="courseLessonDetail.isMarketable!=null">,lesson_type=#{courseLessonDetail.isMarketable}</if>
         <if test="courseLessonDetail.createTime!=null">,create_time=#{courseLessonDetail.createTime}</if>
         <if test="courseLessonDetail.isDeleted!=null">,is_deleted=#{courseLessonDetail.isDeleted}</if>
         where id =#{courseLessonDetail.id}

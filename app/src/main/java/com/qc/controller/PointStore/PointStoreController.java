@@ -1,4 +1,4 @@
-package com.qc.controller.pointStore;
+package com.qc.controller.PointStore;
 
 import com.qc.module.pointMailOrder.service.BasePointMailService;
 import com.qc.module.pointMerchandise.entity.PointMerchandise;
@@ -16,7 +16,7 @@ import java.math.BigInteger;
 
 @RestController
 @Slf4j
-public class pointStoreController {
+public class PointStoreController {
 
     @Autowired
     private PointUserService pointUserService;

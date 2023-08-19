@@ -28,7 +28,7 @@ public class PointUserOrder {
     /**
      * 订单号
      */
-    private BigInteger orderId;
+    private BigInteger orderNumber;
 
     /**
      * 供应商名称

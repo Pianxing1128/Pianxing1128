@@ -375,4 +375,20 @@ public class BaseUtils {
 
     }
 
+    public static String generateKey(String courseName, String nickName,
+                                     Integer showTagId, Integer isVip, Integer orderedType,Integer pageNum) {
+
+        return "courseName" +":"+ courseName+":"+ "nickName" +":"+ nickName +":"+ "showTagId" +":"
+                + showTagId+":" + "isVip" +":"+ isVip+":" + "orderedType" +":"+ orderedType + ":" + "pageNum" + ":" +  pageNum;
+    }
+    //冒号前面的是key，后面的是对应的value
+    public static String extractValueInKey(String[] parts, String key) {
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].equals(key)) {
+                return parts[i + 1];
+            }
+        }
+        return null;
+    }
+
 }

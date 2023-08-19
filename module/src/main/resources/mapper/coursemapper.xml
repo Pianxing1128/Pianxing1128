@@ -73,8 +73,8 @@
             <if test="courseIds !=null and courseIds !=''">
                 and id in(${courseIds})
             </if>
-            <if test="isVip !=null">
-                and is_vip = #{isVip}
+            <if test="courseType!=null">
+                and course_type = #{courseType}
             </if>
             and is_deleted=0 and is_marketable=1
         </where>
