@@ -36,10 +36,6 @@
                     <artifactId>zookeeper</artifactId>
                     <groupId>org.apache.zookeeper</groupId>
                 </exclusion>
-                <!--                <exclusion>-->
-<!--                    <artifactId>zookeeper</artifactId>-->
-<!--                    <groupId>org.apache.zookeeper</groupId>-->
-<!--                </exclusion>-->
             </exclusions>
         </dependency>
         <!-- JWT -->
@@ -49,10 +45,10 @@
             <version>0.9.1</version>
         </dependency>
         <!-- Spring Secutiry -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -72,6 +68,8 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.5</version>
+                <!--修改maven-resources-plugin版本-->
                 <!--使用热部署出现中文乱码解决方案-->
                 <configuration>
                     <fork>true</fork>
@@ -81,6 +79,13 @@
                     <mainClass>com.qc.ConsoleApplication</mainClass>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+
         </plugins>
     </build>
 </project>

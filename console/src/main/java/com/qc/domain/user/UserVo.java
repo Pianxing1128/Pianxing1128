@@ -2,7 +2,6 @@ package com.qc.domain.user;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.context.annotation.Primary;
 
 import java.math.BigInteger;
 
@@ -25,5 +24,5 @@ public class UserVo {
     private String updateTime;
     private String createTime;
     private Integer isDeleted;
-
+    private String token;
 }

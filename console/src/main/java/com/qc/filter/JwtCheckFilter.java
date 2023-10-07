@@ -1,98 +1,37 @@
 package com.qc.filter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qc.domain.HttpResult.HttpResultVo;
-import com.qc.module.user.entity.User;
-import com.qc.utils.BaseUtils;
 import com.qc.utils.JWTUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+@Configuration
+public class JwtCheckFilter implements HandlerInterceptor {
 
-@Component
-@Slf4j
-public class JwtCheckFilter extends OncePerRequestFilter {
-
-    @Resource
+    @Autowired
     private JWTUtils jwtUtils;
-
-    @Resource
-    private ObjectMapper objectMapper;
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
-        //如果是登陆请求url，直接放行
-        if(requestURI.equals("/login")){
-            doFilter(request,response,filterChain);
-            return;
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        HashMap<String, String> map=new HashMap<>();
+        //从http请求头获取token
+        String token = request.getHeader("token");
+        try {
+            //如果验证成功放行请求
+            DecodedJWT verify = jwtUtils.verify(token);
+            return true;
         }
-        String strAuthorization = request.getHeader("Authorization");
-        if(BaseUtils.isEmpty(strAuthorization)){
-            HttpResultVo httpResultVo = HttpResultVo.builder()
-                    .code(0)
-                    .msg("Authorization is null!")
-                    .data(null)
-                    .build();
-            printToken(request,response,httpResultVo);
-            return;
+        catch (Exception exception)
+        {
+            map.put("msg","验证失败："+exception);
         }
-
-        String jwtToken = strAuthorization.replace("bearer ","");
-        if(BaseUtils.isEmpty(jwtToken)){
-            HttpResultVo httpResultVo = HttpResultVo.builder()
-                    .code(0)
-                    .msg("JWT is null!")
-                    .data(null)
-                    .build();
-            printToken(request,response,httpResultVo);
-            return;
-        }
-
-        //校验jwt
-        Boolean jwtVerification = jwtUtils.verifyToken(jwtToken);
-        if(!jwtVerification){
-            HttpResultVo httpResultVo = HttpResultVo.builder()
-                    .code(0)
-                    .msg("JWT is illegal!")
-                    .data(null)
-                    .build();
-            printToken(request,response,httpResultVo);
-            return;
-        }
-
-        //从jwt里获取用户信息和权限信息
-        String userInfo = jwtUtils.getUserInfoFromToken(jwtToken);
-        List<String> userAuthList =  jwtUtils.getUserAuthFromToken(jwtToken);
-        //反序列化成User对象
-        User user = objectMapper.readValue(userInfo, User.class);
-        List<SimpleGrantedAuthority> authorityList = userAuthList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        //用户名密码认证token
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user,null,authorityList);
-        //把token放到安全上下文：securityContext
-        SecurityContextHolder.getContext().setAuthentication(token);
-        doFilter(request,response,filterChain);
-    }
-
-    private void printToken(HttpServletRequest request, HttpServletResponse response, HttpResultVo httpResultVo) throws IOException {
-        String strResponse = objectMapper.writeValueAsString(httpResultVo);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        writer.println(strResponse);
-        writer.flush();
+        String json = new ObjectMapper().writeValueAsString(map);
+        response.setContentType("application/json:charset=UTF=8");
+        response.getWriter().println(json);
+        return false;
     }
 }

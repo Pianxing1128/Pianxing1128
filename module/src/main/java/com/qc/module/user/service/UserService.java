@@ -255,6 +255,7 @@ public class UserService {
         if(noPassword || BaseUtils.md5(userPassword).equals(user.getUserPassword())) {
             // write session??
             // lifetime =
+            log.info("密码验证"+BaseUtils.md5(userPassword));
             return true;
         }else{
             return false;

@@ -10,7 +10,7 @@ import redis.clients.jedis.Jedis;
 @Service
 public class RedisService {
 
-    private static final String REDIS_HOST = "localhost";
+    private static final String REDIS_HOST = "43.139.24.31";
     private static final int REDIS_PORT = 6379;
     private static final int EXPIRATION_SECONDS = 1209600;
 

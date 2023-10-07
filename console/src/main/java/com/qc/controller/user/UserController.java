@@ -1,15 +1,11 @@
 package com.qc.controller.user;
 
-import com.alibaba.fastjson.JSON;
 import com.qc.annotations.VerifiedUser;
 import com.qc.domain.BaseListVo;
 import com.qc.domain.user.UserVo;
 import com.qc.module.user.entity.User;
 import com.qc.module.user.service.UserService;
-import com.qc.utils.BaseUtils;
-import com.qc.utils.IpUtils;
-import com.qc.utils.Response;
-import com.qc.utils.SpringUtils;
+import com.qc.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -38,10 +36,10 @@ public class UserController {
                               @RequestParam(name="userPassword") String userPassword,
                               @RequestParam(required = false,name = "remember") boolean remember) {
 
-        //如果用户登陆不为空
-        if(!BaseUtils.isEmpty(loginUser)){
-            return new Response(1002);
-        }
+//        //如果用户登陆不为空
+//        if(BaseUtils.isEmpty(loginUser)){
+//            return new Response(1002);
+//        }
 
         boolean result;
         if(remember){
@@ -75,18 +73,26 @@ public class UserController {
         userVo.setIsDeleted(user.getIsDeleted());
 
         // web登陆时候写session
-        httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
+//        httpSession.setAttribute(SpringUtils.getProperty("application.session.key"), JSON.toJSONString(user));
 
+        Map<String, String> payload = new HashMap<>();
+        payload.put("id", String.valueOf(user.getId()));
+        payload.put("name", user.getUserAccount());
+        payload.put("password", user.getUserPassword());
+
+        // 生成token
+        String token = JWTUtils.getToken(payload);
+        userVo.setToken(token);
         return new Response(1001, userVo);
-
     }
     @RequestMapping("/user/list")
-    public Response userList(@VerifiedUser User loginUser,
+//    @CrossOrigin(origins = "http://192.168.110.131:3032", allowCredentials = "true")
+    public Response userList(
                              @RequestParam(required = false,name = "pageNum")Integer inputPageNum){
 
-        if (BaseUtils.isEmpty(loginUser)) {
-            return new Response(1002);
-        }
+//        if (BaseUtils.isEmpty(loginUser)) {
+//            return new Response(1002);
+//        }@VerifiedUser User loginUser,
         Integer pageNum = null;
         if(pageNum==null || pageNum<=0){
             pageNum = 1;

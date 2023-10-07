@@ -107,7 +107,8 @@ public class CourseController {
             courseVo.setCourseIntro(c.getCourseIntro());
             courseVo.setCoursePrice("￥"+c.getCoursePrice());
             courseVo.setWeight(c.getWeight());
-            courseVo.setIsVip(c.getIsVip());
+//            Integer courseType = c.getCourseType();
+//            courseVo.setCourseType(courseType);
             courseVo.setIsMarketable(c.getIsMarketable());
             courseVo.setPurchasedTotal(c.getPurchasedTotal());
             courseVo.setUpdateTime(BaseUtils.timeStamp2Date(c.getUpdateTime()));
@@ -169,7 +170,7 @@ public class CourseController {
         List<String> courseList = Arrays.asList(course.getCourseImage().split("\\$"));
         courseVo.setCourseImages(courseList);
         courseVo.setWeight(course.getWeight());
-        courseVo.setIsVip(course.getIsVip());
+//        courseVo.setCourseType(course.getCourseType());
         courseVo.setIsMarketable(course.getIsMarketable());
         courseVo.setPurchasedTotal(course.getPurchasedTotal());
         courseVo.setUpdateTime(BaseUtils.timeStamp2Date(course.getUpdateTime()));

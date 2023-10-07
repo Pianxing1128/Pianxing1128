@@ -9,7 +9,6 @@ public class Response<T> {
     private final ResponseStatus status = new ResponseStatus();
     private final T result;
 
-
     public Response(int status) {
         this.status.setCode(status);
         this.status.setMsg(ResponseCode.getMsg(status));
